@@ -1,0 +1,13 @@
+{
+  "name": "Крипто-Радар",
+  "idea": "Показує курси, графіки й список криптовалют із відкритого API (на кшталт CoinGecko). Можна стежити за обраними монетами. Для початківців, які хочуть швидко глянути ціни без реєстрації на біржі.",
+  "learning_mode": true,
+  "stack": null,
+  "has_http_api": null,
+  "deploy_target": null,
+  "verify_commands": {},
+  "debt_commands": {},
+  "oracle": null,
+  "quality_rules": [],
+  "disabled_rules": []
+}
