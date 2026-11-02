@@ -51,50 +51,17 @@ export const QUERY_MAX_LENGTH = 50;
 /** US-1: монет на першому показі й за натиск «Показати більше». */
 export const PAGE_SIZE = 25;
 
+export { formatPrice, formatChange, formatMarketCap, formatPriceTime } from "./format.js";
+export { sortCoins } from "./sort.js";
+export { pluralCoins } from "./plural.js";
+
 /**
- * Ціна в доларах за UX §5.3 (`$67 250,10`).
- * @param {number} usd
+ * Запит пошуку для порівняння: обрізані пробіли, нижній регістр, не довше QUERY_MAX_LENGTH (US-3).
+ * @param {string} raw
  * @returns {string}
  */
-export function formatPrice(usd) {
-  throw new Error(`not implemented: formatPrice(${usd})`);
-}
-
-/**
- * Зміна за 7 днів: видимий текст, напрям і текст для зчитувача (UX §5.2 `change.*`, §5.3, AC-1.5).
- * @param {number} pct
- * @returns {{text: string, direction: 'up' | 'down' | 'flat', spoken: string}}
- */
-export function formatChange(pct) {
-  throw new Error(`not implemented: formatChange(${pct})`);
-}
-
-/**
- * Капіталізація за UX §5.3 (`$1,32 трлн`).
- * @param {number} usd
- * @returns {string}
- */
-export function formatMarketCap(usd) {
-  throw new Error(`not implemented: formatMarketCap(${usd})`);
-}
-
-/**
- * Час цін у 24-годинному форматі за часом пристрою (`14:32`, UX §5.2 `prices.time`).
- * @param {Date} date
- * @returns {string}
- */
-export function formatPriceTime(date) {
-  throw new Error(`not implemented: formatPriceTime(${date})`);
-}
-
-/**
- * Нова впорядкована копія за ключем; рівні значення — за місцем у рейтингу (US-2).
- * @param {Coin[]} coins
- * @param {SortKey} key
- * @returns {Coin[]}
- */
-export function sortCoins(coins, key) {
-  throw new Error(`not implemented: sortCoins(${coins.length}, ${key})`);
+export function normalizeQuery(raw) {
+  return raw.trim().toLocaleLowerCase("uk").slice(0, QUERY_MAX_LENGTH);
 }
 
 /**
@@ -104,16 +71,13 @@ export function sortCoins(coins, key) {
  * @returns {Coin[]}
  */
 export function searchCoins(coins, query) {
-  throw new Error(`not implemented: searchCoins(${coins.length}, ${query})`);
-}
-
-/**
- * Запит пошуку для порівняння: обрізані пробіли, нижній регістр, не довше QUERY_MAX_LENGTH (US-3).
- * @param {string} raw
- * @returns {string}
- */
-export function normalizeQuery(raw) {
-  throw new Error(`not implemented: normalizeQuery(${raw})`);
+  const needle = normalizeQuery(query);
+  if (needle === "") return [...coins];
+  return coins.filter(
+    (coin) =>
+      coin.name.toLocaleLowerCase("uk").includes(needle) ||
+      coin.symbol.toLocaleLowerCase("uk").includes(needle),
+  );
 }
 
 /**
@@ -123,15 +87,5 @@ export function normalizeQuery(raw) {
  * @returns {boolean}
  */
 export function isFresh(oldestLastUpdated, now) {
-  throw new Error(`not implemented: isFresh(${oldestLastUpdated}, ${now})`);
-}
-
-/**
- * Число з узгодженим словом «монета»: acc — «1 монету», «2 монети», «5 монет»; nom — «1 монета», «2 монети», «5 монет».
- * @param {number} n
- * @param {'acc' | 'nom'} form
- * @returns {string}
- */
-export function pluralCoins(n, form) {
-  throw new Error(`not implemented: pluralCoins(${n}, ${form})`);
+  return now.getTime() - oldestLastUpdated.getTime() <= FRESHNESS_LIMIT_MS;
 }
