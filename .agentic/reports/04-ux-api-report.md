@@ -2,7 +2,7 @@
 
 - **Етап:** `Stage 4: UX і контракт API`
 - **Відповідальний скіл:** `ux-api-design`
-- **Дата формування:** `2026-11-02 19:25`
+- **Дата формування:** `2026-11-02 19:25` · **Revise (запит №1):** `2026-11-03 00:20`
 - **Статус аудиту independent-reviewer:** `PASS`
 
 ---
@@ -41,6 +41,7 @@
 ## 3. Виконаний обсяг робіт (Deliverables)
 
 - [`.agentic/specs/04-ux-and-contract.md`](../specs/04-ux-and-contract.md) — карта 5 екранів, 7 user flows (US-1 – US-10), матриці станів, WCAG 2.2 AA, тексти (6 підказок, 60+ рядків мікрокопірайту, формат чисел), брейкпоінти, 4 діаграми послідовності, каталог операцій стороннього API, дизайн-система й відповідність макетам.
+- **Revise 2026-11-03 (запит на зміну №1):** у §5.2 рядок `footer.privacy` — «GitHub» тепер звичайний текст без посилання, «CoinGecko» лишається посиланням на політику приватності. Причина: `quality_rules.only-coingecko-origins` у `.agentic/project.json` забороняє в `src/**` адреси поза доменами CoinGecko (виявив рев'юер етапу 6). Текст примітки й решта документа не змінювалися.
 - [`.agentic/reports/04-ux-api-report.md`](04-ux-api-report.md) — цей звіт.
 - [`.agentic/pipeline-state.md`](../pipeline-state.md) — статус етапу 4, рішення власника в розділі 4; також хеш `2edc20f` етапу 3 у матриці й журналі (правка, що була в робочому дереві до старту етапу).
 - **Контракт API: не застосовно — `has_http_api: false`** (ADR 0001: статичний frontend-only SPA на GitHub Pages, браузер напряму звертається до CoinGecko, ADR 0005). `contract/openapi.yaml` і конфіг лінтера (`redocly.yaml` / `.spectral.yaml`) не створювалися.
@@ -56,12 +57,13 @@
 
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 4` | 0 | 0 помилок (фінальний запуск після вердикту) | так | Без `--run`: етап без коду; вивід у 4.2 |
-| Сканер секретів | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .agentic/specs/` | 0 | 10 файлів, 0 секретів | так | — |
-| Назви станів у документі | `grep -c -e Loading -e Empty -e Error .agentic/specs/04-ux-and-contract.md` | 0 | 61 рядок (> 0) | так (еквівалент Grep; команду заблокував хук read-only) | `must_match` етапу |
-| Розділ дизайн-системи | `grep -c "Дизайн-система" .agentic/specs/04-ux-and-contract.md` | 0 | 4 (> 0) | так (еквівалент Grep; команду заблокував хук read-only) | Графічний інтерфейс |
-| Покриття AC | `python -c "import re;a=set(re.findall(r'@(AC-\d+\.\d+)',open('.agentic/specs/02-requirements.md',encoding='utf-8').read()));b=set(re.findall(r'AC-\d+\.\d+',open('.agentic/specs/04-ux-and-contract.md',encoding='utf-8').read()));print(len(a),len(a-b));exit(len(a-b))"` | 0 | 57 AC у вимогах, 0 непокритих | так (еквівалент Grep -o; команду заблокував хук read-only) | Код виходу = кількість непокритих AC (L-001) |
-| Вердикт рев'юера | Субагент `independent-reviewer` | 0 | PASS (3-й прохід) | — | Розділ 4.3 |
+| Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 4` | 0 | 0 помилок (фінальний запуск після вердикту) | так (до вердикту — exit 1, лише через вердикт) | Без `--run`: етап без коду; вивід у 4.2 |
+| Сканер секретів | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .agentic/specs/` | 0 | 12 файлів, 0 секретів | так | Revise 2026-11-03 |
+| Назви станів у документі | `grep -c -e Loading -e Empty -e Error .agentic/specs/04-ux-and-contract.md` | 0 | 62 рядки (> 0) | так (еквівалент Grep; хук read-only) | `must_match` етапу |
+| Розділ дизайн-системи | `grep -c "Дизайн-система" .agentic/specs/04-ux-and-contract.md` | 0 | 4 (> 0) | так (еквівалент Grep; хук read-only) | Графічний інтерфейс |
+| Покриття AC | `python -c "import re;a=set(re.findall(r'@(AC-\d+\.\d+)',open('.agentic/specs/02-requirements.md',encoding='utf-8').read()));b=set(re.findall(r'AC-\d+\.\d+',open('.agentic/specs/04-ux-and-contract.md',encoding='utf-8').read()));print(len(a),len(a-b));exit(len(a-b))"` | 0 | 57 AC у вимогах, 0 непокритих | так (еквівалент Grep -o; хук read-only) | Код виходу = кількість непокритих AC (L-001) |
+| Правка запиту №1 | `grep -c "«GitHub» — звичайний текст без посилання" .agentic/specs/04-ux-and-contract.md` | 0 | 1 (очікується 1) | так (еквівалент Grep; хук read-only) | Revise 2026-11-03 |
+| Вердикт рев'юера | Субагент `independent-reviewer` | 0 | PASS (повторний гейт, 3 WARNING) | — | Розділ 4.3 |
 
 ### 4.1. Збірка, лінтери та автоматичні тести
 ```text
@@ -70,26 +72,37 @@
 ```
 
 ### 4.2. Валідація артефактів, контракту, інфраструктури
+
+Вивід останнього запуску (Revise за запитом №1, 2026-11-03).
+
 ```text
 $ python verify-gate.py --scan-secrets .agentic/specs/
 
 === Сканування секретів: .agentic/specs ===
-ℹ️  [INFO] Проскановано файлів: 10
+ℹ️  [INFO] Проскановано файлів: 12
 ✅ [PASS] Відкритих секретів не виявлено
 
 УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
 exit=0
 
 $ grep -c -e Loading -e Empty -e Error .agentic/specs/04-ux-and-contract.md
-61
+62
 exit=0
 
 $ grep -c "Дизайн-система" .agentic/specs/04-ux-and-contract.md
 4
 exit=0
 
+$ grep -c "«GitHub» — звичайний текст без посилання" .agentic/specs/04-ux-and-contract.md
+1
+exit=0
+
 $ python -c "<покриття AC>"
 57 0
+exit=0
+
+$ grep -c "«GitHub» — звичайний текст без посилання" .agentic/specs/04-ux-and-contract.md   (після правки за WARNING рев'юера)
+1
 exit=0
 
 $ python verify-gate.py --stage 4   (фінальний запуск після вердикту рев'юера)
@@ -98,17 +111,17 @@ $ python verify-gate.py --stage 4   (фінальний запуск після 
 ✅ [PASS] Передумови схвалено: 3
 ℹ️  [INFO] Перевірка звіту: .agentic/reports/04-ux-api-report.md
 ✅ [PASS] Статус аудиту independent-reviewer: PASS
-✅ [PASS] «Валюта довіри»: 6 перевірок із кодами виходу
+✅ [PASS] «Валюта довіри»: 7 перевірок із кодами виходу
 ✅ [PASS] Карта технологій заповнена (6 рядків)
 ✅ [PASS] Conventional Commit у секції 7 валідний
 ✅ [PASS] Артефакт .agentic/specs/04-ux-and-contract.md знайдено
 ℹ️  [INFO] Артефакт contract/openapi.yaml: не застосовно (has_http_api = false)
 
 === Правила якості коду: . ===
-ℹ️  [INFO] У .agentic/project.json немає quality_rules: правила якості не застосовуються
+✅ [PASS] Перевірено файлів: 6, порушень-помилок немає
 
 === Сканування секретів: . ===
-ℹ️  [INFO] Проскановано файлів: 20
+ℹ️  [INFO] Проскановано файлів: 66
 ✅ [PASS] Відкритих секретів не виявлено
 
 УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
@@ -117,15 +130,15 @@ exit=0
 
 ### 4.3. Вердикт незалежного аудиту (`independent-reviewer`)
 ```text
-PASS — independent-reviewer, 2026-11-02, Stage 4 (третій прохід; перший і другий — BLOCKERS FOUND, виправлено).
-Межі етапу: 3 файли (.agentic/specs/04-ux-and-contract.md, .agentic/reports/04-ux-api-report.md, .agentic/pipeline-state.md), усі в зоні етапу 4; коду, маніфестів, contract/ немає; git status до і після аудиту однаковий. Секція 7: явний git add трьох файлів, docs(stage-4) — валідний.
-Секрети: verify-gate.py --scan-secrets . — 20 файлів, 0 секретів, exit 0; --scan-secrets .agentic/specs/ — 10 файлів, 0 секретів, exit 0.
-Залежності: не застосовно — етап документний, маніфестів і lock-файлів немає.
-Правила якості: не застосовно — коду немає; quality_rules порожній.
-Контракт: не застосовно — has_http_api: false (ADR 0001, ADR 0005); замість нього каталог операцій стороннього API CoinGecko (розділ 8).
-Повторений запуск: verify-gate.py --stage 4 до вердикту — exit 1, 3 FAIL, усі через ще не заповнений вердикт; --scan-secrets .agentic/specs/ — збігається; «Назви станів» 61, «Дизайн-система» 4, «Покриття AC» 57/0 — збігаються (повторено інструментом Grep, бо grep і python -c заблокував хук read-only рев'юера). Версії Python 3.14.7, Git 2.45.2 — збігаються.
-Трасування: 57/57 AC-N.M з 02-requirements.md мають екран і стан у документі.
-Попередні блокери: секція 4.2 без виводу; ім'я ★ проти WCAG 2.5.3 / AC-5.4 і aria-pressed; стара назва на діаграмі 7.3; немає WCAG 3.1.2 — усі виправлено. INFO третього проходу (aria-busy на діаграмі 7.1, текст повторної помилки при E-NET) закрито після вердикту.
+PASS — independent-reviewer, 2026-11-03, Stage 4 (повторний гейт після Revise за запитом на зміну №1).
+Межі етапу: git diff --stat HEAD — 3 файли зі змістом (.agentic/specs/04-ux-and-contract.md: 1 рядок, .agentic/reports/04-ux-api-report.md, .agentic/pipeline-state.md), усі в зоні етапу 4. У 04-ux-and-contract.md змінено лише примітку рядка footer.privacy у §5.2, текст примітки для відвідувача той самий. Коду, маніфестів і contract/ немає. 01–03 « M» без змістового diff, у коміт не входять; .claude/skills/verify/SKILL.md поза етапом, у git add його немає. git status до і після аудиту однаковий. Секція 7: явний git add трьох файлів, docs(stage-4): keep github in privacy note as plain text — валідний.
+Правка: «GitHub» — текст без посилання, «CoinGecko» — посилання на політику приватності (домен www.coingecko.com дозволено quality_rules.only-coingecko-origins). Відповідає рішенню власника 2026-11-03 00:05/00:10. Оракул acceptance/us-9 посилання на GitHub не вимагає. §3 (каркас) правці не суперечить.
+Секрети: verify-gate.py --scan-secrets . — 66 файлів, 0 секретів, exit 0; --scan-secrets .agentic/specs/ — 12 файлів, 0 секретів, exit 0.
+Залежності: не застосовно — етап документний. Правила якості: 6 файлів, 0 помилок. Контракт: не застосовно — has_http_api: false (ADR 0001, ADR 0005).
+Повторний запуск: verify-gate.py --stage 4 до вердикту — exit 1, 2 FAIL, обидва чекають на вердикт рев'юера. «Сканер секретів» 12/0, «Назви станів» 62, «Дизайн-система» 4, «Правка запиту №1» 1, «Покриття AC» 57/0 — збігаються (останні чотири — інструментом Grep, бо grep і python -c заблокував хук read-only). Python 3.14.7, Git 2.45.2.windows.1.
+Трасування: 57/57 AC-N.M; матриці станів і WCAG 2.2 AA правка не зачіпає.
+WARNING: (1) розходження §5.2 з розділом 8.4 архітектури; (2) неправдива фраза в секції 6 про відсутність .agentic/tech-debt.md; (3) WCAG 2.4.4 — мета посилання «CoinGecko» на політику приватності (було й до Revise).
+Після вердикту: (1) у §5.2 прямо названо відступ від 8.4 за рішенням власника, питання про §8.4 — на гейт (секція 6); (2) фразу виправлено; (3) винесено на гейт (секція 6). .agentic/tech-debt.md поза зоною етапу 4 — не змінювався.
 ```
 
 ---
@@ -161,7 +174,7 @@ PASS — independent-reviewer, 2026-11-02, Stage 4 (третій прохід; �
 
 ## 6. Ризики, технічний борг і відкриті питання
 
-Реєстру `.agentic/tech-debt.md` ще немає (створює етап 5 або 7); нового боргу етап не вносить.
+Реєстр `.agentic/tech-debt.md` існує з коміту `3c7cc09` (TD-001 – TD-004). Він поза зоною змін етапу 4, тому два нові пункти Revise (розходження з §8.4 і WCAG 2.4.4) винесено нижче як питання на гейт; занести їх у реєстр як TD-005 / TD-006 — за рішенням власника.
 
 | Тип | Опис | Вплив | Що пропонується | Власник рішення |
 | :--- | :--- | :--- | :--- | :--- |
@@ -174,6 +187,9 @@ PASS — independent-reviewer, 2026-11-02, Stage 4 (третій прохід; �
 | Ризик | Під час фонового оновлення порядок рядків не змінюється до дії відвідувача, тож колонка «№» або порядок обраних (AC-6.7) можуть тимчасово йти не по черзі | Низький | Свідомий компроміс заради WCAG 2.2.2 (документ, S-1 «Data (фонове оновлення)»); врахувати в тест-дизайні 8.a / 8.b | Скіл етапу 8.a |
 | Питання | Тексти 6 підказок і помилок написав агент; зрозумілість для новачка перевіряє M-2 | Середній | Власник читає §5.1–5.2 на гейті; ручна перевірка з 1–2 знайомими на етапі 8.a | Власник продукту |
 | Питання | Підказку Safari визначає User-Agent; неточність дає зайву або відсутню пораду (ADR 0006) | Низький | Етап 8.a: перевірка в Safari / WebKit | Скіл етапу 8.a |
+| Питання | Макет футера в Claude Design міг показувати «GitHub» як посилання (до запиту №1); норма — §5.2 документа (лише «CoinGecko» — посилання) | Низький | Етап 7 бере розмітку футера з §5.2; макети — лише візуал | Скіл етапу 7 |
+| Питання (рев'ю Revise, WARNING) | Розділ 8.4 архітектури досі вимагає примітку «з посиланнями на політики GitHub і CoinGecko»; §5.2 тепер свідомо відступає від нього (рішення власника, запит №1). Правового обов'язку давати посилання немає (03-architecture.md, 8.5) | Низький | Власник на гейті: відкрити запит на зміну §8.4 етапу 3 через `project-kickoff` або записати в трекері, що §8.4 у цій частині замінено запитом №1; за бажанням — TD-005 у реєстрі | Власник продукту |
+| Питання (рев'ю Revise, WARNING) | WCAG 2.4.4: у примітці лишилося одне посилання «CoinGecko» на політику приватності, поруч — «Powered by CoinGecko» з іншою адресою; мета посилання не зрозуміла з тексту, рядок 2.4.4 його не охоплює (було й до Revise) | Низький | Власник на гейті: окремий Revise етапу 4 (доступне ім'я «CoinGecko — політика приватності», рядок 2.4.4) або TD-006 для етапу 7 | Власник продукту |
 | Ризик | Артефакти Claude Design живуть поза репозиторієм і приватні; етапи 6–7 мають до них доступ лише через власника | Низький | Значення токенів і тексти продубльовано в розділах 5 і 9 документа (джерело правди в репозиторії) | Власник продукту |
 
 ### 6.1. Карта технологій для самостійного опанування
@@ -194,14 +210,16 @@ PASS — independent-reviewer, 2026-11-02, Stage 4 (третій прохід; �
 ### 7.1. Список файлів для індексації (`git status --short`)
 ```text
  M .agentic/pipeline-state.md
-?? .agentic/reports/04-ux-api-report.md
-?? .agentic/specs/04-ux-and-contract.md
+ M .agentic/reports/04-ux-api-report.md
+ M .agentic/specs/04-ux-and-contract.md
 ```
+
+`git status --short` також показує ` M` для `01-…`–`03-…` звітів і специфікацій (`01-product-brief.md`, `02-requirements.md`, `03-architecture.md`), але `git diff --stat` для них порожній (змістових змін немає, лише стан індексу) — у коміт етапу 4 вони не входять; `.claude/skills/` — поза зоною етапу.
 
 ### 7.2. Явна індексація та коміт (Conventional Commits)
 ```bash
 git add .agentic/specs/04-ux-and-contract.md .agentic/reports/04-ux-api-report.md .agentic/pipeline-state.md
-git commit -m "docs(stage-4): add ux state matrix and interface spec"
+git commit -m "docs(stage-4): keep github in privacy note as plain text"
 ```
 
 ---
@@ -214,3 +232,5 @@ git commit -m "docs(stage-4): add ux state matrix and interface spec"
 
 **Коментарі / Зауваження:**
 > 2026-11-02 19:31: власник обрав «Approve & закоміть».
+> 2026-11-03 00:20: Revise за запитом на зміну №1 (footer.privacy).
+> 2026-11-03 00:40: власник обрав «Approve & закоміть».

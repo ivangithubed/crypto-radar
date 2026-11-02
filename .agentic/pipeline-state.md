@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 7: Реалізація`
+- **Поточний активний етап:** `Stage 6: повтор verify-gate.py --stage 6 після запиту №1, далі Stage 7`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-02 23:55`
+- **Останнє оновлення:** `2026-11-03 00:40`
 
 ---
 
@@ -23,7 +23,7 @@
 | **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f` |
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
-| **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | див. журнал |
+| **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b` |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `PENDING` | `.agentic/reports/07-implementation-report.md` | — |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `PENDING` | `.agentic/reports/08a-qa-manual-report.md` | — |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
@@ -50,7 +50,7 @@
 | **3** | `2026-11-02 19:40` | `2edc20f` | `docs(stage-3): add architecture, NFR and ADRs, choose stack` | `Власник продукту` |
 | **4** | `2026-11-02 19:31` | `див. git log` | `docs(stage-4): add ux state matrix and interface spec` | `Власник продукту` |
 | **5** | `2026-11-02 22:39` | `3c7cc09` | `build(stage-5): add walking skeleton, verify command and ci` | `Власник продукту` |
-| **6** | `2026-11-02 23:55` | `див. git log` | `docs(stage-6): add sprint 1 implementation plan and acceptance oracle` | `Власник продукту` |
+| **6** | `2026-11-02 23:55` | `ddcdf0b` | `docs(stage-6): add sprint 1 implementation plan and acceptance oracle` | `Власник продукту` |
 
 ---
 
@@ -89,3 +89,10 @@
 - `2026-11-02 23:45 Stage 6: рев'ю №1 — BLOCKERS FOUND (AC-2.2 і AC-7.3 неможливо пройти через 25 видимих монет; заглушки Wave 0 — «сироти» для no-orphans); виправлено. На гейт винесено: P-1 (монета поза топ-50 в обраних — за id), P-2 (ім'я кнопки «?»), суперечність UX §5.2 (посилання на політику GitHub) з правилом only-coingecko-origins, пропозицію запускати оракул у CI (зона етапу 5).`
 - `2026-11-02 23:50 Stage 6: рев'ю №2 PASS; verify-gate.py --stage 6 exit 0; етап винесено на гейт (схвалення — фразою «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.»).`
 - `2026-11-02 23:55 Stage 6: власник написав «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» → «Approve & закоміть» (APPROVED_AND_COMMITTED). Рішення P-1 (вибула монета в обраних — за id) і P-2 (ім'я кнопки «?») окремо не коментував — схвалено разом із планом. Відкритими лишаються: посилання на політику GitHub проти only-coingecko-origins (до Wave 4 етапу 7: Revise етапу 4 або 5), запуск оракула в CI (Revise етапу 5), приховані сценарії власника (до старту етапу 7, необов'язково).`
+- `2026-11-03 00:05 Запит на зміну схваленого артефакту №1 (виявив: рев'юер етапу 6): UX §5.2 footer.privacy робить «GitHub» посиланням на політику GitHub, а quality_rules.only-coingecko-origins забороняє не-CoinGecko адреси в src/**. Рішення власника: лишити «GitHub» текстом без посилання → Revise етапу 4 (04-ux-and-contract.md, §5.2). Залежні етапи: 6 (повтор --stage 6), 8.a (старт від 4).`
+- `2026-11-03 00:05 Запит на зміну схваленого артефакту №2 (виявив: рев'юер етапу 6): verify-gate.py --ci лише перевіряє цілісність оракула, а не запускає його. Рішення власника: так, додати запуск оракула (pnpm exec vitest run --config acceptance/vitest.config.js) у CI → Revise етапу 5 (.github/workflows/ci.yml, runbook). Залежні етапи: 6 (повтор --stage 6), транзитивно 7. Оракул зараз червоний за задумом, тому крок у CI має з'явитися не раніше, ніж оракул стане зеленим (після хвилі 4 етапу 7).`
+- `2026-11-03 00:05 Приховані сценарії: власник напише їх сам, коли знадобиться (до гейту етапу 7).`
+- `2026-11-03 00:10 Власник погодив процедуру змін: запит №1 — Revise етапу 4 зараз, до старту етапу 7 (етап 4 → REJECTED_REVISING; скіл ux-api-design змінює лише UX §5.2 footer.privacy: «GitHub» — текст без посилання, «CoinGecko» лишається посиланням на політику; гейт етапу 4 заново; потім повтор verify-gate.py --stage 6). Запит №2 — Revise етапу 5 після хвилі 4 етапу 7, коли оракул зелений, до гейту етапу 7.`
+- `2026-11-03 00:20 Stage 4 (Revise, запит №1): статус IN_PROGRESS; план — процедура, погоджена власником о 00:10. Змінено лише рядок footer.privacy у §5.2 04-ux-and-contract.md: «GitHub» — текст без посилання, «CoinGecko» — посилання на політику (домен www.coingecko.com дозволений only-coingecko-origins).`
+- `2026-11-03 00:35 Stage 4 (Revise, запит №1): рев'ю PASS (3 WARNING: розходження §5.2 з §8.4 архітектури; хибна фраза про відсутність tech-debt.md — виправлено; WCAG 2.4.4 для посилання «CoinGecko» на політику — було й до Revise); verify-gate.py --stage 4 exit 0; етап винесено на гейт. На гейті власник вирішує: що робити з §8.4 архітектури (запит на зміну етапу 3 або запис, що його замінено запитом №1) і з WCAG 2.4.4 (окремий Revise етапу 4 або TD для етапу 7).`
+- `2026-11-03 00:40 Stage 4 (Revise, запит №1): власник обрав «Approve & закоміть» (APPROVED_AND_COMMITTED). Коміт: docs(stage-4): keep github in privacy note as plain text. Питання гейту (§8.4 архітектури проти §5.2; WCAG 2.4.4 для посилання «CoinGecko» на політику) власник окремо не коментував — лишаються відкритими (секція 6 звіту етапу 4). Далі: повтор verify-gate.py --stage 6.`
