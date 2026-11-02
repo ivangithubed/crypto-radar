@@ -1,12 +1,10 @@
 // Публічний інтерфейс модуля favorites (архітектура §5, §6, ADR 0004, ADR 0006): обрані в localStorage.
-// Контракт Wave 0 етапу 7 (план етапу 6, розділ 5): сигнатури не змінюються, реалізацію дає хвиля 2.
-import "../lib/index.js";
+// Контракт Wave 0 етапу 7 (план етапу 6, розділ 5): сигнатури не змінюються.
+import { useCallback, useState, useSyncExternalStore } from "react";
+import { persistDismissed, shouldShowHint } from "./safari.js";
+import { addFavorite, getSnapshot, removeFavorite, subscribe } from "./store.js";
 
-/** Ключ обраних: JSON-масив рядків-ідентифікаторів (NFR-10). */
-export const FAVORITES_KEY = "crypto-radar:favorites";
-
-/** Ключ «підказку Safari закрито»: значення "1" (ADR 0006). */
-export const SAFARI_HINT_KEY = "crypto-radar:safari-hint-dismissed";
+export { FAVORITES_KEY, SAFARI_HINT_KEY } from "./store.js";
 
 /**
  * Обрані монети: без дублів, додавання лише з топ-50, синхронізація вкладок подією `storage` (C-TAB).
@@ -15,7 +13,9 @@ export const SAFARI_HINT_KEY = "crypto-radar:safari-hint-dismissed";
  *   has: (id: string) => boolean, storeError: 'write' | 'read' | null}}
  */
 export function useFavorites() {
-  throw new Error("not implemented: useFavorites");
+  const { ids, storeError } = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const has = useCallback((id) => ids.includes(id), [ids]);
+  return { ids, add: addFavorite, remove: removeFavorite, has, storeError };
 }
 
 /**
@@ -24,5 +24,10 @@ export function useFavorites() {
  * @returns {{visible: boolean, dismiss: () => void}}
  */
 export function useSafariHint() {
-  throw new Error("not implemented: useSafariHint");
+  const [visible, setVisible] = useState(shouldShowHint);
+  const dismiss = useCallback(() => {
+    persistDismissed();
+    setVisible(false);
+  }, []);
+  return { visible, dismiss };
 }
