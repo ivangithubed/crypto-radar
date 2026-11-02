@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* Токени дизайн-системи — .agentic/specs/04-ux-and-contract.md, розділ 9.2.
+   Тему перемикає атрибут data-theme на <html> (US-10, етап 7); без атрибута діє світла тема. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root,
+[data-theme="light"] {
+  --kr-surface: #f7f5fb;
+  --kr-surface-raised: #ffffff;
+  --kr-surface-sunken: #eeeaf6;
+  --kr-ink: #1e1a2b;
+  --kr-ink-muted: #5c5670;
+  --kr-line: #d9d3e6;
+  --kr-line-strong: #857c9e;
+  --kr-brand: #4e3d80;
+  --kr-on-brand: #ffffff;
+  --kr-brand-soft: #e7e1f5;
+  --kr-up: #1b7445;
+  --kr-down: #b3261e;
+  --kr-error-surface: #fbedec;
+  --kr-shadow-pop: 0 6px 24px rgba(30, 26, 43, 0.16);
+}
+
+[data-theme="dark"] {
+  --kr-surface: #15121f;
+  --kr-surface-raised: #1f1b2c;
+  --kr-surface-sunken: #110e19;
+  --kr-ink: #ede9f6;
+  --kr-ink-muted: #a9a2bd;
+  --kr-line: #332d45;
+  --kr-line-strong: #726a8c;
+  --kr-brand: #b9a8ee;
+  --kr-on-brand: #1a1530;
+  --kr-brand-soft: #2e2645;
+  --kr-up: #5fd39a;
+  --kr-down: #ff8a80;
+  --kr-error-surface: #2a1a1f;
+  --kr-shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-surface: var(--kr-surface);
+  --color-surface-raised: var(--kr-surface-raised);
+  --color-surface-sunken: var(--kr-surface-sunken);
+  --color-ink: var(--kr-ink);
+  --color-ink-muted: var(--kr-ink-muted);
+  --color-line: var(--kr-line);
+  --color-line-strong: var(--kr-line-strong);
+  --color-brand: var(--kr-brand);
+  --color-on-brand: var(--kr-on-brand);
+  --color-brand-soft: var(--kr-brand-soft);
+  --color-up: var(--kr-up);
+  --color-down: var(--kr-down);
+  --color-error-surface: var(--kr-error-surface);
+  --color-focus: var(--kr-brand);
+  --shadow-pop: var(--kr-shadow-pop);
+  --font-display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Onest", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+}

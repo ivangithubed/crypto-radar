@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "oxc", "import", "vitest"],
+  "ignorePatterns": [
+    "dist/**",
+    "sbom/**",
+    ".lighthouse/**",
+    "playwright-report/**",
+    "test-results/**",
+    ".agentic/**"
+  ],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "complexity": ["error", { "max": 15 }],
+    "react/no-danger": "error",
+    "no-eval": "error",
+    "no-new-func": "error"
+  }
+}

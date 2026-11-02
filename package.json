@@ -1,0 +1,52 @@
+{
+  "name": "crypto-radar",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "oxlint --deny-warnings",
+    "preview": "vite preview",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "test": "vitest run",
+    "size": "node scripts/check-bundle-size.mjs",
+    "test:a11y": "playwright test -c playwright.a11y.config.js",
+    "verify": "pnpm lint && pnpm fmt:check && pnpm test && pnpm build && pnpm size",
+    "dup": "jscpd",
+    "deadcode": "knip",
+    "boundaries": "depcruise src",
+    "sbom:write": "pnpm sbom --sbom-format cyclonedx --sbom-type application --out sbom/crypto-radar.cdx.json",
+    "vitals": "pnpm build && node scripts/web-vitals.mjs"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "chrome-launcher": "^1.2.2",
+    "dependency-cruiser": "^18.7.0",
+    "jscpd": "^5.4.2",
+    "jsdom": "^30.1.3",
+    "knip": "^6.44.1",
+    "lighthouse": "^13.6.0",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.89.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.5",
+    "vitest": "5.0.5"
+  },
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "packageManager": "pnpm@11.23.0"
+}

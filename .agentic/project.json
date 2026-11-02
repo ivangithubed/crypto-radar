@@ -12,9 +12,70 @@
   },
   "has_http_api": false,
   "deploy_target": "static-hosting",
-  "verify_commands": {},
-  "debt_commands": {},
+  "verify_commands": {
+    "5": [
+      "pnpm install --frozen-lockfile",
+      "pnpm verify"
+    ],
+    "7": [
+      "pnpm install --frozen-lockfile",
+      "pnpm verify"
+    ]
+  },
+  "debt_commands": {
+    "complexity": [
+      "pnpm lint",
+      "pnpm dup"
+    ],
+    "dead_code": [
+      "pnpm deadcode"
+    ],
+    "boundaries": [
+      "pnpm boundaries"
+    ],
+    "vulnerabilities": [
+      "pnpm audit --audit-level high"
+    ],
+    "sbom": [
+      "pnpm sbom:write"
+    ],
+    "accessibility": [
+      "pnpm test:a11y"
+    ],
+    "web_vitals": [
+      "pnpm vitals"
+    ]
+  },
   "oracle": null,
-  "quality_rules": [],
+  "quality_rules": [
+    {
+      "id": "no-unsafe-html",
+      "severity": "error",
+      "globs": [
+        "src/**/*.{js,jsx,mjs}"
+      ],
+      "pattern": "dangerouslySetInnerHTML|\\.innerHTML\\b|\\.outerHTML\\b|insertAdjacentHTML|document\\.write\\(",
+      "message": "NFR-8: дані рендеряться лише як текст — без dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write"
+    },
+    {
+      "id": "no-dynamic-code",
+      "severity": "error",
+      "globs": [
+        "src/**/*.{js,jsx,mjs}"
+      ],
+      "pattern": "\\beval\\(|new Function\\(",
+      "message": "NFR-8: заборонено eval і new Function (CSP script-src 'self')"
+    },
+    {
+      "id": "only-coingecko-origins",
+      "severity": "error",
+      "globs": [
+        "src/**/*.{js,jsx,mjs,css}",
+        "index.html"
+      ],
+      "pattern": "https?://(?!api\\.coingecko\\.com|coin-images\\.coingecko\\.com|www\\.coingecko\\.com)[a-z0-9.-]+",
+      "message": "NFR-10 / NFR-8: мережеві адреси в коді — лише домени CoinGecko; сторонні скрипти, шрифти й трекери заборонені"
+    }
+  ],
   "disabled_rules": []
 }

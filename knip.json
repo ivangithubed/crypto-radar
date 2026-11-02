@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["scripts/*.mjs", "a11y/**/*.spec.js"],
+  "project": ["src/**/*.{js,jsx}", "scripts/**/*.mjs", "a11y/**/*.js", "*.{js,cjs,mjs}"],
+  "ignoreDependencies": ["tailwindcss"]
+}

@@ -1,0 +1,340 @@
+{
+  "bundle": "sdd-delivery",
+  "bundle_version": "2.2.0",
+  "statuses": {
+    "approved": [
+      "APPROVED_AND_COMMITTED",
+      "APPROVED_MANUAL_COMMIT",
+      "SKIPPED_APPROVED"
+    ],
+    "blocking": [
+      "PENDING",
+      "IN_PROGRESS",
+      "WAITING_FOR_APPROVAL",
+      "REJECTED_REVISING"
+    ]
+  },
+  "orchestrator": "project-kickoff",
+  "reviewer": "independent-reviewer",
+  "helper_skills": [
+    "agentic-harness",
+    "brownfield-onboarding",
+    "bug-diagnosis",
+    "dag-runner",
+    "gate-check",
+    "grill-me",
+    "modern-web-guidance",
+    "red-team-review",
+    "tech-debt-auditor"
+  ],
+  "paths": {
+    "project": ".agentic/project.json",
+    "state": ".agentic/pipeline-state.md",
+    "reports_dir": ".agentic/reports",
+    "report_template": "skills/sdd-delivery/assets/stage-report.template.md",
+    "tech_debt": ".agentic/tech-debt.md",
+    "backlog": ".agentic/backlog.md",
+    "sprints": ".agentic/sprints"
+  },
+  "sprint": {
+    "stages": [
+      "6",
+      "7",
+      "8.a",
+      "8.b",
+      "9"
+    ],
+    "archive": [
+      ".agentic/specs/implementation_plan.md",
+      ".agentic/evidence",
+      ".agentic/qa/runs"
+    ]
+  },
+  "commit_types": [
+    "feat",
+    "fix",
+    "docs",
+    "test",
+    "refactor",
+    "perf",
+    "build",
+    "ci",
+    "chore"
+  ],
+  "stages": [
+    {
+      "id": "1",
+      "title": "Discovery: від ідеї до продуктового брифу",
+      "skill": "product-discovery",
+      "requires": [],
+      "skippable": false,
+      "run_required": false,
+      "report": ".agentic/reports/01-discovery-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/specs/01-product-brief.md",
+          "must_match": [
+            "(?i)MVP",
+            "(?i)метрик",
+            "(?i)не входить|out of scope",
+            "(?i)бізнес-модел"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Вимоги: User Stories та Gherkin-критерії",
+      "skill": "ba-requirements",
+      "requires": [
+        "1"
+      ],
+      "skippable": false,
+      "run_required": false,
+      "report": ".agentic/reports/02-requirements-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/specs/02-requirements.md",
+          "must_match": [
+            "US-\\d+",
+            "(?m)^\\s*(Сценарій|Приклад|Scenario):",
+            "AC-\\d+\\.\\d+"
+          ]
+        },
+        {
+          "path": ".agentic/backlog.md",
+          "must_match": [
+            "US-\\d+",
+            "(?i)Product Goal|мета продукту"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Архітектура: NFR, ADR, STRIDE і вибір стеку",
+      "skill": "solution-architect",
+      "requires": [
+        "2"
+      ],
+      "skippable": false,
+      "run_required": false,
+      "report": ".agentic/reports/03-architecture-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/specs/03-architecture.md",
+          "must_match": [
+            "(?i)NFR|нефункціональн",
+            "(?i)STRIDE"
+          ]
+        },
+        {
+          "glob": ".agentic/specs/adr/*.md",
+          "min": 1
+        },
+        {
+          "path": ".agentic/project.json",
+          "json_keys": [
+            "stack",
+            "has_http_api",
+            "deploy_target",
+            "learning_mode"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "title": "UX і контракт API",
+      "skill": "ux-api-design",
+      "requires": [
+        "3"
+      ],
+      "skippable": false,
+      "run_required": false,
+      "report": ".agentic/reports/04-ux-api-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/specs/04-ux-and-contract.md",
+          "must_match": [
+            "(?i)loading",
+            "(?i)empty",
+            "(?i)error"
+          ]
+        },
+        {
+          "path": "contract/openapi.yaml",
+          "must_match": [
+            "(?m)^openapi:\\s*['\"]?3\\.1"
+          ],
+          "when": "has_http_api"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Платформа: каркас, команда verify, CI",
+      "skill": "platform-devops",
+      "requires": [
+        "3"
+      ],
+      "skippable": false,
+      "run_required": true,
+      "debt_checks": true,
+      "report": ".agentic/reports/05-platform-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/specs/05-platform-runbook.md",
+          "must_match": [
+            "(?i)verify",
+            "(?i)\\bCI\\b"
+          ]
+        },
+        {
+          "path": "CLAUDE.md"
+        },
+        {
+          "path": ".agentic/project.json",
+          "json_keys": [
+            "verify_commands",
+            "debt_commands"
+          ]
+        },
+        {
+          "path": ".agentic/bundle/skills/gate-check/verify-gate.py"
+        },
+        {
+          "path": ".claude/settings.json",
+          "must_match": [
+            "holdout_guard\\.py"
+          ]
+        },
+        {
+          "path": ".gitignore",
+          "must_match": [
+            "\\.agentic/holdouts"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "title": "План реалізації: хвилі DAG і матриця перевірок",
+      "skill": "implementation-planner",
+      "requires": [
+        "4",
+        "5"
+      ],
+      "skippable": false,
+      "run_required": false,
+      "report": ".agentic/reports/06-plan-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/specs/implementation_plan.md",
+          "must_match": [
+            "(?i)Wave 0",
+            "(?i)мета спринту|sprint goal",
+            "(?i)File Ownership",
+            "(?i)rollback|відкат"
+          ]
+        },
+        {
+          "path": ".agentic/project.json",
+          "json_keys": [
+            "oracle"
+          ]
+        }
+      ],
+      "oracle": "define"
+    },
+    {
+      "id": "7",
+      "title": "Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері",
+      "skill": "sdd-delivery",
+      "requires": [
+        "6"
+      ],
+      "skippable": false,
+      "run_required": true,
+      "debt_checks": true,
+      "red_team_report": ".agentic/evidence/red-team-report.md",
+      "report": ".agentic/reports/07-implementation-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/evidence/red-team-report.md",
+          "must_match": [
+            "(?i)Score|Grade|оцінк"
+          ]
+        },
+        {
+          "path": ".agentic/evidence/walkthrough.md"
+        }
+      ],
+      "oracle": "run"
+    },
+    {
+      "id": "8.a",
+      "title": "QA, частина A: тест-дизайн і ручне тестування",
+      "skill": "qa-engineer",
+      "requires": [
+        "4"
+      ],
+      "gate_requires": [
+        "7"
+      ],
+      "skippable": false,
+      "run_required": false,
+      "report": ".agentic/reports/08a-qa-manual-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/specs/08-test-plan.md",
+          "must_match": [
+            "TC-\\d+"
+          ]
+        },
+        {
+          "glob": ".agentic/qa/runs/RUN-*.md",
+          "min": 1
+        }
+      ],
+      "oracle": "protect"
+    },
+    {
+      "id": "8.b",
+      "title": "QA, частина B: автоматизація E2E і контрактні тести",
+      "skill": "qa-engineer",
+      "requires": [
+        "7"
+      ],
+      "skippable": false,
+      "run_required": true,
+      "report": ".agentic/reports/08b-qa-automation-report.md",
+      "artifacts": [],
+      "oracle": "protect"
+    },
+    {
+      "id": "9",
+      "title": "Реліз: версіонування, staging → production, rollback",
+      "skill": "release-engineer",
+      "requires": [
+        "8.a",
+        "8.b"
+      ],
+      "skippable": true,
+      "run_required": true,
+      "report": ".agentic/reports/09-release-report.md",
+      "artifacts": [
+        {
+          "path": ".agentic/specs/09-release-runbook.md",
+          "must_match": [
+            "(?i)rollback|відкат"
+          ]
+        },
+        {
+          "path": "CHANGELOG.md"
+        }
+      ],
+      "oracle": "protect"
+    }
+  ]
+}

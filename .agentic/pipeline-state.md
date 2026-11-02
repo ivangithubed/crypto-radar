@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 4: UX і контракт API` + `Stage 5: Платформа` (можна паралельно)
+- **Поточний активний етап:** `Stage 6: План реалізації`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-02 19:31`
+- **Останнє оновлення:** `2026-11-02 22:39`
 
 ---
 
@@ -22,7 +22,7 @@
 | **2** | Вимоги: User Stories та Gherkin-критерії | `ba-requirements` | `1` | `APPROVED_AND_COMMITTED` | `.agentic/reports/02-requirements-report.md` | `2ff839a` |
 | **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f` |
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал |
-| **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `PENDING` | `.agentic/reports/05-platform-report.md` | — |
+| **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `PENDING` | `.agentic/reports/06-plan-report.md` | — |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `PENDING` | `.agentic/reports/07-implementation-report.md` | — |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `PENDING` | `.agentic/reports/08a-qa-manual-report.md` | — |
@@ -49,6 +49,7 @@
 | **2** | `2026-11-02 17:10` | `2ff839a` | `docs(stage-2): add user stories and gherkin acceptance criteria` | `Власник продукту` |
 | **3** | `2026-11-02 19:40` | `2edc20f` | `docs(stage-3): add architecture, NFR and ADRs, choose stack` | `Власник продукту` |
 | **4** | `2026-11-02 19:31` | `див. git log` | `docs(stage-4): add ux state matrix and interface spec` | `Власник продукту` |
+| **5** | `2026-11-02 22:39` | `див. git log` | `build(stage-5): add walking skeleton, verify command and ci` | `Власник продукту` |
 
 ---
 
@@ -79,3 +80,7 @@
 - `2026-11-02 Stage 4: дизайн-система — нова в Claude Design, основний колір темно-лавандовий, решта за контрастом WCAG AA. Шрифти — два не «попсові» з каталогу Google Fonts з кирилицею; у продукті їхні woff2 лежать у складі сайту (self-hosting), бо NFR-10 і CSP етапу 3 забороняють сторонні шрифти (уточнено з власником: заборона стосується завантаження з серверів Google, а не самих гарнітур).`
 - `2026-11-02 19:25 Stage 4: звіт сформовано, рев'ю PASS (третій прохід; два перші — BLOCKERS FOUND, виправлено); етап винесено на гейт. На гейті власник має вирішити: AC-9.3 проти англійської атрибуції «Powered by CoinGecko» (Revise етапу 2 або виняток у тест-дизайні 8.a/8.b).`
 - `2026-11-02 19:31 Stage 4: власник обрав «Approve & закоміть» (APPROVED_AND_COMMITTED). Рев'ю: PASS (третій прохід); валідатор --stage 4 exit 0. Питання AC-9.3 проти «Powered by CoinGecko» лишається відкритим для тест-дизайну 8.a/8.b або Revise етапу 2.`
+- `2026-11-02 19:20 Stage 5: власник погодив план етапу 5 і встановлення залежностей у проєкт. Рішення: пороги боргу, яких немає в NFR, — цикломатична складність функції ≤ 15 (Oxlint complexity) і дублювання в src ≤ 3 % (jscpd); workflow публікації на GitHub Pages — на етапі 9 (етап 5 робить лише CI verify); бот оновлень — Dependabot щотижня (npm і GitHub Actions, cooldown 7 днів). vitest закріплено на 5.0.5 (5.1.0 опубліковано того ж дня).`
+- `2026-11-02 19:46 Stage 4 (після гейту): власник закрив питання AC-9.3 проти «Powered by CoinGecko» — варіант 1: атрибуція джерела даних — дозволений виняток з «увесь текст українською». Вимоги (AC-9.3) не змінюються; етап 8.a/8.b записує виняток у тест-дизайн: перевіряти українську мову всього тексту, крім назв монет, тікерів і напису «Powered by CoinGecko» (lang="en", NFR-16, ADR 0005).`
+- `2026-11-02 20:10 Stage 5: звіт сформовано; рев'ю №1 BLOCKERS FOUND (виправлено, урок L-004), рев'ю №2 PASS; verify-gate.py --stage 5 --run exit 0. На гейті власник має підтвердити: поріг dead_code = 0 (knip); TD-001 – TD-004; заміну @lhci/cli на lighthouse і cdxgen на pnpm sbom.`
+- `2026-11-02 22:39 Stage 5: власник обрав «Approve & закоміть» (APPROVED_AND_COMMITTED). Разом зі схваленням підтверджено винесене на гейт: поріг dead_code = 0 (knip, виняток tailwindcss); TD-001 – TD-004 лишаються відкритим боргом з планом у реєстрі; заміна @lhci/cli на lighthouse + scripts/web-vitals.mjs і cdxgen на pnpm sbom. Запит на зміну тексту NFR-4 (назва інструменту) — через project-kickoff (TD-002). Наступний етап — implementation-planner (етап 6).`
