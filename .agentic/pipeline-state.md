@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 3: Архітектура`
+- **Поточний активний етап:** `Stage 4: UX і контракт API` + `Stage 5: Платформа` (можна паралельно)
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-02 17:10`
+- **Останнє оновлення:** `2026-11-02 19:40`
 
 ---
 
@@ -19,8 +19,8 @@
 | ID | Етап | Скіл | Передумови | Статус | Звіт етапу | Коміт |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **1** | Discovery: від ідеї до продуктового брифу | `product-discovery` | — | `APPROVED_AND_COMMITTED` | `.agentic/reports/01-discovery-report.md` | `04c6271` |
-| **2** | Вимоги: User Stories та Gherkin-критерії | `ba-requirements` | `1` | `APPROVED_AND_COMMITTED` | `.agentic/reports/02-requirements-report.md` | див. журнал |
-| **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `PENDING` | `.agentic/reports/03-architecture-report.md` | — |
+| **2** | Вимоги: User Stories та Gherkin-критерії | `ba-requirements` | `1` | `APPROVED_AND_COMMITTED` | `.agentic/reports/02-requirements-report.md` | `2ff839a` |
+| **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | див. журнал |
 | **4** | UX і контракт API | `ux-api-design` | `3` | `PENDING` | `.agentic/reports/04-ux-api-report.md` | — |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `PENDING` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `PENDING` | `.agentic/reports/06-plan-report.md` | — |
@@ -46,7 +46,8 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **init** | `2026-11-02` | `ca1bcc7` | `chore(init): start sdd delivery pipeline` | `Власник продукту` |
 | **1** | `2026-11-02 15:04` | `04c6271` | `docs(stage-1): add product brief for Крипто-Радар` | `Власник продукту` |
-| **2** | `2026-11-02 17:10` | `див. git log` | `docs(stage-2): add user stories and gherkin acceptance criteria` | `Власник продукту` |
+| **2** | `2026-11-02 17:10` | `2ff839a` | `docs(stage-2): add user stories and gherkin acceptance criteria` | `Власник продукту` |
+| **3** | `2026-11-02 19:40` | `див. git log` | `docs(stage-3): add architecture, NFR and ADRs, choose stack` | `Власник продукту` |
 
 ---
 
@@ -65,3 +66,11 @@
 - `2026-11-02 Stage 2: Won't у беклозі — 12 пунктів «Не входить у MVP» брифу §11 (причини там же).`
 - `2026-11-02 Stage 2: відкрите питання №1 брифу закрито: «сьогодні на Мінфін заходив, чи піднявся біткоїн на тлі падіння акцій компаній з ШІ-пулу, які втратили на тижні».`
 - `2026-11-02 17:10 Stage 2: власник обрав «Approve & закоміть» (APPROVED_AND_COMMITTED). Рев'ю: PASS після виправлень; валідатор --stage 2 exit 0.`
+- `2026-11-02 Stage 3: власник дозволив читати лише офіційні джерела (документація, реєстри, тарифи); перелік — у звіті етапу 3.`
+- `2026-11-02 Stage 3: рішення власника — дані напряму з браузера до CoinGecko без власного сервера (has_http_api: false); хостинг GitHub Pages (публічний репозиторій); стек React + JavaScript на Vite.`
+- `2026-11-02 Stage 3: зауваження власника до плану — React Router лише як бібліотека маршрутизації (декларативний режим, HashRouter), НЕ як фреймворк (без framework mode, SSR і плагіна Vite від React Router).`
+- `2026-11-02 Stage 3: Must US-5/US-6 «частково»: Safari видаляє localStorage після 7 днів без взаємодії (webkit.org/tracking-prevention). Власник обрав компроміс: прийнятий ризик в ADR + підказка «додайте на головний екран» у Safari + маніфест вебзастосунку; питання в опитування (A-4).`
+- `2026-11-02 19:10 Stage 3: звіт сформовано, рев'ю PASS (третій прохід); етап винесено на гейт. На гейті власник має підтвердити 4 ризики: clickjacking, підроблений сайт, недокументований ліміт keyless CoinGecko, свіжість за годинником пристрою.`
+- `2026-11-02 Stage 3 (гейт): власник прийняв ризики — clickjacking: «не проблема»; підроблений сайт під схожою адресою: «не проблема»; недокументований ліміт CoinGecko без ключа: «поки працюємо як є, без запасного плану»; свіжість за годинником пристрою: «реалізуй саме таку схему».`
+- `2026-11-02 Stage 3: за згодою власника створено .claude/rules/project-lessons.md з уроками L-001 – L-003 (BLOCKERS FOUND рев'ю етапу 3).`
+- `2026-11-02 19:40 Stage 3: власник обрав «Approve & закоміть» (APPROVED_AND_COMMITTED). ADR 0001–0006 → accepted. Рев'ю: PASS (третій прохід); валідатор --stage 3 exit 0.`
