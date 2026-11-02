@@ -46,7 +46,12 @@
       "pnpm vitals"
     ]
   },
-  "oracle": null,
+  "oracle": {
+    "paths": [
+      "acceptance/**"
+    ],
+    "command": "pnpm exec vitest run --config acceptance/vitest.config.js"
+  },
   "quality_rules": [
     {
       "id": "no-unsafe-html",

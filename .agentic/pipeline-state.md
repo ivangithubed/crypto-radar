@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 6: План реалізації`
+- **Поточний активний етап:** `Stage 7: Реалізація`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-02 22:39`
+- **Останнє оновлення:** `2026-11-02 23:55`
 
 ---
 
@@ -23,7 +23,7 @@
 | **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f` |
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
-| **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `PENDING` | `.agentic/reports/06-plan-report.md` | — |
+| **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | див. журнал |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `PENDING` | `.agentic/reports/07-implementation-report.md` | — |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `PENDING` | `.agentic/reports/08a-qa-manual-report.md` | — |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
@@ -49,7 +49,8 @@
 | **2** | `2026-11-02 17:10` | `2ff839a` | `docs(stage-2): add user stories and gherkin acceptance criteria` | `Власник продукту` |
 | **3** | `2026-11-02 19:40` | `2edc20f` | `docs(stage-3): add architecture, NFR and ADRs, choose stack` | `Власник продукту` |
 | **4** | `2026-11-02 19:31` | `див. git log` | `docs(stage-4): add ux state matrix and interface spec` | `Власник продукту` |
-| **5** | `2026-11-02 22:39` | `див. git log` | `build(stage-5): add walking skeleton, verify command and ci` | `Власник продукту` |
+| **5** | `2026-11-02 22:39` | `3c7cc09` | `build(stage-5): add walking skeleton, verify command and ci` | `Власник продукту` |
+| **6** | `2026-11-02 23:55` | `див. git log` | `docs(stage-6): add sprint 1 implementation plan and acceptance oracle` | `Власник продукту` |
 
 ---
 
@@ -84,3 +85,7 @@
 - `2026-11-02 19:46 Stage 4 (після гейту): власник закрив питання AC-9.3 проти «Powered by CoinGecko» — варіант 1: атрибуція джерела даних — дозволений виняток з «увесь текст українською». Вимоги (AC-9.3) не змінюються; етап 8.a/8.b записує виняток у тест-дизайн: перевіряти українську мову всього тексту, крім назв монет, тікерів і напису «Powered by CoinGecko» (lang="en", NFR-16, ADR 0005).`
 - `2026-11-02 20:10 Stage 5: звіт сформовано; рев'ю №1 BLOCKERS FOUND (виправлено, урок L-004), рев'ю №2 PASS; verify-gate.py --stage 5 --run exit 0. На гейті власник має підтвердити: поріг dead_code = 0 (knip); TD-001 – TD-004; заміну @lhci/cli на lighthouse і cdxgen на pnpm sbom.`
 - `2026-11-02 22:39 Stage 5: власник обрав «Approve & закоміть» (APPROVED_AND_COMMITTED). Разом зі схваленням підтверджено винесене на гейт: поріг dead_code = 0 (knip, виняток tailwindcss); TD-001 – TD-004 лишаються відкритим боргом з планом у реєстрі; заміна @lhci/cli на lighthouse + scripts/web-vitals.mjs і cdxgen на pnpm sbom. Запит на зміну тексту NFR-4 (назва інструменту) — через project-kickoff (TD-002). Наступний етап — implementation-planner (етап 6).`
+- `2026-11-02 23:10 Stage 6: власник погодив каркас плану. Рішення: спринт 1 = усі Must US-1 – US-9 (US-10 Should — спринт 2, до того тема пристрою через prefers-color-scheme); етап 7 — хвилі DAG (Wave 0 + 4 хвилі + Red-Team); дозволено на Wave 0 додати `react-router`, `@tanstack/react-query`, `@fontsource/unbounded`, `@fontsource/onest` (кожен після `npm view`); робоча гілка етапу 7 — `main`, контрольний коміт перед хвилею — лише за згодою власника.`
+- `2026-11-02 23:45 Stage 6: рев'ю №1 — BLOCKERS FOUND (AC-2.2 і AC-7.3 неможливо пройти через 25 видимих монет; заглушки Wave 0 — «сироти» для no-orphans); виправлено. На гейт винесено: P-1 (монета поза топ-50 в обраних — за id), P-2 (ім'я кнопки «?»), суперечність UX §5.2 (посилання на політику GitHub) з правилом only-coingecko-origins, пропозицію запускати оракул у CI (зона етапу 5).`
+- `2026-11-02 23:50 Stage 6: рев'ю №2 PASS; verify-gate.py --stage 6 exit 0; етап винесено на гейт (схвалення — фразою «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.»).`
+- `2026-11-02 23:55 Stage 6: власник написав «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» → «Approve & закоміть» (APPROVED_AND_COMMITTED). Рішення P-1 (вибула монета в обраних — за id) і P-2 (ім'я кнопки «?») окремо не коментував — схвалено разом із планом. Відкритими лишаються: посилання на політику GitHub проти only-coingecko-origins (до Wave 4 етапу 7: Revise етапу 4 або 5), запуск оракула в CI (Revise етапу 5), приховані сценарії власника (до старту етапу 7, необов'язково).`
