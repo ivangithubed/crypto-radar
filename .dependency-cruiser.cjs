@@ -75,5 +75,10 @@ module.exports = {
     doNotFollow: { path: "node_modules" },
     exclude: { path: "^src/test/" },
     moduleSystems: ["es6"],
+    // Пакети лише з полем `exports` (react-router 8) інакше нерозв'язні: not-to-unresolvable (запит №2, етап 5).
+    enhancedResolveOptions: {
+      exportsFields: ["exports"],
+      conditionNames: ["import", "require", "node", "default"],
+    },
   },
 };

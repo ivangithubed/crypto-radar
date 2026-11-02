@@ -44,6 +44,10 @@ jobs:
       - name: Verify (lint, format, tests, build, bundle size)
         run: pnpm verify
 
+      # Оракул етапу 6 (приймальні тести US-1 – US-9): --ci нижче лише звіряє його цілісність, тут — запуск.
+      - name: Acceptance oracle (stage 6)
+        run: pnpm exec vitest run --config acceptance/vitest.config.js
+
       - name: Install Chromium for axe and Lighthouse
         run: pnpm exec playwright install --with-deps chromium
 

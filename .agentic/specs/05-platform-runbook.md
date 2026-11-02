@@ -57,7 +57,7 @@ pnpm preview
 | :--- | :--- | :--- | :--- |
 | `complexity` | `pnpm lint`, `pnpm dup` | цикломатична складність функції ≤ 15; дублювання в `src` ≤ 3 % (`.jscpd.json`) | рішення власника 2026-11-02 (трекер, розділ 4), NFR не задає |
 | `dead_code` | `pnpm deadcode` (knip) | 0 невикористаних файлів, експортів і залежностей. Виняток у `knip.json`: `tailwindcss` (його імпортує лише CSS — `@import "tailwindcss"`, а knip CSS не аналізує) | NFR не задає; рішення власника на гейті етапу 5 (2026-11-02, трекер, розділ 4) |
-| `boundaries` | `pnpm boundaries` (dependency-cruiser) | 0 порушень `.dependency-cruiser.cjs` (без циклів, без сиріт, межі розділу 5 архітектури) | архітектура, розділ 5 |
+| `boundaries` | `pnpm boundaries` (dependency-cruiser) | 0 порушень `.dependency-cruiser.cjs` (без циклів, без сиріт, межі розділу 5 архітектури); `options.enhancedResolveOptions` читає поле `exports` пакетів (`react-router` 8 має лише його; запит на зміну №2) | архітектура, розділ 5 |
 | `vulnerabilities` | `pnpm audit --audit-level high` | 0 знахідок high/critical | NFR-9 |
 | `sbom` | `pnpm sbom:write` | SBOM CycloneDX 1.7 згенеровано в `sbom/crypto-radar.cdx.json` | NFR-9 |
 | `accessibility` | `pnpm test:a11y` | axe, теги WCAG 2.2 AA: 0 порушень critical/serious у світлій і темній темах | NFR-6 |
@@ -78,16 +78,17 @@ pnpm preview
   3. `pnpm install --frozen-lockfile`;
   4. `pnpm audit --audit-level high`;
   5. `pnpm verify`;
-  6. встановлення Chromium;
-  7. `verify-gate.py --debt`;
-  8. `verify-gate.py --ci` — схвалені етапи, цілісність оракула, секрети.
+  6. оракул етапу 6 — `pnpm exec vitest run --config acceptance/vitest.config.js` (запит на зміну №2, 2026-11-03);
+  7. встановлення Chromium;
+  8. `verify-gate.py --debt`;
+  9. `verify-gate.py --ci` — схвалені етапи, цілісність оракула, секрети.
 - **Червоний job:** відкрий лог кроку й відтвори його локально тією самою командою з кореня проєкту. Наприклад, червоний «Measured tech debt» відтворює `python .agentic/bundle/skills/gate-check/verify-gate.py --debt`. Виправляй код, а не поріг.
 - **Dependabot** (`.github/dependabot.yml`): npm і GitHub Actions щотижня, ≤ 5 відкритих PR, cooldown 7 днів для свіжих релізів, dev-залежності minor/patch — однією групою.
 - Релізний workflow (публікація на GitHub Pages) додає етап 9 (рішення власника 2026-11-02).
 
 ## 7. Приймальні тести й E2E
 
-- **Оракул етапу 6:** `acceptance/` — приймальні тести за Gherkin-сценаріями (`@AC-N.M`). Інструмент — Vitest + Testing Library для логіки й компонентів, Playwright — для сценаріїв у браузері. Етап 6 записує шляхи й команду в `.agentic/project.json → oracle`.
+- **Оракул етапу 6:** `acceptance/` — приймальні тести за Gherkin-сценаріями (`@AC-N.M`). Інструмент — Vitest + Testing Library для логіки й компонентів, Playwright — для сценаріїв у браузері. Етап 6 записує шляхи й команду в `.agentic/project.json → oracle`. CI запускає оракул окремим кроком після `pnpm verify` (розділ 6); `pnpm verify` бере тести лише з `src/**`.
 - **E2E етапу 8.b:** `e2e/` — Playwright (Chromium і WebKit) + `@axe-core/playwright`. Застосунок піднімається через `pnpm build && pnpm preview --port 4173 --strictPort`, origin — `http://localhost:4173`, шлях — `/crypto-radar/`. Відповіді CoinGecko підміняються в тестах (fixture, `page.route`).
 - `pnpm test` і `pnpm verify` E2E не запускають.
 

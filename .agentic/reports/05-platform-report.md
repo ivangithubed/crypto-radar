@@ -4,6 +4,7 @@
 - **Відповідальний скіл:** `platform-devops`
 - **Дата формування:** `2026-11-02 20:05`
 - **Статус аудиту independent-reviewer:** `PASS`
+- **Revise №2 (2026-11-03 01:05):** запит на зміну №2 (трекер, розділ 4): `.github/workflows/ci.yml` — крок «Acceptance oracle (stage 6)» після `pnpm verify` (оракул став зеленим після хвилі 4 етапу 7); `.dependency-cruiser.cjs` — `options.enhancedResolveOptions` (`exportsFields`, `conditionNames`), бо `react-router` 8 має лише поле `exports` і без цього кожен його імпорт — порушення `not-to-unresolvable`; правила й пороги не змінено; runbook §5–§7. Решта звіту — стан на коміті `3c7cc09`; нові факти позначено «Revise №2».
 
 ---
 
@@ -62,7 +63,7 @@
 | Дані й RPO/RTO | — | — | **Не застосовно:** серверних даних немає (NFR-12). RTO ≤ 15 хв — етап 9 |
 | Витрати | — | Ліміти до створення ресурсу | **Не застосовно:** $0, платних ресурсів немає (NFR-15) |
 | CSP (NFR-8) | `<meta>` прямо в `index.html` | CSP лише у збірці | **Best Practice:** плагін `crypto-radar:csp` (`apply: 'build'`) додає `<meta>` у `dist/index.html`. Dev-сервер Vite вставляє inline-скрипти, тож CSP у dev його зламала б |
-| Web Vitals (NFR-4) | `@lhci/cli` (план) | Інструмент без відомих high-вразливостей | **Заміна в межах плану:** `@lhci/cli` 0.15.1 (останній реліз — 2025-06) тягнув 5 high-вразливостей (`extract-zip` без патчу, `tmp`, `basic-ftp`, `zod`), і поріг NFR-9 був би червоним. `lighthouse` 13.6.0 + `scripts/web-vitals.mjs` з тими самими порогами NFR-4 дає 0 high |
+| Web Vitals (NFR-4) (стан `3c7cc09`) | `@lhci/cli` (план) | Інструмент без відомих high-вразливостей | **Заміна в межах плану:** `@lhci/cli` 0.15.1 (останній реліз — 2025-06) тягнув 5 high-вразливостей (`extract-zip` без патчу, `tmp`, `basic-ftp`, `zod`), і поріг NFR-9 був би червоним. `lighthouse` 13.6.0 + `scripts/web-vitals.mjs` з тими самими порогами NFR-4 дає 0 high |
 | Правила якості (`--check-code`) | `quality_rules: []` | Детерміновані заборони з NFR у валідаторі | **Best Practice (після рев'ю №1):** `no-unsafe-html`, `no-dynamic-code` (NFR-8), `only-coingecko-origins` (NFR-10) для `src/**` (зокрема CSS) і `index.html`; працюють і в CI (`--ci`) |
 | SBOM (NFR-9) | `cdxgen` (≈ сотні транзитивних пакетів) | Найменша поверхня ланцюга постачання | **Best Practice:** вбудований `pnpm sbom --sbom-format cyclonedx` (CycloneDX 1.7), без нової залежності |
 | Бот оновлень | — | Dependabot / Renovate | **Рішення власника:** Dependabot щотижня (npm і GitHub Actions), cooldown 7 днів, ≤ 5 PR, група minor/patch для dev-залежностей |
@@ -70,6 +71,8 @@
 ---
 
 ## 3. Виконаний обсяг робіт (Deliverables)
+
+**Revise №2:** `.github/workflows/ci.yml` (крок оракула), `.dependency-cruiser.cjs` (`enhancedResolveOptions`), `.agentic/specs/05-platform-runbook.md` (§5–§7), [`.claude/rules/project-lessons.md`](../../.claude/rules/project-lessons.md) — L-004 посилено (повтор), новий L-005 (час із годинника) за рев'ю Revise №2 і №3.
 
 **Каркас (генератор create-vite 9.3.3 + правки оболонки):**
 - [`package.json`](../../package.json) — маніфест: `name`, `engines.node` `>=24.0.0 <25`, `packageManager` `pnpm@11.23.0`, скрипти `verify`, `lint`, `fmt`, `fmt:check`, `test`, `size`, `dup`, `deadcode`, `boundaries`, `test:a11y`, `vitals`, `sbom:write`.
@@ -126,23 +129,28 @@
 
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 5 --run` | 0 | 24 PASS, 0 FAIL (10 команд) | ні | запущено після вердикту PASS (L-004); рев'юеру `--run` заборонено |
-| Сканер секретів | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .` | 0 | 51 файл, 0 секретів | так | рев'ю №1 і №2: код 0, 51 файл |
-| Правила якості | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --check-code src` | 0 | 3 правила, 4 файли, 0 порушень; штучне порушення → 3 помилки, код 1 | так | додано після рев'ю №1; рев'ю №2: код 0, 0 порушень |
-| Заморожене встановлення | `pnpm install --frozen-lockfile` | 0 | lockfile актуальний | ні | |
+| Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 5 --run` | 0 | 24 PASS, 0 FAIL; 10 команд (`verify_commands["5"]` і 8 `debt_commands`) | ні | Revise №2: запущено 2026-11-03 01:44:40–01:45:37 після вердикту PASS рев'ю №7 (L-004); вивід — 4.2, блок «Revise №2 — валідатор етапу» |
+| Сканер секретів (стан `3c7cc09`) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .` | 0 | 51 файл, 0 секретів | так | рев'ю №1 і №2: код 0, 51 файл |
+| Правила якості (стан `3c7cc09`) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --check-code src` | 0 | 3 правила, 4 файли, 0 порушень; штучне порушення → 3 помилки, код 1 | так | додано після рев'ю №1; рев'ю №2: код 0, 0 порушень |
+| Заморожене встановлення (стан `3c7cc09`) | `pnpm install --frozen-lockfile` | 0 | lockfile актуальний | ні | |
 | Типи | — | не застосовно | — | ні | JavaScript без TypeScript (ADR 0001) |
-| Лінт | `pnpm lint` (`oxlint --deny-warnings`) | 0 | 0 помилок, 0 попереджень | так | рев'ю №1 і №2: `pnpm verify` код 0 |
-| Формат | `pnpm fmt:check` | 0 | 21 файл, усі відформатовані | так | рев'ю №1 і №2: `pnpm verify` код 0 |
-| Тести | `pnpm test` | 0 | 1 passed / 0 failed / 0 skipped | так | рев'ю №1 і №2: `pnpm verify` код 0 |
-| Збірка | `pnpm build` | 0 | 16 модулів, JS 68,97 кБ gzip | так | рев'ю №1 і №2: `pnpm verify` код 0 |
-| Розмір бандла (NFR-5) | `pnpm size` | 0 | 68,23 кБ gzip ≤ 150 кБ | так | рев'ю №1 і №2: `pnpm verify` код 0 |
-| Виміряний борг | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --debt` | 0 | 7 з 7 аспектів, 8 з 8 команд PASS | ні | |
-| Доступність (NFR-6) | `pnpm test:a11y` | 0 | 2 passed (світла й темна теми), 0 critical/serious | ні | |
-| Web Vitals (NFR-4) | `pnpm vitals` | 0 | медіана LCP 753 мс, CLS 0, TBT 0 мс | ні | |
-| Живий старт (UI) | `preview_start` → `http://localhost:4173/crypto-radar/`; `curl -fsS` | 0 | HTTP 200, 1 `h1`, 0 повідомлень у консолі | ні | |
-| Вердикт рев'юера | субагент `independent-reviewer` | 0 | рев'ю №1: BLOCKERS FOUND (виправлено); рев'ю №2: PASS, 0 blocker, 0 warning, 3 info | так | INFO внесено: лічильник пакетів, CSS у `only-coingecko-origins`, примітки |
+| Лінт (стан `3c7cc09`) | `pnpm lint` (`oxlint --deny-warnings`) | 0 | 0 помилок, 0 попереджень | так | рев'ю №1 і №2: `pnpm verify` код 0 |
+| Формат (стан `3c7cc09`) | `pnpm fmt:check` | 0 | 21 файл, усі відформатовані | так | рев'ю №1 і №2: `pnpm verify` код 0 |
+| Тести (стан `3c7cc09`) | `pnpm test` | 0 | 1 passed / 0 failed / 0 skipped | так | рев'ю №1 і №2: `pnpm verify` код 0 |
+| Збірка (стан `3c7cc09`) | `pnpm build` | 0 | 16 модулів, JS 68,97 кБ gzip | так | рев'ю №1 і №2: `pnpm verify` код 0 |
+| Розмір бандла (NFR-5) (стан `3c7cc09`) | `pnpm size` | 0 | 68,23 кБ gzip ≤ 150 кБ | так | рев'ю №1 і №2: `pnpm verify` код 0 |
+| Виміряний борг (стан `3c7cc09`) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --debt` | 0 | 7 з 7 аспектів, 8 з 8 команд PASS | ні | |
+| Доступність (NFR-6) (стан `3c7cc09`) | `pnpm test:a11y` | 0 | 2 passed (світла й темна теми), 0 critical/serious | ні | |
+| Web Vitals (NFR-4) (стан `3c7cc09`) | `pnpm vitals` | 0 | медіана LCP 753 мс, CLS 0, TBT 0 мс | ні | |
+| Живий старт (UI) (стан `3c7cc09`) | `preview_start` → `http://localhost:4173/crypto-radar/`; `curl -fsS` | 0 | HTTP 200, 1 `h1`, 0 повідомлень у консолі | ні | |
+| Revise №2: оракул, як у новому кроці CI | `pnpm exec vitest run --config acceptance/vitest.config.js` | 0 | 9 файлів, 91 passed / 0 failed | ні | вивід — 4.1, блок «Revise №2»; на коді етапу 7 і запиту №3 (незакомічені) — див. ризик у секції 6 |
+| Revise №2: межі модулів | `pnpm boundaries` | 0 | 0 порушень, 84 модулі, 200 залежностей | ні | вивід — 4.1, блок «Revise №2»; причину правки описано в журналі автономності (Sync 3 етапу 7) |
+| Revise №2: синтаксис workflow | — | не запускалось | — | ні | `actionlint` у проєкті немає; новий крок повторює формат сусідніх; перший запуск — після push власника |
+| Вердикт рев'юера | субагент `independent-reviewer` | не запускалось | — | ні | Revise №2: після рев'ю; попередні рев'ю (№1 BLOCKERS FOUND, №2 PASS) — розділ 4.3 |
 
 ### 4.1. Збірка, лінтери та автоматичні тести
+
+> Блоки нижче до «Revise №2» — стан `3c7cc09` (рев'ю №1 і №2), у цьому проході не повторювалися; поточні виміри дерева з кодом етапу 7 — у блоці «Revise №2» і в `.agentic/evidence/debt-checks.md`.
 
 `pnpm install --frozen-lockfile && pnpm verify` (останній запуск, ANSI-кольори прибрано):
 
@@ -195,7 +203,7 @@ EXIT=0
 ```text
 pnpm dup        → Found 0 clones. (4 файли, 0,00 % дублювання)
 pnpm deadcode   → без знахідок (1 підказка конфігурації про .css, код 0)
-pnpm boundaries → ✔ no dependency violations found (8 modules, 7 dependencies cruised)
+pnpm boundaries → ✔ no dependency violations found (8 modules, 7 dependencies cruised)   (стан 3c7cc09)
 pnpm audit --audit-level high → 2 vulnerabilities found, Severity: 2 moderate (код 0; TD-001)
 pnpm sbom:write → sbom/crypto-radar.cdx.json, CycloneDX 1.7, 282 components
 pnpm test:a11y  → ok light, ok dark — 2 passed
@@ -240,7 +248,58 @@ EXIT=1
 
 `sbom` — генерація, а не поріг: команда червоніє лише тоді, коли не може прочитати lockfile чи store. Штучне порушення для неї не має сенсу.
 
+**Revise №2 — оракул (команда нового кроку CI) і межі модулів:**
+
+```text
+$ pnpm exec vitest run --config acceptance/vitest.config.js   (2026-11-03 01:10, код етапу 7 + запит №3)
+ RUN  v5.0.5 D:/crypto-radar
+ Test Files  9 passed (9)
+      Tests  91 passed (91)
+   Start at  01:10:52
+EXIT=0
+```
+
+```text
+$ pnpm boundaries   (2026-11-03 01:10, код етапу 7, .dependency-cruiser.cjs з enhancedResolveOptions)
+✔ no dependency violations found (84 modules, 200 dependencies cruised)
+EXIT=0
+```
+
 ### 4.2. Валідація артефактів, контракту, інфраструктури
+
+**Revise №2 — валідатор етапу (після вердикту рев'ю №7, 2026-11-03 01:44:40–01:45:37):**
+
+```text
+$ python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 5 --run
+=== Перевірка етапу: Stage 5 ===
+✅ [PASS] Передумови схвалено: 3
+✅ [PASS] Статус аудиту independent-reviewer: PASS
+✅ [PASS] Артефакт .agentic/specs/05-platform-runbook.md знайдено
+✅ [PASS] Артефакт CLAUDE.md знайдено
+✅ [PASS] Артефакт .agentic/project.json знайдено
+✅ [PASS] Артефакт .agentic/bundle/skills/gate-check/verify-gate.py знайдено
+✅ [PASS] Артефакт .claude/settings.json знайдено
+✅ [PASS] Артефакт .gitignore знайдено
+=== Правила якості коду: . ===
+=== Сканування секретів: . ===
+=== Команди перевірки етапу 5 ===
+✅ [PASS] Команда успішна: pnpm install --frozen-lockfile
+✅ [PASS] Команда успішна: pnpm verify
+=== Виміряний технічний борг (debt_commands) ===
+✅ [PASS] Команда успішна: pnpm lint
+✅ [PASS] Команда успішна: pnpm dup
+✅ [PASS] Команда успішна: pnpm deadcode
+✅ [PASS] Команда успішна: pnpm boundaries
+✅ [PASS] Команда успішна: pnpm audit --audit-level high
+✅ [PASS] Команда успішна: pnpm sbom:write
+✅ [PASS] Команда успішна: pnpm test:a11y
+✅ [PASS] Команда успішна: pnpm vitals
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+```
+
+
+> Блоки нижче — стан `3c7cc09` (рев'ю №1 і №2), у Revise №2 не повторювалися; `index.html` і `vite.config.js` відтоді змінено етапом 7 (його звіт і `.agentic/evidence/`).
 
 **Живий старт** (`.claude/launch.json` → `preview`, браузер сесії, `http://localhost:4173/crypto-radar/`):
 
@@ -319,6 +378,31 @@ project.json проти HEAD: змінено лише verify_commands ("5", "7")
 Не перевірено повторно рев'юером: pnpm install --frozen-lockfile, --debt, test:a11y, vitals, живий старт (заборонені встановлення / браузер).
 Узгодженість (L-002): TD-001…TD-004, 3 правила якості, лічильник сканера 51, пороги complexity 15 / jscpd 3 % — однакові в усіх документах.
 INFO (внесено після рев'ю): 21 пакет замість 19; globs only-coingecko-origins охоплюють CSS; примітки «Повторив рев'юер».
+Рев'ю №3, Revise №2 (2026-11-03 01:10): BLOCKERS FOUND.
+  BLOCKER: рядки 4.0 «оракул» і «межі модулів» з кодом 0 без виводу; рядок 4.1 boundaries (8 modules) суперечив 4.0 → додано блок «Revise №2» у 4.1 (прогін 01:10), рядок 4.1 позначено «стан 3c7cc09», твердження про 8 порушень без резолвера прибрано з 4.0 (посилання на журнал).
+  WARNING: крок оракула червоний на коміті Revise №2, поки не закомічено етап 7 і запит №3 → ризик у секції 6 і на гейті; часові позначки трекера й шапки → виправлено за git log і часом зміни файлів, урок L-005.
+  INFO: forbidden без змін (13 правил), лише options.enhancedResolveOptions; runbook узгоджений з ci.yml; трекер у коміті — дозволено.
+Рев'ю №4, Revise №2 (2026-11-03 01:14): BLOCKERS FOUND.
+  BLOCKER: «час уточнено 01:15» у трекері записано до 01:15 (повтор L-005) → позначки й «Останнє оновлення» замінено виводом `date` (2026-11-03 01:15).
+  BLOCKER: урок без .claude/rules/project-lessons.md у секціях 3 і 7 → додано в секції 3, 7.1, 7.2.
+  WARNING: «о 00:10» у записі «≤ 00:05» → виправлено; звіт етапу 4 зберігає первинні 00:20/00:40 → запис у трекері, питання на гейт; рядки 4.0 і блок 4.1 стану 3c7cc09 → позначено «стан 3c7cc09».
+Рев'ю №5, Revise №2 (2026-11-03 01:19): BLOCKERS FOUND.
+  BLOCKER: розбіжність часу звіту етапу 4 відсутня в секції 6 і на гейті → додано (01:20, після читання рев'юером); трекер доповнено позначками 00:05 / 00:10.
+  BLOCKER: рядок 4.0 «Web Vitals» без позначки → «стан 3c7cc09».
+  BLOCKER: записи трекера етапів 2, 3, 6 пізніші за коміти, що їх містять → звірка всіх записів з git log одним проходом (скрипт), позначки «≤ HH:MM (час уточнено …)», журнал комітів вирівняно й доповнено.
+  WARNING: план «.dependency-cruiser.cjs не змінюється» → примітки в плані (§5, §13, §15.1) у межах Revise №3 етапу 6; блоки 4.2 → позначено «стан 3c7cc09».
+Рев'ю №6, Revise №2 (2026-11-03 01:30): BLOCKERS FOUND.
+  BLOCKER: рядки журналу комітів у матриці етапів трекера → перенесено в розділ 3 (01:31).
+  BLOCKER: розбіжність часу звіту етапу 4 відсутня в блоці гейту → окремий пункт на гейті (L-003).
+  WARNING: позначка 00:10 не названа → «00:10, 00:20, 00:40» у секції 6 і на гейті обох звітів.
+Рев'ю №7, Revise №2 (2026-11-03 01:42): PASS — independent-reviewer, Stage 5.
+  Закриття рев'ю №6 підтверджено: матриця розділу 2 трекера — 10 рядків етапів; f689fc3 і чекпоінти етапу 7 — у розділі 3 (час = git log); розбіжність часу звіту етапу 4 — секція 6 і пункт 2 блоку гейту («00:10, 00:20, 00:40»).
+  Годинник: vitest «Start at 01:41:52»; найпізніша позначка в .agentic/ — 01:41; Revise №2: ci.yml і runbook 01:05:34, .dependency-cruiser.cjs 00:41:04, project-lessons.md 01:11:59.
+  Межі: 6 файлів Revise №2 у зоні етапу 5; git add 7.2 — явний список; решта дерева — етап 7 і Revise №3, у коміт не входять. ci.yml — лише крок оракула; .dependency-cruiser.cjs — лише options.enhancedResolveOptions; runbook §5–§7 узгоджений.
+  Секрети: --scan-secrets . — 160 файлів, 0. Правила якості: --check-code . — 81 файл, 0. Залежності, контракт — не застосовно.
+  Повторний pnpm verify (дерево етапу 7): код 0 — 14 файлів / 189 passed, JS 104,95 кБ. Не повторено (хук read-only): оракул, pnpm boundaries, --debt, test:a11y, vitals — звірено статично з блоками 4.1 і evidence.
+  WARNING: записи 4.3 №1 і №2 стояли після №6 → упорядковано за часом (2026-11-03 01:44).
+  INFO: запис трекера 01:31 стосується обох Revise; «Останнє оновлення» на 1 хв раніше за час зміни файла; мітка уроків змішує етапи — без впливу на правила.
 ```
 
 ---
@@ -363,6 +447,10 @@ INFO (внесено після рев'ю): 21 пакет замість 19; glo
 | Спостереження | `git status` показує 9 файлів `.agentic/` як `M`, хоча їхній вміст побайтово збігається з HEAD (кеш стану після відновлення і появи `.gitattributes`). У коміт етапу 5 вони не потрапляють | Низький | Нічого; `git add` цих файлів дав би порожню зміну | — |
 | Межі етапу | ADR 0003 згадує workflow деплою для етапу 5. Власник вирішив перенести його на етап 9 | — | Етап 9 | Власник продукту (2026-11-02) |
 
+**Revise №2 — ризик порядку комітів (підтвердити на гейті, L-003):** новий крок CI «Acceptance oracle (stage 6)» зелений лише разом із кодом етапу 7 і запитом №3 (етап 6). На коміті Revise №2 окремо оракул червоний (на `3c7cc09` / `f689fc3` — 91 з 91). Remote і push ще немає, тож CI зараз не запускається; пропозиція — push лише після комітів запиту №3 і етапу 7.
+
+**Revise №2 — розбіжність часу у звіті етапу 4 (підтвердити на гейті, L-003):** `.agentic/reports/04-ux-api-report.md` (коміт `f689fc3`, 00:05:46) містить позначки 00:10, 00:20 і 00:40, пізніші за коміт; уточнений час — у трекері, розділ 4 («≤ 00:05»). Те саме питання — на гейті етапу 6; власник вирішує один раз: запит на зміну до етапу 4 або лишити трекер джерелом правди.
+
 ### 6.1. Карта технологій для самостійного опанування
 
 | Технологія / Інструмент / Патерн | Рівень опанування | Ключові концепції | Офіційне першоджерело |
@@ -379,6 +467,20 @@ INFO (внесено після рев'ю): 21 пакет замість 19; glo
 ## 7. Точка фіксації в Git (Recommended Git Commit Checkpoint)
 
 ### 7.1. Список файлів для індексації (`git status --short`)
+
+```text
+Revise №2:
+ M .github/workflows/ci.yml
+ M .dependency-cruiser.cjs
+ M .agentic/specs/05-platform-runbook.md
+ M .agentic/reports/05-platform-report.md
+ M .agentic/pipeline-state.md
+ M .claude/rules/project-lessons.md
+```
+
+`.claude/rules/project-lessons.md` — уроки L-004 (посилено) і L-005 з рев'ю Revise №2 і №3 (розділ 11 контракту); у коміт Revise №2 як першого гейту. Інші незакомічені файли робочого дерева належать етапу 7 (`IN_PROGRESS`) і запиту №3 (етап 6) — у коміт Revise №2 не входять.
+
+Початковий коміт `3c7cc09`:
 
 ```text
  M .agentic/pipeline-state.md
@@ -428,6 +530,11 @@ INFO (внесено після рев'ю): 21 пакет замість 19; glo
 ### 7.2. Явна індексація та коміт (Conventional Commits)
 
 ```bash
+# Revise №2
+git add .github/workflows/ci.yml .dependency-cruiser.cjs .agentic/specs/05-platform-runbook.md .agentic/reports/05-platform-report.md .agentic/pipeline-state.md .claude/rules/project-lessons.md
+git commit -m "ci(stage-5): run acceptance oracle in ci and resolve package exports"
+
+# Початковий коміт етапу 5 (3c7cc09)
 git add package.json pnpm-lock.yaml index.html vite.config.js src/main.jsx src/index.css src/app/App.jsx src/app/App.test.jsx src/test/setup.js public/favicon.svg scripts/check-bundle-size.mjs scripts/web-vitals.mjs a11y/shell.a11y.spec.js playwright.a11y.config.js knip.json .jscpd.json .dependency-cruiser.cjs .oxlintrc.json .oxfmtrc.json .nvmrc .gitignore .gitattributes .env.example .github/workflows/ci.yml .github/dependabot.yml CLAUDE.md .claude/settings.json .claude/launch.json .agentic/bundle .agentic/specs/05-platform-runbook.md .agentic/project.json .agentic/tech-debt.md .agentic/reports/05-platform-report.md .agentic/pipeline-state.md .claude/rules/project-lessons.md
 git commit -m "build(stage-5): add walking skeleton, verify command and ci"
 ```
@@ -441,4 +548,7 @@ git commit -m "build(stage-5): add walking skeleton, verify command and ci"
 - [ ] **Revise** — статус `REJECTED_REVISING`: зауваження нижче, етап повертається на Фазу 3.
 
 **Коментарі / Зауваження:**
-> —
+> Початковий гейт: «Approve & закоміть» (2026-11-02 22:39) → `3c7cc09`.
+> Revise №2: «Approve & закоміть» (2026-11-03 01:47). Підтверджено на гейті: push лише після комітів запиту №3 і етапу 7; трекер — джерело правди для часу звіту етапу 4. Пункти гейту:
+> 1. Ризик порядку комітів (секція 6) — push / CI лише після комітів запиту №3 і етапу 7.
+> 2. Розбіжність часу у звіті етапу 4 (секція 6): позначки 00:10, 00:20, 00:40 пізніші за `f689fc3` — запит на зміну до етапу 4 або трекер як джерело правди; власник вирішує один раз для етапів 5 і 6.
