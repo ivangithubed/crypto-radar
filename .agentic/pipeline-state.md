@@ -10,7 +10,7 @@
 - **Проєкт:** `Крипто-Радар`
 - **Поточний активний етап:** `Stage 4: UX і контракт API` + `Stage 5: Платформа` (можна паралельно)
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-02 19:40`
+- **Останнє оновлення:** `2026-11-02 19:31`
 
 ---
 
@@ -20,8 +20,8 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **1** | Discovery: від ідеї до продуктового брифу | `product-discovery` | — | `APPROVED_AND_COMMITTED` | `.agentic/reports/01-discovery-report.md` | `04c6271` |
 | **2** | Вимоги: User Stories та Gherkin-критерії | `ba-requirements` | `1` | `APPROVED_AND_COMMITTED` | `.agentic/reports/02-requirements-report.md` | `2ff839a` |
-| **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | див. журнал |
-| **4** | UX і контракт API | `ux-api-design` | `3` | `PENDING` | `.agentic/reports/04-ux-api-report.md` | — |
+| **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f` |
+| **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `PENDING` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `PENDING` | `.agentic/reports/06-plan-report.md` | — |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `PENDING` | `.agentic/reports/07-implementation-report.md` | — |
@@ -47,7 +47,8 @@
 | **init** | `2026-11-02` | `ca1bcc7` | `chore(init): start sdd delivery pipeline` | `Власник продукту` |
 | **1** | `2026-11-02 15:04` | `04c6271` | `docs(stage-1): add product brief for Крипто-Радар` | `Власник продукту` |
 | **2** | `2026-11-02 17:10` | `2ff839a` | `docs(stage-2): add user stories and gherkin acceptance criteria` | `Власник продукту` |
-| **3** | `2026-11-02 19:40` | `див. git log` | `docs(stage-3): add architecture, NFR and ADRs, choose stack` | `Власник продукту` |
+| **3** | `2026-11-02 19:40` | `2edc20f` | `docs(stage-3): add architecture, NFR and ADRs, choose stack` | `Власник продукту` |
+| **4** | `2026-11-02 19:31` | `див. git log` | `docs(stage-4): add ux state matrix and interface spec` | `Власник продукту` |
 
 ---
 
@@ -74,3 +75,7 @@
 - `2026-11-02 Stage 3 (гейт): власник прийняв ризики — clickjacking: «не проблема»; підроблений сайт під схожою адресою: «не проблема»; недокументований ліміт CoinGecko без ключа: «поки працюємо як є, без запасного плану»; свіжість за годинником пристрою: «реалізуй саме таку схему».`
 - `2026-11-02 Stage 3: за згодою власника створено .claude/rules/project-lessons.md з уроками L-001 – L-003 (BLOCKERS FOUND рев'ю етапу 3).`
 - `2026-11-02 19:40 Stage 3: власник обрав «Approve & закоміть» (APPROVED_AND_COMMITTED). ADR 0001–0006 → accepted. Рев'ю: PASS (третій прохід); валідатор --stage 3 exit 0.`
+- `2026-11-02 Stage 4: власник погодив план етапу 4 і всі Best Practices Фази 2; has_http_api: false → контракт OpenAPI і лінтер не застосовні. Відкрите питання №12 закрито: показувати час цін («Ціни на 14:32»). Навігація — вкладки «Монети / Обрані» в шапці на всіх ширинах.`
+- `2026-11-02 Stage 4: дизайн-система — нова в Claude Design, основний колір темно-лавандовий, решта за контрастом WCAG AA. Шрифти — два не «попсові» з каталогу Google Fonts з кирилицею; у продукті їхні woff2 лежать у складі сайту (self-hosting), бо NFR-10 і CSP етапу 3 забороняють сторонні шрифти (уточнено з власником: заборона стосується завантаження з серверів Google, а не самих гарнітур).`
+- `2026-11-02 19:25 Stage 4: звіт сформовано, рев'ю PASS (третій прохід; два перші — BLOCKERS FOUND, виправлено); етап винесено на гейт. На гейті власник має вирішити: AC-9.3 проти англійської атрибуції «Powered by CoinGecko» (Revise етапу 2 або виняток у тест-дизайні 8.a/8.b).`
+- `2026-11-02 19:31 Stage 4: власник обрав «Approve & закоміть» (APPROVED_AND_COMMITTED). Рев'ю: PASS (третій прохід); валідатор --stage 4 exit 0. Питання AC-9.3 проти «Powered by CoinGecko» лишається відкритим для тест-дизайну 8.a/8.b або Revise етапу 2.`
