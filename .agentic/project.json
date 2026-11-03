@@ -20,6 +20,10 @@
     "7": [
       "pnpm install --frozen-lockfile",
       "pnpm verify"
+    ],
+    "8.b": [
+      "pnpm install --frozen-lockfile",
+      "pnpm exec playwright test -c e2e/playwright.config.js"
     ]
   },
   "debt_commands": {

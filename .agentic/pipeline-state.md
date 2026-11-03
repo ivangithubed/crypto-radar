@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 8.b: автоматизація E2E (qa-engineer)`
+- **Поточний активний етап:** `Рішення щодо BUG-010 (Revise етапу 7), далі Stage 9`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-03 22:43`
+- **Останнє оновлення:** `2026-11-03 23:38`
 
 ---
 
@@ -25,8 +25,8 @@
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5` |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5` |
-| **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f` |
-| **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
+| **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f`, Revise 8.a — `8755fb3` |
+| **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08b-qa-automation-report.md` | — |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
 
 > **Статуси:**
@@ -62,6 +62,7 @@
 | **4 (запит №5)** | `2026-11-03 19:01` | `a6719e0` | `docs(stage-4): align network error retries with client after bug-001` | `Власник продукту` |
 | **6 (запит №5)** | `2026-11-03 20:59` | `f1ac4b5` | `docs(stage-6): align p-4 retry policy with client after bug-001` | `Власник продукту` |
 | **7 (Revise №5)** | `2026-11-03 22:25` | `8f0f2a5` | `fix(stage-7): fix bug-003 and bug-009, keep list scroll on navigation` | `Власник продукту` |
+| **8.a (Revise 8.a)** | `2026-11-03 22:43` | `8755fb3` | `test(stage-8.a): retest bug-003 and bug-009 after stage 7 revise` | `Власник продукту` |
 
 ---
 
@@ -161,3 +162,8 @@
 - `2026-11-03 22:36 Stage 8.a (Revise 8.a): рев'ю №1 — BLOCKERS FOUND (TC-068 без підказок, TC-059 без кроків 3–4, пристрій). Виправлено: повтор qa8a-retest.mjs на 8f0f2a5 (22:34:48 – 22:34:57) — TC-059 1–4, TC-068 з підказками, TC-058 Pass; TC-086 — варіант Б; копія сценарію в support/; L-004 — коміт старих рядків 4.0. Далі — рев'ю №2.`
 - `2026-11-03 22:40 Stage 8.a (Revise 8.a): рев'ю №2 — PASS; трасування, BUG і сканер повторено 22:39:32; verify-gate.py --stage 8.a — EXIT 0 (22:40:06). Статус — WAITING_FOR_APPROVAL. На гейт: схвалити ретест; чек-лист TC-087 – TC-090 — прийняти ризик чи виконати перед етапом 9 (L-003).`
 - `2026-11-03 22:43 Stage 8.a (Revise 8.a): власник — «Approve & закоміть 8.a» (APPROVED_AND_COMMITTED). Схвалено ретест (BUG-003, BUG-009 Verified на 8f0f2a5). Відкритими лишаються (L-003, окремо не вирішено): чек-лист TC-087 – TC-090 (ризик не прийнято), TD-022, TD-023, ризики IP (STRIDE I), рядок .agentic/project.json, .claude/skills/verify/**. Далі — Stage 8.b.`
+- `2026-11-03 22:51 Stage 8.b: власник схвалив план («Так, схвалюю план»): Playwright 1.64 + теги @US-N @AC-N.M (без нових пакетів); Chromium + WebKit + Firefox (завантажено firefox-1555, webkit-2370 за згодою); окремий job e2e у ci.yml; verify_commands["8.b"]. Статус — IN_PROGRESS. Wave 0 (e2e/playwright.config.js, e2e/support/) — пробний прогін 3 passed у 3 браузерах.`
+- `2026-11-03 23:10 Stage 8.b: рев'ю №1 — BLOCKERS FOUND (3 × waitForTimeout у us-8; карантин AC-8.1 у WebKit ширший за дефект; заглушка команди трасування; SHA upload-artifact без доказу; абсолютні імпорти BUG-010-repro). Виправлено 23:12 – 23:21: керований годинник, test.fail замість fixme, справжня команда, gh api, відносні імпорти; знайдено й виправлено нестабільність AC-8.8 у WebKit (waitUntil). Час — зі звіту рев'юера (vitest 23:10).`
+- `2026-11-03 23:26 Stage 8.b: рев'ю №2 — PASS (2 WARNING: застаріле «fixme» у секції 6; негативні перевірки без точки синхронізації). Виправлено 23:27 – 23:32: expectNoRetryWithinWindow (waitForRequest до runFor), мутаційна перевірка ловить повтор; US-8 × 5 — 150 passed; повні прогони — 279 passed, 3 skipped; BUG-010 — примітка про load. Час — зі звіту рев'юера (vitest 23:26:09).`
+- `2026-11-03 23:34 Stage 8.b: verify-gate.py --stage 8.b --run — EXIT 0 (23:33:39 – 23:34:32). Статус — WAITING_FOR_APPROVAL. Нові BUG: BUG-010 (Major / P1, WebKit preload, етап 7), BUG-011 (Minor / P3, текст поради Safari, етап 7). На гейт: набір, job e2e, verify_commands["8.b"]; рішення щодо BUG-010 і BUG-011; рядок project.json власника.`
+- `2026-11-03 23:38 Stage 8.b: власник — «Approve & закоміть 8.b» (APPROVED_AND_COMMITTED). Схвалено набір E2E, job e2e у CI, verify_commands["8.b"]. Відкритими лишаються (L-003, окремо не вирішено): BUG-010 (Major / P1, WebKit preload — рекомендовано Revise етапу 7 до етапу 9), BUG-011 (Minor / P3), чек-лист TC-087 – TC-090, TD-022, TD-023, ризики IP (STRIDE I), рядок власника в .agentic/project.json, .claude/skills/verify/**. Далі — рішення щодо BUG-010, потім етап 9.`
