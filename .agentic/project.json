@@ -54,7 +54,8 @@
     "paths": [
       "acceptance/**"
     ],
-    "command": "pnpm exec vitest run --config acceptance/vitest.config.js"
+    "command": "pnpm exec vitest run --config acceptance/vitest.config.js",
+    "holdouts_command": "pnpm exec vitest run --config .agentic/holdouts/vitest.config.js"
   },
   "quality_rules": [
     {
