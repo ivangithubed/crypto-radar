@@ -33,7 +33,7 @@ decision-makers: власник продукту
 | US-4 | Сторінка монети за посиланням, графік за 7 днів | так: React Router `HashRouter`, графік SVG із `sparkline_in_7d` | так: Vue Router hash-режим | так | частково: власний роутер |
 | US-5, US-6 | Обрані на пристрої тижнями | **частково**: localStorage; Safari видаляє дані через 7 днів без взаємодії (ADR 0006) | частково (те саме) | частково (те саме без акаунтів) | частково (те саме) |
 | US-7 | Доступні підказки на телефоні й ПК | так | так | так | так, але більше ручного коду доступності |
-| US-8 | Свіжість ≤ 5 хв, автооновлення, повтори | так: TanStack Query (`refetchInterval`, `retry`) + перевірка `last_updated` | так: TanStack Query для Vue | так | частково: опитування й повтори вручну |
+| US-8 | Свіжість ≤ 5 хв, автооновлення, повтори | так: TanStack Query (`refetchInterval`) + власна політика повторів (`fetchTopCoins`, P-4) + перевірка `last_updated` | так: TanStack Query для Vue | так | частково: опитування й повтори вручну |
 | US-9, US-10 | Статичні тексти, тема | так: Tailwind CSS v4 `dark:` | так | так | так |
 | NFR-4, NFR-5 | LCP ≤ 2,5 с, JS ≤ 150 КБ gzip | так (оцінка: React DOM + Router + Query вкладаються, перевірка на етапі 5) | так | частково: SSR на безкоштовному тарифі має холодні старти | так |
 | NFR-15 | $0, GitHub Pages | так | так | **ні**: GitHub Pages не запускає сервер; потрібна безсерверна платформа | так |
@@ -61,7 +61,7 @@ decision-makers: власник продукту
 | Генератор каркаса | `pnpm create vite@latest .scaffold --template react --no-interactive` (шаблон `react` — JavaScript) | create-vite 9.3.3 |
 | UI | React 19 + React DOM | 19.3.1 |
 | Маршрутизація | React Router, **декларативний режим**, `<HashRouter>` з пакета `react-router`; без data mode, framework mode, SSR і плагіна Vite від React Router (зауваження власника 2026-11-02) | react-router 8.5.1 |
-| Дані й оновлення | TanStack Query v5 (`refetchInterval: 60000`, `refetchIntervalInBackground: false`, повтори за ADR 0005: на 429 — 0, на 5xx і мережу — 2 з паузами 2 с і 4 с) | @tanstack/react-query 5.105.2 |
+| Дані й оновлення | TanStack Query v5 (`refetchInterval: 60000`, `refetchIntervalInBackground: false`, `retry: false`); повтори за ADR 0005 — власна політика в `fetchTopCoins` (`src/market-data/client.js`, P-4): на 429 і виняток `fetch` при `navigator.onLine === true` — 0, на 5xx, таймаут і мережу офлайн — 2 з паузами 2 с і 4 с (запит на зміну №5) | @tanstack/react-query 5.105.2 |
 | Графік | Власний SVG-компонент (`chart`), без бібліотеки: одна лінія зі 168 точок + текстова альтернатива | — |
 | Стилізація | Tailwind CSS v4 через `@tailwindcss/vite`; темна тема — варіант `dark:` | tailwindcss 4.3.3, @tailwindcss/vite 4.3.3 |
 | Менеджер пакетів | pnpm | 11.23.0 (встановлено; npm — 11.19.0) |
@@ -77,7 +77,7 @@ decision-makers: власник продукту
 ### Consequences
 
 - Добре: один деплойний блок, без сервера, секретів і бази; $0; швидкий старт за офіційним генератором; велика екосистема й навчальні матеріали.
-- Добре: TanStack Query з коробки дає опитування, паузу в прихованій вкладці й повтори з експоненційною паузою (NFR-2, NFR-3).
+- Добре: TanStack Query з коробки дає опитування й паузу в прихованій вкладці (NFR-2); повтори — власна політика `fetchTopCoins` (P-4), `retry: false`, бо типові 3 повтори TanStack Query порушили б NFR-3 (запит на зміну №5).
 - Погано: **JavaScript без перевірки типів** — помилки на кшталт «undefined замість числа» видно лише під час роботи. Пом'якшення: Oxlint, JSDoc-типи, перевірка форми відповіді CoinGecko в `market-data`, модульні тести. Перехід на TypeScript пізніше — окремий ADR.
 - Погано: ліміти CoinGecko рахуються за IP кожного відвідувача і не задокументовані (ADR 0005).
 - Нейтрально: `HashRouter` дає адреси вигляду `…/crypto-radar/#/coin/bitcoin`.

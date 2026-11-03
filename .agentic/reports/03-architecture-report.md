@@ -2,8 +2,8 @@
 
 - **Етап:** `Stage 3: Архітектура`
 - **Відповідальний скіл:** `solution-architect`
-- **Дата формування:** `2026-11-02 18:40`
-- **Статус аудиту independent-reviewer:** `PASS`
+- **Дата формування:** `2026-11-02 18:40` · **Revise (запит №5, TD-021):** `2026-11-03 14:35`
+- **Статус аудиту independent-reviewer:** `PASS` (рев'ю №3 запиту на зміну №5, 2026-11-03; рев'ю №1 і №2 повернули блокери, їх виправлено — див. 4.3)
 
 ---
 
@@ -67,6 +67,8 @@
 
 ## 3. Виконаний обсяг робіт (Deliverables)
 
+**Revise (запит на зміну №5, 2026-11-03 14:35):** змінено [`.agentic/specs/03-architecture.md`](../specs/03-architecture.md) (NFR-3, діаграма потоку завантаження; STRIDE: рядки I (IP для CoinGecko і GitHub Pages) — «прийняття — підтвердити на гейті», L-003, правка 16:22 після рев'ю №2), [`.agentic/specs/adr/0005-data-source-coingecko.md`](../specs/adr/0005-data-source-coingecko.md) («Помилки») і [`.agentic/specs/adr/0001-stack.md`](../specs/adr/0001-stack.md) (рядок «Дані й оновлення» — дописано 14:43 за знахідкою Red-Team №8, L-002) — повтори при мережевій помилці лише при `navigator.onLine === false`; виняток `fetch` онлайн — E-SRC, 1 запит; трекер — `.agentic/pipeline-state.md` (розділ 4).
+
 - [`.agentic/specs/03-architecture.md`](../specs/03-architecture.md):
   - драйвери, NFR-1 – NFR-16;
   - C4 Context і Container, модулі, доменна модель;
@@ -91,15 +93,20 @@
 
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Кількість NFR | `grep -cE` за рядками таблиці NFR (точна команда — у 4.2) | 0 | 16 | так | — |
-| STRIDE у документі | `grep -c "STRIDE" .agentic/specs/03-architecture.md` | 0 | 2 | так | — |
-| Обов'язкові ADR | `ls` трьох обов'язкових ADR (точна команда — у 4.2) | 0 | 3 з 3 (усього 6 ADR) | так | — |
-| ADR з варіантами | `grep -c "^## Considered Options" .agentic/specs/adr/*.md` | 0 | 6 з 6 | так | Замість `grep -L` зі скіла: він повертає 1 при успіху, а валідатор вважає це провалом |
-| Поля `project.json` | `python -c "…assert…"` | 0 | 6 ключів stack, bool, рядок, bool | так (через git diff) | Рев'юеру хук не дозволив python -c |
-| Зміни `project.json` | `git diff -- .agentic/project.json` | 0 | змінено лише `stack`, `has_http_api`, `deploy_target` | так | — |
-| Секрети | `verify-gate.py --scan-secrets .agentic/` | 0 | 16 файлів, 0 секретів | так | — |
-| Валідатор етапу | `verify-gate.py --stage 3` | 0 | 0 помилок | так (до вердикту: exit 1, лише 3 очікувані помилки) | Фінальний запуск після вердикту — у 4.2 |
-| Збірка й тести | — | не застосовно | — | не застосовно | Етап без коду |
+| Запит №5: нове формулювання повторів | `grep -c "onLine" .agentic/specs/03-architecture.md .agentic/specs/adr/0005-data-source-coingecko.md .agentic/specs/adr/0001-stack.md` | 0 | 03-architecture.md:2, 0005:1, 0001:1 | ні | вивід — 4.2, блок «Запит №5», повтор 2026-11-03 16:27:31 |
+| Запит №5: старе формулювання ADR 0001 | `python -c "import sys;t=open('.agentic/specs/adr/0001-stack.md',encoding='utf-8').read();n=t.count('на 5xx і мережу — 2');print('старих формулювань ADR 0001:',n);sys.exit(n)"` | 0 | 0 | ні | вивід — 4.2, блок «Запит №5», повтор 2026-11-03 16:27:31; код 0 = 0 збігів (L-001) |
+| Запит №5: механізм повторів у ADR | `python -c "import sys;fs=['.agentic/specs/adr/0005-data-source-coingecko.md','.agentic/specs/adr/0001-stack.md'];old=['власні '+chr(96)+'retry'+chr(96),'на 5xx і мережу — 2'];n=sum(open(f,encoding='utf-8').read().count(o) for f in fs for o in old);print('retry TanStack / старе ADR 0001:',n);sys.exit(n)"` | 0 | 0 | ні | вивід — 4.2, блок «Запит №5», повтор 2026-11-03 16:27:31 (дослівна команда; `chr(96)` — зворотні лапки без підстановки оболонки); код 0 = 0 збігів (L-001) |
+| Запит №5: старих формулювань немає | `python -c "import sys;fs=['.agentic/specs/03-architecture.md','.agentic/specs/adr/0005-data-source-coingecko.md','.agentic/specs/04-ux-and-contract.md','.agentic/specs/implementation_plan.md'];old=['мережа після 2 повторів','5xx / мережа / таймаут','5xx, мережа, таймаут','мережа / таймаут 10 с / 5xx','на мережеву помилку, таймаут і 5xx'];n=sum(open(f,encoding='utf-8').read().count(o) for f in fs for o in old);print('старих формулювань:',n);sys.exit(n)"` | 0 | 0 у 4 документах | ні | вивід — 4.2, блок «Запит №5», повтор 2026-11-03 16:27:31; код 0 = 0 збігів (L-001) |
+| Запит №5: валідатор етапу і вердикт рев'юера | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 3`, субагент `independent-reviewer` | 0 | вердикт PASS (рев'ю №3); валідатор — 10 PASS, 0 FAIL | ні | запущено 2026-11-03 16:28:28 після вердикту PASS (L-004); вивід — 4.2, блок «Запит №5 — валідатор етапу» |
+| Кількість NFR (`2edc20f`, 2026-11-02) | `grep -cE` за рядками таблиці NFR (точна команда — у 4.2) | 0 | 16 | так | — |
+| STRIDE у документі (`2edc20f`, 2026-11-02) | `grep -c "STRIDE" .agentic/specs/03-architecture.md` | 0 | 2 | так | — |
+| Обов'язкові ADR (`2edc20f`, 2026-11-02) | `ls` трьох обов'язкових ADR (точна команда — у 4.2) | 0 | 3 з 3 (усього 6 ADR) | так | — |
+| ADR з варіантами (`2edc20f`, 2026-11-02) | `grep -c "^## Considered Options" .agentic/specs/adr/*.md` | 0 | 6 з 6 | так | Замість `grep -L` зі скіла: він повертає 1 при успіху, а валідатор вважає це провалом |
+| Поля `project.json` (`2edc20f`, 2026-11-02) | `python -c "…assert…"` | 0 | 6 ключів stack, bool, рядок, bool | так (через git diff) | Рев'юеру хук не дозволив python -c |
+| Зміни `project.json` (`2edc20f`, 2026-11-02) | `git diff -- .agentic/project.json` | 0 | змінено лише `stack`, `has_http_api`, `deploy_target` | так | — |
+| Секрети (`2edc20f`, 2026-11-02) | `verify-gate.py --scan-secrets .agentic/` | 0 | 16 файлів, 0 секретів | так | — |
+| Валідатор етапу (`2edc20f`, 2026-11-02) | `verify-gate.py --stage 3` | 0 | 0 помилок | так (до вердикту: exit 1, лише 3 очікувані помилки) | Фінальний запуск після вердикту — у 4.2 |
+| Збірка й тести (`2edc20f`, 2026-11-02) | — | не застосовно | — | не застосовно | Етап без коду |
 
 ### 4.1. Збірка, лінтери та автоматичні тести
 ```text
@@ -155,7 +162,73 @@ $ python verify-gate.py --stage 3   # exit 0
 УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
 ```
 
+**Запит на зміну №5 (TD-021; перші прогони 14:35:47, 14:46:04, 14:48:24, 16:21:39; нижче — повний повтор усіх чотирьох команд 4.0 о 2026-11-03 16:27:31, після останньої правки 03-architecture.md о 16:22 — STRIDE-рядки IP):** змінено `03-architecture.md` (NFR-3 «шлях помилки», діаграма потоку завантаження), ADR 0005 («Помилки») і ADR 0001 (рядок «Дані й оновлення»): повтори лише при `navigator.onLine === false`, таймауті й 5xx; виняток `fetch` при `navigator.onLine === true` — E-SRC, 0 повторів, 1 запит (як у коді після BUG-001, L-008).
+```text
+# 2026-11-03 16:27:31
+$ grep -c "onLine" .agentic/specs/03-architecture.md .agentic/specs/adr/0005-data-source-coingecko.md .agentic/specs/adr/0001-stack.md
+.agentic/specs/03-architecture.md:2
+.agentic/specs/adr/0005-data-source-coingecko.md:1
+.agentic/specs/adr/0001-stack.md:1
+EXIT=0
+$ python -c "import sys;t=open('.agentic/specs/adr/0001-stack.md',encoding='utf-8').read();n=t.count('на 5xx і мережу — 2');print('старих формулювань ADR 0001:',n);sys.exit(n)"
+старих формулювань ADR 0001: 0
+EXIT=0
+$ python -c "import sys;fs=['.agentic/specs/adr/0005-data-source-coingecko.md','.agentic/specs/adr/0001-stack.md'];old=['власні '+chr(96)+'retry'+chr(96),'на 5xx і мережу — 2'];n=sum(open(f,encoding='utf-8').read().count(o) for f in fs for o in old);print('retry TanStack / старе ADR 0001:',n);sys.exit(n)"
+retry TanStack / старе ADR 0001: 0
+EXIT=0
+$ python -c "import sys;fs=['.agentic/specs/03-architecture.md','.agentic/specs/adr/0005-data-source-coingecko.md','.agentic/specs/04-ux-and-contract.md','.agentic/specs/implementation_plan.md'];old=['мережа після 2 повторів','5xx / мережа / таймаут','5xx, мережа, таймаут','мережа / таймаут 10 с / 5xx','на мережеву помилку, таймаут і 5xx'];n=sum(open(f,encoding='utf-8').read().count(o) for f in fs for o in old);print('старих формулювань:',n);sys.exit(n)"
+старих формулювань: 0
+EXIT=0
+```
+
+**Запит №5 — валідатор етапу (2026-11-03 16:28:28, після вердикту PASS рев'ю №3, повний вивід):**
+```text
+$ python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 3
+
+=== Перевірка етапу: Stage 3 ===
+ℹ️  [INFO] Архітектура: NFR, ADR, STRIDE і вибір стеку — скіл solution-architect
+✅ [PASS] Передумови схвалено: 2
+ℹ️  [INFO] Перевірка звіту: .agentic/reports/03-architecture-report.md
+✅ [PASS] Статус аудиту independent-reviewer: PASS
+✅ [PASS] «Валюта довіри»: 14 перевірок із кодами виходу
+✅ [PASS] Карта технологій заповнена (11 рядків)
+✅ [PASS] Conventional Commit у секції 7 валідний
+✅ [PASS] Артефакт .agentic/specs/03-architecture.md знайдено
+✅ [PASS] Артефакт '.agentic/specs/adr/*.md': 6 файлів
+✅ [PASS] Артефакт .agentic/project.json знайдено
+
+=== Правила якості коду: . ===
+✅ [PASS] Перевірено файлів: 85, порушень-помилок немає
+
+=== Сканування секретів: . ===
+ℹ️  [INFO] Проскановано файлів: 193
+✅ [PASS] Відкритих секретів не виявлено
+
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+```
+
 ### 4.3. Вердикт незалежного аудиту (`independent-reviewer`)
+
+**Рев'ю №3 запиту на зміну №5 (поточний вердикт):**
+```text
+PASS — independent-reviewer, 2026-11-03 (після 16:24 — mtime трекера; date хуком read-only недоступний), Stage 3, Revise за запитом на зміну №5 (TD-021), рев'ю №3 (№1 ≈ 14:43 і №2 ≈ 16:18 — BLOCKERS FOUND, виправлено).
+Межі етапу: git add секції 7.2 — 6 файлів (.agentic/specs/03-architecture.md, adr/0001-stack.md, adr/0005-data-source-coingecko.md, .agentic/tech-debt.md, .agentic/reports/03-architecture-report.md, .agentic/pipeline-state.md), усі в зоні етапу 3 або завжди дозволені; список збігається з 7.1 і git status. Інші зміни в робочому дереві (етапи 4, 6, 7, 8.a, project.json) до git add етапу 3 не входять. git status після аудиту не змінився (46 рядків).
+Секрети: verify-gate.py --stage 3 (сканування .) — 193 файли, 0 секретів; у ADR 0005 — лише назва заголовка x-cg-demo-api-key в цитаті документації, значень немає.
+Залежності: не застосовно — етап документний. Правила якості: verify-gate.py --stage 3 — 85 файлів, 0 помилок. Контракт: не застосовно — has_http_api: false (ADR 0001, ADR 0005).
+Повторний запуск: verify-gate.py --stage 3 — exit 1, єдина помилка «Статус аудиту … не PASS» (очікувана до вердикту), «Валюта довіри»: 14 перевірок із кодами виходу. Рядки 4.0 «Запит №5» повторено Grep-ом: onLine — 2/1/1; старі формулювання у .agentic/specs — 0. Команда 4.0 «механізм повторів у ADR» дослівно ідентична команді 4.2.
+Виправлення рев'ю №2: (1) команда 4.0 = 4.2 — так; (2) STRIDE IP-рядки — «підтвердити на гейті (L-003)», інші «прийнятий ризик» мають запис власника в трекері; (3) секція 6 — реєстр TD-001 – TD-023, рядки TD-020, TD-021, TD-022 узгоджено з tech-debt.md.
+Звірка з кодом: src/market-data/client.js, MarketDataProvider.jsx (retry: false), TopCoinsPoller.jsx (refetchInterval 60000, refetchIntervalInBackground: false), client.test.js (таблиця тригерів) — збігаються з NFR-3, діаграмою 7.1, ADR 0005 і ADR 0001.
+Трасування: 26/26 рядків матриці без змін; NFR-3 має перевірку на етапах 7, 8.a, 8.b.
+WARNING: вивід 4.2 (16:21:39) знято раніше за останню правку 03-architecture.md (16:22:34), лічильники не змінились; секція 3 не згадує зміну STRIDE IP-рядків; шапка «рев'ю ще не проведено» і немає запису рев'ю №2; TD-021 у tech-debt.md не називає ADR 0001.
+Після вердикту (автор, 2026-11-03 16:28): 4 команди 4.0 перезапущено о 16:27:31 (вивід у 4.2, лічильники ті самі); секцію 3, шапку, запис рев'ю №2, TD-021 (ADR 0001) і 7.1 («лише CRLF у 01–02») виправлено.
+```
+
+**Рев'ю запиту на зміну №5, №1 (2026-11-03 ≈ 14:43, час — «Start at» з виводу рев'юера):** BLOCKERS FOUND — виправлено 14:47 – 14:48: ADR 0005 і ADR 0001 — повтори робить власна політика `fetchTopCoins`, `retry` TanStack Query вимкнено (P-4); ADR 0001 — у секціях 3, 4.0, 4.2, 7 і в трекері; старі рядки 4.0 позначено `2edc20f`; секція 7 — новий список і повідомлення коміту; колонка перевірки NFR-3 доповнена; блок «Запит №5» перенесено в 4.2; ризики Safari й IP — «підтвердити на гейті» (L-003); TD-021 — «вирішено, закривається на гейті етапу 3».
+
+**Рев'ю запиту на зміну №5, №2 (2026-11-03 ≈ 16:18):** BLOCKERS FOUND — (1) вивід 4.2 «механізм повторів у ADR» не відповідав команді 4.0; (2) STRIDE IP-рядки «прийнятий ризик» без запису власника (L-003); (3) секція 6 без реєстру й TD-020/021/022; WARNING — вивід до правок 14:47 – 14:48, формулювання ризику Safari. Виправлено 16:21 – 16:23.
+
+**Попередній вердикт (етап 3, 2026-11-02):**
 ```text
 PASS — independent-reviewer, 2026-11-02, Stage 3 (третій прохід; перші два — BLOCKERS FOUND, виправлено).
 Межі етапу: 10 файлів (git status --short --untracked-files=all): .agentic/pipeline-state.md, .agentic/project.json (M); .agentic/reports/03-architecture-report.md, .agentic/specs/03-architecture.md, .agentic/specs/adr/0001…0006 (нові). Усі в зоні етапу 3; коду й маніфестів пакетів немає; список збігається з 7.1; git status після аудиту не змінився. Бриф, вимоги й backlog не змінено.
@@ -171,6 +244,7 @@ PASS — independent-reviewer, 2026-11-02, Stage 3 (третій прохід; �
 Після вердикту (2026-11-02): власник на гейті прийняв 4 ризики, позначені «підтвердити на гейті» (розділ 4 трекера), і погодив запис уроків L-001 – L-003. Документи оновлено лише в статусах цих ризиків і переліку файлів; валідатор --stage 3 після оновлення — exit 0.
 
 ---
+
 
 ## 5. Матриця трасування вимог (Requirements Traceability)
 
@@ -207,17 +281,20 @@ PASS — independent-reviewer, 2026-11-02, Stage 3 (третій прохід; �
 
 ## 6. Ризики, технічний борг і відкриті питання
 
-Реєстру `.agentic/tech-debt.md` ще немає (його створює етап 5); технічного боргу в коді на етапі 3 немає.
+Реєстр боргу — `.agentic/tech-debt.md` (TD-001 – TD-023). Цього Revise стосуються TD-020, TD-021, TD-022 (рядки нижче).
 
 | Тип | Опис | Вплив | Що пропонується | Власник рішення |
 | :--- | :--- | :--- | :--- | :--- |
-| Ризик (прийнятий) | Safari видаляє localStorage через 7 днів без взаємодії: обрані можуть зникнути (Must US-5 / US-6, закрито компромісом) | Середній | Підказка «Додайте на головний екран» + маніфест (ADR 0006); питання в опитуванні (A-4) | Власник продукту (рішення 2026-11-02) |
+| Ризик (захід — ADR 0006; прийнятий власником 2026-11-02 — трекер, розділ 4, запис Stage 3 «Must US-5/US-6 … прийнятий ризик в ADR») | Safari видаляє localStorage через 7 днів без взаємодії: обрані можуть зникнути (Must US-5 / US-6, закрито компромісом) | Середній | Підказка «Додайте на головний екран» + маніфест (ADR 0006); питання в опитуванні (A-4) | Власник продукту (рішення 2026-11-02) |
 | Ризик (прийнятий власником 2026-11-02) | Ліміт keyless-доступу CoinGecko не задокументований; відвідувачі за одним NAT ділять квоту | Середній | ≤ 1 запит/хв, пауза в прихованій вкладці, на 429 без швидких повторів; працюємо як є, без запасного плану (рішення власника) | Власник продукту |
 | Ризик | CoinGecko кешує відповіді «around 1 to 5 minutes»: можливі хибні стани «Помилка» біля межі 5 хв | Середній | Guardrail M-5 важливіший; спостерігати на 8.a | Власник продукту / етап 8.a |
 | Ризик (прийнятий власником 2026-11-02) | Свіжість рахується за годинником пристрою (заголовок `Date` недоступний через CORS); якщо годинник відстає більш ніж на 5 хв, застарілі ціни можуть показатися як свіжі (guardrail M-5) | Середній | Реалізувати саме цю схему (рішення власника); `last_updated` із майбутнього — `console.warn` (ADR 0005) | Власник продукту |
 | Ризик (прийнятий власником 2026-11-02) | Clickjacking: `frame-ancestors` неможливо задати на GitHub Pages | Низький | «Не проблема» (рішення власника): на сторінці немає небезпечних дій | Власник продукту |
 | Ризик (прийнятий власником 2026-11-02) | Підроблений сайт під схожою адресою (STRIDE S) | Низький | «Не проблема» (рішення власника): немає входу й платежів; посилання надсилається особисто | Власник продукту |
-| Ризик (прийнятий) | GitHub і CoinGecko бачать IP-адреси відвідувачів | Низький | Примітка про приватність (§8.4) | Власник продукту |
+| Ризик (прийняття — підтвердити на гейті, L-003) | GitHub і CoinGecko бачать IP-адреси відвідувачів | Низький | Примітка про приватність (§8.4) | Власник продукту |
+| Борг TD-021 (вирішено, закривається на гейті етапу 3) | NFR-3, діаграма 7.1, ADR 0005 і ADR 0001 вимагали 2 повторів на будь-яку мережеву помилку, а код після BUG-001 повторює лише офлайн, при таймауті й 5xx | Низький | Документи приведено до коду цим запитом №5 (рішення власника 14:35) | Власник продукту |
+| Борг TD-020 (відкрито, запитом №5 не закривається) | Виняток першого завантаження (preload і запит стейблкоїнів у прихованій вкладці) не записано в текст NFR-3 | Низький | Окремий запит на зміну етапу 3 (рішення власника 04:41 — виняток у NFR-3) | Власник продукту |
+| Борг TD-022 (відкрито) | §6 `change7dPct: number` не знає `null`, а код за варіантом Б BUG-003 повертає `null` і показує «—» | Низький | Рішення на гейті: окремий запит на зміну §6 (і UX §3 / §5.2, TC-086) чи лишити як є | Власник продукту |
 | Борг (свідомий) | JavaScript без перевірки типів | Середній | JSDoc, Oxlint, перевірка форми відповіді, тести; TypeScript — окремий ADR у майбутньому | Власник продукту |
 | Наслідок | Репозиторій має бути публічним для GitHub Pages на GitHub Free | Низький | Секретів немає; власник робить репозиторій публічним на етапі 5 | Власник продукту |
 | Питання | Тексти примітки про приватність, підказки Safari, помилки «сховище недоступне» | Низький | Етап 4 | Етап 4 |
@@ -244,24 +321,23 @@ PASS — independent-reviewer, 2026-11-02, Stage 3 (третій прохід; �
 ## 7. Точка фіксації в Git (Recommended Git Commit Checkpoint)
 
 ### 7.1. Список файлів для індексації (`git status --short`)
+
+Revise за запитом на зміну №5 (TD-021). Попередні коміти етапу — у журналі трекера (розділ 3). Правки власника в робочому дереві (`.agentic/project.json` → `holdouts_command`, лише CRLF у `.agentic/specs/01–02`, `.agentic/reports/01–02`) до цього запиту не належать і не індексуються.
+
 ```text
+ M .agentic/specs/03-architecture.md
+ M .agentic/specs/adr/0001-stack.md
+ M .agentic/specs/adr/0005-data-source-coingecko.md
+ M .agentic/tech-debt.md
+ M .agentic/reports/03-architecture-report.md
  M .agentic/pipeline-state.md
- M .agentic/project.json
-?? .agentic/reports/03-architecture-report.md
-?? .agentic/specs/03-architecture.md
-?? .agentic/specs/adr/0001-stack.md
-?? .agentic/specs/adr/0002-authentication.md
-?? .agentic/specs/adr/0003-deploy-target.md
-?? .agentic/specs/adr/0004-data-storage.md
-?? .agentic/specs/adr/0005-data-source-coingecko.md
-?? .agentic/specs/adr/0006-safari-favorites-retention.md
-?? .claude/rules/project-lessons.md
 ```
 
 ### 7.2. Явна індексація та коміт (Conventional Commits)
+
 ```bash
-git add .agentic/specs/03-architecture.md .agentic/specs/adr/0001-stack.md .agentic/specs/adr/0002-authentication.md .agentic/specs/adr/0003-deploy-target.md .agentic/specs/adr/0004-data-storage.md .agentic/specs/adr/0005-data-source-coingecko.md .agentic/specs/adr/0006-safari-favorites-retention.md .agentic/project.json .agentic/reports/03-architecture-report.md .agentic/pipeline-state.md .claude/rules/project-lessons.md
-git commit -m "docs(stage-3): add architecture, NFR and ADRs, choose stack"
+git add .agentic/specs/03-architecture.md .agentic/specs/adr/0001-stack.md .agentic/specs/adr/0005-data-source-coingecko.md .agentic/tech-debt.md .agentic/reports/03-architecture-report.md .agentic/pipeline-state.md
+git commit -m "docs(stage-3): align retry policy with client after bug-001"
 ```
 
 ---
@@ -274,3 +350,4 @@ git commit -m "docs(stage-3): add architecture, NFR and ADRs, choose stack"
 
 **Коментарі / Зауваження:**
 > 2026-11-02: власник обрав «Approve & закоміть». На гейті прийнято 4 ризики (розділ 4 трекера) і погоджено запис уроків L-001 – L-003.
+> 2026-11-03 14:35: Revise за запитом на зміну №5 (TD-021, рішення власника «Оновити документи»): документи про повтори приведено до коду; статус `REJECTED_REVISING`, чекбокси знову порожні до гейту (порядок гейтів 3 → 4 → 6 → 7).
