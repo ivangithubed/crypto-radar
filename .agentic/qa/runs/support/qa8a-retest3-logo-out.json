@@ -1,0 +1,85 @@
+{
+ "list": {
+  "rows": 50,
+  "nullRowChange": "—\nнемає даних",
+  "alert": false,
+  "brokenImgs": 0,
+  "imgs": 0,
+  "fallbacks": 50,
+  "firstFallback": "B"
+ },
+ "mouseToCoin": {
+  "listY": 1500,
+  "text": "Ethena USDe",
+  "focused": true,
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "outlineWidth": "3px",
+  "scrollY": 0
+ },
+ "coinLogo": {
+  "img": false,
+  "fallback": "E",
+  "size": 40
+ },
+ "mouseBackLink": {
+  "text": "Топ-50 монет",
+  "focused": true,
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "outlineWidth": "3px",
+  "scrollY": 1500
+ },
+ "browserBack": {
+  "text": "Топ-50 монет",
+  "focused": true,
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "outlineWidth": "3px",
+  "scrollY": 1500
+ },
+ "keyboard": {
+  "text": "Bitcoin",
+  "focused": true,
+  "focusVisible": true,
+  "outlineStyle": "solid",
+  "outlineWidth": "2px",
+  "scrollY": 0
+ },
+ "keyboardNextTab": "☆Додати в обрані",
+ "nullCoinPage": {
+  "dash": true,
+  "spoken": [
+   "немає даних за 7 днів",
+   "немає даних"
+  ]
+ },
+ "desktop": {
+  "errors": [],
+  "csp": 0
+ },
+ "mobile": {
+  "#/": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/coin/bitcoin": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/coin/binancecoin": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/favorites": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/abc": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "errors": [],
+  "csp": 0
+ }
+}

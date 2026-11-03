@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 8.b (після рішення щодо Revise 8.a)`
+- **Поточний активний етап:** `Stage 8.b: автоматизація E2E (qa-engineer)`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-03 22:25`
+- **Останнє оновлення:** `2026-11-03 22:43`
 
 ---
 
@@ -24,7 +24,7 @@
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0` |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5` |
-| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805` |
+| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5` |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f` |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
@@ -61,6 +61,7 @@
 | **3 (запит №5)** | `2026-11-03 17:18` | `9417669` | `docs(stage-3): align retry policy with client after bug-001` | `Власник продукту` |
 | **4 (запит №5)** | `2026-11-03 19:01` | `a6719e0` | `docs(stage-4): align network error retries with client after bug-001` | `Власник продукту` |
 | **6 (запит №5)** | `2026-11-03 20:59` | `f1ac4b5` | `docs(stage-6): align p-4 retry policy with client after bug-001` | `Власник продукту` |
+| **7 (Revise №5)** | `2026-11-03 22:25` | `8f0f2a5` | `fix(stage-7): fix bug-003 and bug-009, keep list scroll on navigation` | `Власник продукту` |
 
 ---
 
@@ -156,3 +157,7 @@
 - `2026-11-03 22:17 Stage 7 (Revise №5): рев'ю №7 — BLOCKERS FOUND (секція 1, 4.0, 7.1 і пункт 1 гейту описували гейти 3 → 4 → 6 як майбутні; tech-debt.md у 7.1 без змін). Виправлено: поточний стан із хешами; TD-021 закрито в реєстрі (гейти 3, 4, 6); «Поточний активний етап». Далі — рев'ю №8.`
 - `2026-11-03 22:23 Stage 7 (Revise №5): рев'ю №8 — PASS (≈22:20); verify-gate.py --stage 7 --run — EXIT 0 (22:21:53 – 22:23:41, 26 PASS). Етап готовий до гейту 7; на гейт: TD-022, TD-023, ризики IP (STRIDE I), артефакти 8.a, рядок project.json, .claude/skills/verify/**.`
 - `2026-11-03 22:25 Stage 7 (Revise №5): власник — «Approve & закоміть 7» (APPROVED_AND_COMMITTED). Схвалено пункт 1 гейту: BUG-003 (варіант Б), BUG-009, фокус і прокрутка. Відкритими лишаються (L-003, окремо не вирішено): TD-023, TD-022, чек-лист TC-087 – TC-090, Revise 8.a (08-test-plan.md, BUG-003, BUG-009, PNG), .claude/skills/verify/logo-focus-check.mjs (не комічено), ризики IP (STRIDE I), рядок .agentic/project.json. Далі — рішення щодо Revise 8.a, потім Stage 8.b.`
+- `2026-11-03 22:29 Stage 8.a (Revise 8.a): власник 22:25 — «Так, Revise 8.a» (REJECTED_REVISING → IN_PROGRESS). Ретест на 8f0f2a5 (RUN-2026-11-03-3, 22:27:02 – 22:27:51): TC-086, TC-078, TC-062, TC-059, TC-068 — Pass; BUG-003, BUG-009 → Verified; TC-061 не повторювався (client.js не змінено з e3fb805). TC-087 – TC-090 відкладено (14:18), ризик не прийнято (L-003). Далі — рев'ю 8.a і гейт.`
+- `2026-11-03 22:36 Stage 8.a (Revise 8.a): рев'ю №1 — BLOCKERS FOUND (TC-068 без підказок, TC-059 без кроків 3–4, пристрій). Виправлено: повтор qa8a-retest.mjs на 8f0f2a5 (22:34:48 – 22:34:57) — TC-059 1–4, TC-068 з підказками, TC-058 Pass; TC-086 — варіант Б; копія сценарію в support/; L-004 — коміт старих рядків 4.0. Далі — рев'ю №2.`
+- `2026-11-03 22:40 Stage 8.a (Revise 8.a): рев'ю №2 — PASS; трасування, BUG і сканер повторено 22:39:32; verify-gate.py --stage 8.a — EXIT 0 (22:40:06). Статус — WAITING_FOR_APPROVAL. На гейт: схвалити ретест; чек-лист TC-087 – TC-090 — прийняти ризик чи виконати перед етапом 9 (L-003).`
+- `2026-11-03 22:43 Stage 8.a (Revise 8.a): власник — «Approve & закоміть 8.a» (APPROVED_AND_COMMITTED). Схвалено ретест (BUG-003, BUG-009 Verified на 8f0f2a5). Відкритими лишаються (L-003, окремо не вирішено): чек-лист TC-087 – TC-090 (ризик не прийнято), TD-022, TD-023, ризики IP (STRIDE I), рядок .agentic/project.json, .claude/skills/verify/**. Далі — Stage 8.b.`

@@ -1,0 +1,45 @@
+{
+ "errors": {
+  "429+CORS": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 1,
+   "onLine": true
+  },
+  "429 без CORS (як CoinGecko)": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 1,
+   "onLine": true
+  },
+  "500+CORS": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 3,
+   "onLine": true
+  },
+  "мережа (abort), онлайн": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 1,
+   "onLine": true
+  },
+  "некоректна форма": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 1,
+   "onLine": true
+  },
+  "офлайн": "goto без мережі неможливий для локального preview — див. примітку"
+ }
+}

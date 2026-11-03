@@ -3,13 +3,16 @@
 - **Етап:** `Stage 8.a: QA A — тест-дизайн і ручне тестування`
 - **Відповідальний скіл:** `qa-engineer`
 - **Дата формування:** `2026-11-03 05:17` (чернетка — 05:10); ретест після Revise №4 етапу 7 — `2026-11-03 05:50`; правки за рев'ю — 06:01 і `14:05` (після коміту етапу 7 `e3fb805`)
-- **Статус аудиту independent-reviewer:** `PASS`
+- **Revise 8.a:** `2026-11-03 22:29` — ретест на коміті етапу 7 `8f0f2a5` (RUN-2026-11-03-3), рішення власника 22:25 «Так, Revise 8.a».
+- **Статус аудиту independent-reviewer:** `PASS` (Revise 8.a, рев'ю №2; рев'ю №1 повернуло блокери, їх виправлено — див. 4.3)
 
 ---
 
 ## 1. Перевірені передумови (Pre-Flight Summary)
 
 Передумови трекера (первинний прогін): етап 4 — `APPROVED_AND_COMMITTED` (старт), етап 7 — `APPROVED_AND_COMMITTED`, коміт `8645c76`. **Після рішення 05:30 етап 7 пройшов Revise №4**: власник схвалив його «Approve & закоміть» — коміт `e3fb805` (2026-11-03 14:00), статус етапу 7 знову `APPROVED_AND_COMMITTED`. Хеш вписано в RUN-2026-11-03-2 і статуси BUG; `git diff --stat e3fb805 -- src` порожній — ретест виконано на тому самому коді. Ще один доказ: хеш бандла `index-B4e6vtFN.js` однаковий у `pnpm verify` 05:34:45 (база ретесту), у повторі рев'юера етапу 7 05:51:58 і в `pnpm verify` 13:59:48 перед комітом. Первинна примітка (гейт, живий прогін). Нічого не встановлювалось: усі інструменти вже були в проєкті з етапів 5 і 7.
+
+**Revise 8.a (2026-11-03 22:29):** передумова — Revise №5 етапу 7 схвалено й закомічено (`8f0f2a5`, 22:25), статус етапу 7 `APPROVED_AND_COMMITTED`. Ретест — на збірці HEAD `8f0f2a5` (`git status --short src` порожній; бандл `index-fiVsxdXU.js`, той самий, що в `verify-gate.py --stage 7 --run` 22:21:53 – 22:23:41). Нічого не встановлювалось.
 
 | Інструмент / SDK / Акаунт | Необхідна версія | Фактичний стан на старті | Запропонована команда | Згода отримана | Результат |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -45,7 +48,7 @@
 - [`.agentic/qa/runs/support/`](../qa/runs/support/) — одноразові сценарії керованих станів (`qa8a.mjs`, `qa8a-extra.mjs`, `qa8a-gaps.mjs`, `busy.mjs`, `name.mjs`) і їхні виводи (`qa8a-out.json`, `qa8a-gaps-out.json`). Запускаються при працюючому `vite preview` :4173: `node .agentic/qa/runs/support/qa8a.mjs`.
 - [`.agentic/qa/bugs/BUG-001.md`](../qa/bugs/BUG-001.md) … [`BUG-009.md`](../qa/bugs/BUG-009.md) — 9 дефектів (BUG-009 — з ретесту).
 - [`.agentic/qa/evidence/BUG-001-429-shows-no-connection-320px.jpg`](../qa/evidence/BUG-001-429-shows-no-connection-320px.jpg) — скриншот живого 429 без CORS.
-- `.agentic/pipeline-state.md` — статус 8.a: `IN_PROGRESS` (04:59) → `WAITING_FOR_APPROVAL` (05:17) → `REJECTED_REVISING` (05:30, рішення власника, ретест) → `IN_PROGRESS` (14:01, після коміту етапу 7 `e3fb805`) → `WAITING_FOR_APPROVAL` (після вердикту рев'ю) — записи в розділі 4 (06:01, 14:01).
+- `.agentic/pipeline-state.md` — статус 8.a: `IN_PROGRESS` (04:59) → `WAITING_FOR_APPROVAL` (05:17) → `REJECTED_REVISING` (05:30, рішення власника, ретест) → `IN_PROGRESS` (14:01, після коміту етапу 7 `e3fb805`) → `WAITING_FOR_APPROVAL` (після вердикту рев'ю) — записи в розділі 4 (06:01, 14:01). Revise 8.a: `APPROVED_AND_COMMITTED` (`93d517f`) → `REJECTED_REVISING` (22:25, «Так, Revise 8.a») → `IN_PROGRESS` (22:29) → `WAITING_FOR_APPROVAL` (після вердикту рев'ю).
 - [`.agentic/reports/08a-qa-manual-report.md`](08a-qa-manual-report.md) — цей звіт.
 
 Продуктовий код, `contract/`, схвалені `.agentic/specs/01-*` … `05-*`, ADR, `acceptance/`, `a11y/` і `.agentic/project.json` не змінювались.
@@ -60,6 +63,17 @@
 - `.agentic/qa/evidence/BUG-001-retest-429-shows-source-error.jpg`, `BUG-007-retest-chart-labels-320px.png`, `BUG-009-broken-logo.png`.
 - Після повторного рев'ю ретесту: `.agentic/qa/bugs/BUG-009.md` (новий, Minor / P3), `.agentic/qa/runs/support/qa8a-offline-logo.mjs` → `qa8a-offline-logo-out.json`; у тест-плані — новий TC-091 (офлайн E-NET) і уточнене очікування TC-078 (UX §8).
 
+### 3.2. Revise 8.a: ретест після Revise №5 етапу 7
+
+Рішення власника: 2026-11-03 14:18 («BUG-003 - ок; BUG-009 - ок; Ручний чек-лист - відкладаємо»), гейт етапу 7 22:25 («Approve & закоміть 7», коміт `8f0f2a5`), 22:25 «Так, Revise 8.a». Нові й змінені файли етапу 8.a:
+
+- [`.agentic/qa/runs/RUN-2026-11-03-3.md`](../qa/runs/RUN-2026-11-03-3.md) — журнал ретесту на `8f0f2a5`: TC-086, TC-078, TC-062, TC-058, TC-059, TC-068 — Pass; TC-061 — не повторювався (причина в журналі).
+- `.agentic/qa/runs/support/qa8a-retest3-errors-out.json`, `qa8a-retest3-logo-out.json`, `qa8a-retest3-flow-out.json` — виводи сценаріїв; `qa8a-retest3-logo.mjs` — копія `.claude/skills/verify/logo-focus-check.mjs` (SHA-256 однаковий), щоб доказ BUG-003 / BUG-009 відтворювався з репозиторію.
+- `.agentic/specs/08-test-plan.md` — TC-086: очікування за варіантом Б BUG-003.
+- `.agentic/qa/evidence/RUN-3-list-320-fallback.png`, `RUN-3-coin-page-focus.png`, `RUN-3-list-after-back.png`; а також `BUG-009-retest-list-320px.png`, `BUG-009-retest-coin-page-focus.png` (попередній ретест 14:24 на незакоміченому дереві).
+- `.agentic/qa/bugs/BUG-003.md`, `BUG-009.md` — статус `Verified` з хешем `8f0f2a5`.
+- `.agentic/specs/08-test-plan.md` — очікування TC-061, TC-062 за запитом на зміну №5 (виняток `fetch` онлайн → E-SRC, 1 запит) і примітка «TC-087 – TC-090 відкладено власником 14:18».
+
 ---
 
 ## 4. Докази працездатності (Verification Evidence)
@@ -68,22 +82,213 @@
 
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 8.a` | 0 | 0 помилок; передумови 4, 7; «Валюта довіри» 14 перевірок; 2 RUN; оракул незмінний; 84 файли правил якості; 191 файл секретів | так (до вердикту: код 1 лише через статус аудиту) | 14:07:37, після вердикту PASS четвертого рев'ю (L-004); вивід — 4.2; первинний прогін 05:17:08 (база `040a537`) — там же |
-| Сканер секретів | `verify-gate.py --scan-secrets .agentic/qa` і `--scan-secrets .agentic/specs/08-test-plan.md` | 0 | 35 + 1 файл, 0 секретів | так | Повтор після ретесту 06:00:02 (первинний 05:09 — 27 + 1); вивід — 4.2 |
-| Вердикт рев'юера | `independent-reviewer` | 0 | четверте рев'ю — PASS (0 BLOCKER, 2 WARNING — виправлено) | так | вивід — 4.3 |
-| Трасування AC → TC | `python -c "<AC з 02-requirements − AC з 08-test-plan>"` (розділ 8 гайду скіла) | 0 | 57 AC, 0 без TC (91 TC) | так (еквівалент через Grep) | Повтор 06:00:02; вивід — 4.2 |
-| Відкриті Blocker / Critical | `python -c "<BUG-*.md із Severity Blocker/Critical і статусом не Verified/Closed>"` | 0 | 9 BUG, 0 відкритих Blocker / Critical | так (еквівалент через Grep) | Повтор 06:00:02, після зміни статусів і BUG-009; лічильник замість `grep -L` (L-001); вивід — 4.2 |
+| Валідатор етапу (Revise 8.a) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 8.a` | 0 | 10 PASS, 0 FAIL: передумови 4, 7; «Валюта довіри» 23; 3 RUN; оракул незмінний; 85 файлів правил якості; 198 файлів секретів | ні | 22:40:06, після вердикту PASS рев'ю №2 (L-004); вивід — 4.2, блок «Revise 8.a — валідатор етапу» |
+| Вердикт рев'юера (Revise 8.a) | субагент `independent-reviewer` | 0 | рев'ю №2 — PASS (0 BLOCKER, 2 WARNING — виправлено); рев'ю №1 — BLOCKERS FOUND (виправлено) | ні | записи — 4.3 |
+| Ретест таблиці помилок (Revise 8.a) | `node .agentic/qa/runs/support/qa8a.mjs errors` | 0 | 5 випадків: 429+CORS 1, 429 без CORS 1, 500 3, обрив онлайн 1, форма 1 запит; усі «Не вдалося отримати ціни» | ні | 22:27:02 – 22:27:43, коміт `8f0f2a5`; вивід — 4.1, блок «Revise 8.a» |
+| Ретест BUG-003, BUG-009, фокус, 320 px (Revise 8.a) | `node .claude/skills/verify/logo-focus-check.mjs <каталог знімків>` (копія — `.agentic/qa/runs/support/qa8a-retest3-logo.mjs`, SHA-256 однаковий) | 0 | 50 рядків, «—» / «немає даних»; 0 зламаних `img`, 50 кружків; фокус мишею без рамки, прокрутка 1500; клавіатурою — рамка 2 px; 5 маршрутів 320 px (iPhone SE, без підказок) — переповнення 0; консоль 0 (без «coin-images» / «ERR_FAILED»), CSP 0 | ні | 22:27:43 – 22:27:51; вивід — 4.1, блок «Revise 8.a» |
+| Ретест потоків (Revise 8.a, після рев'ю 8.a) | `node .agentic/qa/runs/support/qa8a-retest.mjs` | 0 | TC-059 кроки 1–4: h1 у фокусі на 4 екранах; TC-058: `cap` 50 / «sol» 1 / `price` 25; TC-068: 5 маршрутів 320 px (Pixel 7) з кожною підказкою — переповнення 0 | ні | 22:34:48 – 22:34:57, коміт `8f0f2a5`; вивід — 4.1, блок «Revise 8.a — потоки» |
+| Код ретесту = коміт етапу 7 (Revise 8.a) | `git status --short src` (HEAD `8f0f2a5`) | 0 | порожній вивід | ні | 22:39:32; збірка `pnpm build` 22:26 — `index-fiVsxdXU.js` gzip 106.52 kB, той самий хеш, що в `--stage 7 --run`; вивід — 4.2, блок «Revise 8.a» |
+| Трасування AC → TC (Revise 8.a) | `python -c "import re;r=set(re.findall(r'AC-\d+\.\d+',open('.agentic/specs/02-requirements.md',encoding='utf-8').read()));t=set(re.findall(r'AC-\d+\.\d+',open('.agentic/specs/08-test-plan.md',encoding='utf-8').read()));tc=set(re.findall(r'TC-\d+',open('.agentic/specs/08-test-plan.md',encoding='utf-8').read()));print('AC',len(r),'без TC',len(r-t),sorted(r-t),'TC',len(tc))"` | 0 | AC 57, без TC 0, TC 91 | ні | 22:39:32; вивід — 4.2, блок «Revise 8.a» |
+| Відкриті Blocker / Critical (Revise 8.a) | `python -c "import glob,re;b=sorted(glob.glob('.agentic/qa/bugs/BUG-*.md'));t={f:open(f,encoding='utf-8').read() for f in b};o=[f for f in b if any(re.search(r'Severity:\**\s*'+w,t[f]) for w in ('Blocker','Critical')) and not any(re.search(r'Статус:\**\s*'+w,t[f]) for w in ('Verified','Closed'))];v=[f[-10:-3] for f in b if re.search(r'Статус:\**\s*Verified',t[f])];print('BUG',len(b),'відкритих Blocker/Critical',len(o),'Verified',len(v),v)"` | 0 | 9 BUG, 0 відкритих Blocker / Critical, 9 Verified | ні | 22:39:32; лічильник замість `grep -L` (L-001); вивід — 4.2, блок «Revise 8.a» |
+| Сканер секретів (Revise 8.a) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .agentic/qa` і `--scan-secrets .agentic/specs/08-test-plan.md` | 0 | 40 + 1 файл, 0 секретів | ні | 22:39:32; вивід — 4.2, блок «Revise 8.a» |
+| Валідатор етапу (Revise №4, `93d517f`) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 8.a` | 0 | 0 помилок; передумови 4, 7; «Валюта довіри» 14 перевірок; 2 RUN; оракул незмінний; 84 файли правил якості; 191 файл секретів | так (до вердикту: код 1 лише через статус аудиту) | 14:07:37, після вердикту PASS четвертого рев'ю (L-004); вивід — 4.2; первинний прогін 05:17:08 (база `040a537`) — там же |
+| Сканер секретів | `verify-gate.py --scan-secrets .agentic/qa` і `--scan-secrets .agentic/specs/08-test-plan.md` | 0 | 35 + 1 файл, 0 секретів | так | Повтор після ретесту 06:00:02 (первинний 05:09 — 27 + 1); вивід — 4.2; отримано на: дерево Revise №4, закомічене як `e3fb805` |
+| Вердикт рев'юера | `independent-reviewer` | 0 | четверте рев'ю — PASS (0 BLOCKER, 2 WARNING — виправлено) | так | вивід — 4.3; отримано на: Revise №4, дерево `e3fb805`; поточний — рядок «Вердикт рев'юера (Revise 8.a)» |
+| Трасування AC → TC | `python -c "<AC з 02-requirements − AC з 08-test-plan>"` (розділ 8 гайду скіла) | 0 | 57 AC, 0 без TC (91 TC) | так (еквівалент через Grep) | Повтор 06:00:02; вивід — 4.2; отримано на: дерево Revise №4, закомічене як `e3fb805` |
+| Відкриті Blocker / Critical | `python -c "<BUG-*.md із Severity Blocker/Critical і статусом не Verified/Closed>"` | 0 | 9 BUG, 0 відкритих Blocker / Critical | так (еквівалент через Grep) | Повтор 06:00:02, після зміни статусів і BUG-009; лічильник замість `grep -L` (L-001); вивід — 4.2; отримано на: дерево Revise №4, закомічене як `e3fb805` |
 | Збірка | `pnpm build` | 0 | `✓ built`, JS 341.42 kB / gzip 105.66 kB | ні (хук рев'юера відхилив `pnpm build`) | первинний прогін 05:09, база `040a537`, до Revise №4 — збірка ретесту — `pnpm verify` 05:34:45 (етап 7, Revise №4): `index-B4e6vtFN.js` 343.03 kB / gzip 106.25 kB, NFR-5 105.66 kB; Вивід — 4.1, 05:09 |
 | Керовані стани в браузері | `node .agentic/qa/runs/support/qa8a.mjs` | 0 | 12 сценаріїв, 0 `ERROR` | ні | первинний прогін 05:09, база `040a537`, до Revise №4 —  04:55:30 – 04:56:33; лічильник — 4.1 (05:11) |
 | Керовані стани (доповнення) | `node .agentic/qa/runs/support/qa8a-extra.mjs`, `qa8a-gaps.mjs`, `busy.mjs`, `name.mjs` | 0 | extra: 3 блоки + 12 замірів reflow; gaps: 9 ключів, 0 `ERROR`; busy: 1; name: 1 | ні | первинний прогін 05:09, база `040a537`, до Revise №4 —  Перший запуск `qa8a-gaps.mjs` (05:05:05) — EXIT=1 через неточний локатор у самому сценарії; виправлено, повтор 05:05:42 — EXIT=0. Виводи — 4.1 і RUN-2026-11-03 |
 | axe (довідково, NFR-6/7) | `pnpm test:a11y` | 0 | 40 passed, 0 failed | ні | первинний прогін 05:09, база `040a537`, до Revise №4 — повтор після Revise №4 — `pnpm test:a11y` 05:43:30, 40 passed (`.agentic/evidence/debt-checks.md`); Старт 04:58; вивід — 4.1 |
-| Ретест керованих станів | `node qa8a.mjs`, `node qa8a-extra.mjs`, `node name.mjs` (`.agentic/qa/runs/support/`) | 0 | 12 сценаріїв, 0 `ERROR`; E-STORE і C-TAB; ім'я ★ точне | ні | 05:36:27 – 05:37:47; вивід — 4.1 (ретест) |
-| Ретест потоків | `node .agentic/qa/runs/support/qa8a-retest.mjs` | 0 | 12 ключів: стан списку, фокус h1 на 4 екранах, підписи графіка, 5 маршрутів 320 px — переповнення 0 | ні | 05:40:55 – 05:41:04; вивід — RUN-2026-11-03-2 |
-| Ретест офлайн і логотипа | `node .agentic/qa/runs/support/qa8a-offline-logo.mjs` | 0 | TC-091 Pass («Немає з'єднання», `onLine=false`); TC-078 Fail (зламаний логотип, 25 на `#/`) → BUG-009 | ні | 05:56:46 – 05:57:02; перший запуск 05:56:19 некоректний (route відповідав 500 в офлайні) — виправлено; вивід — 4.1 |
+| Ретест керованих станів | `node qa8a.mjs`, `node qa8a-extra.mjs`, `node name.mjs` (`.agentic/qa/runs/support/`) | 0 | 12 сценаріїв, 0 `ERROR`; E-STORE і C-TAB; ім'я ★ точне | ні | 05:36:27 – 05:37:47; вивід — 4.1 (ретест); отримано на: код Revise №4, закомічений як `e3fb805` |
+| Ретест потоків | `node .agentic/qa/runs/support/qa8a-retest.mjs` | 0 | 12 ключів: стан списку, фокус h1 на 4 екранах, підписи графіка, 5 маршрутів 320 px — переповнення 0 | ні | 05:40:55 – 05:41:04; вивід — RUN-2026-11-03-2; отримано на: код Revise №4, закомічений як `e3fb805` |
+| Ретест офлайн і логотипа | `node .agentic/qa/runs/support/qa8a-offline-logo.mjs` | 0 | TC-091 Pass («Немає з'єднання», `onLine=false`); TC-078 Fail (зламаний логотип, 25 на `#/`) → BUG-009 | ні | 05:56:46 – 05:57:02; перший запуск 05:56:19 некоректний (route відповідав 500 в офлайні) — виправлено; вивід — 4.1; отримано на: код Revise №4, закомічений як `e3fb805` |
 | Код ретесту = коміт етапу 7 | `git diff --stat e3fb805 -- src` | 0 | порожній diff | так | 14:00 (після коміту); вивід — 4.2 |
-| Ручний прогін | вбудований браузер + журнал RUN | не застосовно | Первинний прогін (база `040a537`): 90 TC — Pass 76, Fail 9, Not run 5; 8 BUG. Після рев'ю ретесту: 91 TC, 9 BUG. Ретест: 10 TC з BUG — Pass 9, Fail 1 (TC-086, BUG-003); регресія TC-068 Pass; новий TC-091 Pass; TC-078 (уточнене очікування) Fail → BUG-009 | — | Ручна сесія без коду виходу; докази — SES-01 – SES-11, RUN-2026-11-03, RUN-2026-11-03-2 |
+| Ручний прогін | вбудований браузер + журнал RUN | не застосовно | Первинний прогін (база `040a537`): 90 TC — Pass 76, Fail 9, Not run 5; 8 BUG. Після рев'ю ретесту: 91 TC, 9 BUG. Ретест: 10 TC з BUG — Pass 9, Fail 1 (TC-086, BUG-003); регресія TC-068 Pass; новий TC-091 Pass; TC-078 (уточнене очікування) Fail → BUG-009. Revise 8.a (`8f0f2a5`, RUN-2026-11-03-3): TC-086, TC-078, TC-062, TC-058, TC-059, TC-068 — Pass; TC-061 не повторювався; 9 BUG — усі Verified | — | Ручна сесія без коду виходу; докази — SES-01 – SES-11, RUN-2026-11-03, RUN-2026-11-03-2, RUN-2026-11-03-3 |
 
 ### 4.1. Збірка, лінтери та автоматичні тести
+
+**Revise 8.a — потоки (2026-11-03 22:34:48 – 22:34:57, після рев'ю 8.a, `vite preview` :4173, коміт `8f0f2a5`):**
+
+```text
+$ node .agentic/qa/runs/support/qa8a-retest.mjs
+{
+ "firstLoadFocus": "BODY:\n    Перейти до вмістуКрипто-Р",
+ "before": {
+  "rows": 50,
+  "sort": "cap"
+ },
+ "coinFocus": "H1:Bitcoin",
+ "coinActive": "<h1 tabindex=\"-1\" class=\"m-0 font-display text-2xl leading-[30px] font-semibold [&amp;:focus:not(:focus-visible)]:outlin",
+ "chartLabels": "27 жовт.\n3 лист.",
+ "afterBackLink": {
+  "rows": 50,
+  "sort": "cap",
+  "focus": "H1:Топ-50 монет"
+ },
+ "afterHistoryBack": {
+  "query": "sol",
+  "rows": 1,
+  "sort": "cap",
+  "focus": "H1:Топ-50 монет"
+ },
+ "favFocus": "H1:Обрані",
+ "outOfTopFocus": "H1:Монета зараз поза топ-50",
+ "afterReload": {
+  "sort": "price",
+  "query": "",
+  "rows": 25
+ },
+ "mobile": {
+  "#/": 0,
+  "#/coin/bitcoin": 0,
+  "#/coin/tether": 0,
+  "#/favorites": 0,
+  "#/abc": 0
+ },
+ "mobileChartLabels": "27 жовт.\n3 лист."
+}
+EXIT=0
+```
+
+**Revise 8.a — ретест на `8f0f2a5` (2026-11-03 22:27:02 – 22:27:51, `vite preview` :4173):**
+
+```text
+$ node .agentic/qa/runs/support/qa8a.mjs errors        # 22:27:02 – 22:27:43
+{
+ "errors": {
+  "429+CORS": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 1,
+   "onLine": true
+  },
+  "429 без CORS (як CoinGecko)": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 1,
+   "onLine": true
+  },
+  "500+CORS": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 3,
+   "onLine": true
+  },
+  "мережа (abort), онлайн": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 1,
+   "onLine": true
+  },
+  "некоректна форма": {
+   "alert": "Не вдалося отримати ціни\n\nCoinGecko зараз не відповідає, тому ціни не показуємо. Спробуйте ще раз за хвилину.\n\nСпробувати ще раз",
+   "prices": false,
+   "sortPanel": 0,
+   "disclaimer": true,
+   "topRequests": 1,
+   "onLine": true
+  },
+  "офлайн": "goto без мережі неможливий для локального preview — див. примітку"
+ }
+}
+EXIT=0
+$ node .claude/skills/verify/logo-focus-check.mjs <scratchpad>/shots   # 22:27:43 – 22:27:51
+{
+ "list": {
+  "rows": 50,
+  "nullRowChange": "—\nнемає даних",
+  "alert": false,
+  "brokenImgs": 0,
+  "imgs": 0,
+  "fallbacks": 50,
+  "firstFallback": "B"
+ },
+ "mouseToCoin": {
+  "listY": 1500,
+  "text": "Ethena USDe",
+  "focused": true,
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "outlineWidth": "3px",
+  "scrollY": 0
+ },
+ "coinLogo": {
+  "img": false,
+  "fallback": "E",
+  "size": 40
+ },
+ "mouseBackLink": {
+  "text": "Топ-50 монет",
+  "focused": true,
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "outlineWidth": "3px",
+  "scrollY": 1500
+ },
+ "browserBack": {
+  "text": "Топ-50 монет",
+  "focused": true,
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "outlineWidth": "3px",
+  "scrollY": 1500
+ },
+ "keyboard": {
+  "text": "Bitcoin",
+  "focused": true,
+  "focusVisible": true,
+  "outlineStyle": "solid",
+  "outlineWidth": "2px",
+  "scrollY": 0
+ },
+ "keyboardNextTab": "☆Додати в обрані",
+ "nullCoinPage": {
+  "dash": true,
+  "spoken": [
+   "немає даних за 7 днів",
+   "немає даних"
+  ]
+ },
+ "desktop": {
+  "errors": [],
+  "csp": 0
+ },
+ "mobile": {
+  "#/": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/coin/bitcoin": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/coin/binancecoin": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/favorites": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/abc": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "errors": [],
+  "csp": 0
+ }
+}
+EXIT=0
+```
 
 **Ретест після Revise №4** (вивід `qa8a.mjs` / `qa8a-extra.mjs` записано в `%TEMP%/rt-out.json` / `rt-extra.json` і скопійовано в `support/` як `qa8a-retest-out.json` / `qa8a-extra-retest-out.json` — RUN-2026-11-03-2, «Виводи»; збірка — `pnpm verify` 05:34:45, EXIT=0, 252 passed; оракул 91/91 — звіт етапу 7, 4.1):
 
@@ -238,6 +443,62 @@ Retry-After: 36
 
 ### 4.2. Валідація артефактів, контракту, інфраструктури
 
+**Revise 8.a — валідатор етапу (2026-11-03 22:40:06, після вердикту PASS рев'ю №2, повний вивід):**
+
+```text
+$ python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 8.a
+
+=== Перевірка етапу: Stage 8.a ===
+ℹ️  [INFO] QA, частина A: тест-дизайн і ручне тестування — скіл qa-engineer
+✅ [PASS] Передумови схвалено: 4, 7
+ℹ️  [INFO] Перевірка звіту: .agentic/reports/08a-qa-manual-report.md
+✅ [PASS] Статус аудиту independent-reviewer: PASS
+✅ [PASS] «Валюта довіри»: 23 перевірок із кодами виходу
+✅ [PASS] Карта технологій заповнена (5 рядків)
+✅ [PASS] Conventional Commit у секції 7 валідний
+✅ [PASS] Артефакт .agentic/specs/08-test-plan.md знайдено
+✅ [PASS] Артефакт '.agentic/qa/runs/RUN-*.md': 3 файлів
+
+=== Оракул (приймальні тести) — режим protect ===
+✅ [PASS] Оракул незмінний від коміту етапу 6 (f1ac4b57)
+
+=== Правила якості коду: . ===
+✅ [PASS] Перевірено файлів: 85, порушень-помилок немає
+
+=== Сканування секретів: . ===
+ℹ️  [INFO] Проскановано файлів: 198
+✅ [PASS] Відкритих секретів не виявлено
+
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+```
+
+**Revise 8.a — перевірки артефактів (2026-11-03 22:39:32, повтор після правок рев'ю №1; попередні запуски 22:28:50 і 22:30:20 — до заміни команди Blocker / Critical і до додавання 2 файлів у `.agentic/qa`):**
+
+```text
+22:39:32
+$ python -c "<трасування AC → TC: див. команду в 4.0>"
+AC 57 без TC 0 [] TC 91
+EXIT=0
+$ python -c "<відкриті Blocker / Critical: див. команду в 4.0>"
+BUG 9 відкритих Blocker/Critical 0 Verified 9 ['BUG-001', 'BUG-002', 'BUG-003', 'BUG-004', 'BUG-005', 'BUG-006', 'BUG-007', 'BUG-008', 'BUG-009']
+EXIT=0
+$ verify-gate.py --scan-secrets .agentic/qa
+=== Сканування секретів: .agentic/qa ===
+ℹ️  [INFO] Проскановано файлів: 40
+✅ [PASS] Відкритих секретів не виявлено
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+$ verify-gate.py --scan-secrets .agentic/specs/08-test-plan.md
+=== Сканування секретів: .agentic/specs/08-test-plan.md ===
+ℹ️  [INFO] Проскановано файлів: 1
+✅ [PASS] Відкритих секретів не виявлено
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+$ git status --short src
+EXIT=0
+```
+
 **Збіг перевіреного коду з комітом етапу 7:**
 
 ```text
@@ -374,6 +635,34 @@ EXIT=0
 
 ### 4.3. Вердикт незалежного аудиту (`independent-reviewer`)
 
+**Рев'ю Revise 8.a №2 (поточний вердикт):**
+```text
+Рев'ю Revise 8.a №2 (після виправлень рев'ю №1): PASS — independent-reviewer, 2026-11-03 (після 22:36:37 — mtime звіту й трекера; команду `date` хук рев'юера відхилив, час узято з git log і mtime), Stage 8.a.
+Закриття рев'ю №1: BLOCKER (TC-068 без підказок і без #/coin/tether, TC-059 без кроків 3–4, пристрій) — закрито. qa8a-retest.mjs не змінено відносно HEAD, його вивід qa8a-retest3-flow-out.json (mtime 22:35:06) збігається з 4.1 «потоки» поле в поле: firstLoadFocus BODY; Bitcoin, «Топ-50 монет» ×2, «Обрані», «Монета зараз поза топ-50» (#/coin/kaspa); TC-058 cap 50 / «sol» 1 / price 25; Pixel 7 320×640 — 0 на #/, #/coin/bitcoin, #/coin/tether, #/favorites, #/abc. Сценарій відкриває кожну «Що означає …?» (ім'я збігається з src/ui/TermHintButton.jsx:80). У RUN-3 пристрій logo-скрипта — iPhone SE, як у коді. WARNING рев'ю №1 закрито: TC-086 — варіант Б (діф тест-плану, очікування посилено: 50 монет замість 49); сортування з null — секція 6, тест «BUG-003: монета без зміни (null)…» є в src/lib/lib.test.js:122; «місце 41» уточнено «ретест — місце 4» (M[3]); копія сценарію ідентична оригіналу (`git diff --no-index` порожній); старі рядки 4.0 позначено e3fb805 / 040a537; секція 1 — 8f0f2a5; трекер — «Поточний активний етап» і запис 22:36. INFO закрито: хвости BUG-003 / BUG-009, фільтр консолі в RUN-3.
+BUG-007-retest-chart-labels-320px.png: `git diff --stat HEAD` порожній, у `git status` файла немає, mtime 22:36:07 — відновлено.
+Межі етапу: 15 файлів 7.1 = git add 7.2 = фактичний git status без чужих змін. Чужі зміни: project.json (holdouts_command), 01–02 — лише закінчення рядків, у diff --stat їх немає; .claude/skills/verify/. `git diff --stat HEAD -- src acceptance a11y contract package.json pnpm-lock.yaml index.html vite.config.js public scripts` порожній. `git status` до і після аудиту однаковий.
+Секрети: --scan-secrets .agentic/qa — 40 файлів, 0 (у звіті 38 на 22:30:20, до додавання 2 файлів); --scan-secrets . у складі --stage — 198 файлів, 0; Grep за password|secret|token|api_key|authorization:|cookie: у .agentic/qa/runs — 0.
+Залежності: нових немає. Правила якості: --stage 8.a — 85 файлів, 0 помилок; оракул незмінний від f1ac4b57. Контракт: не застосовно — has_http_api: false (ADR 0001).
+Повторний запуск: verify-gate.py --stage 8.a — код 1, єдина помилка — статус аудиту; «Валюта довіри» 23 перевірки, RUN-* 3 файли. Повторено з рядків 4.0: «Трасування» (еквівалент Grep) — 57 AC у матриці тест-плану, 57 тегів AC у 02-requirements, 91 рядок TC; «Відкриті Blocker / Critical» (Grep) — 9 Verified, Severity Blocker/Critical 0; «Сканер секретів» — 40 + перевірка всього дерева, 0; «Код ретесту = коміт етапу 7» — diff src порожній. Не перевірено повторно (хук read-only, потрібен vite preview, сценарій пише у файл під Git): node qa8a*.mjs, logo-focus-check.mjs, pnpm build; їхні виводи звірено з JSON у support/ — 4.1 збігається з qa8a-retest3-errors-out.json, qa8a-retest3-logo-out.json, qa8a-retest3-flow-out.json і з RUN-3.
+Узгодженість (L-002): TC-062 і TC-061 відповідають UX §3 E-SRC (04-ux-and-contract.md:127, запит №5); очікувань не послаблено. Невідповідності: секція 3.2 і рядок «Ручний прогін» без TC-058 / RUN-3 (WARNING); рядки 4.0 від 22:30:20 раніші за правки 22:35 (WARNING).
+Трасування: 57/57 AC мають TC; TC-086 → BUG-003 Verified, TC-078 → BUG-009 Verified (8f0f2a5); TC-087 – TC-090 відкладено власником 14:18, ризик не прийнято (L-003).
+Зауваження: 0 BLOCKER, 2 WARNING (повторити трасування, лічильник BUG і сканер після правок 22:35 — сканер 40 + 1; додати TC-058 / RUN-3 у секцію 3.2 і рядок «Ручний прогін»), 5 INFO (кількість відкритих підказок не логується — для 8.b; qa8a-retest.mjs пише в закомічений PNG — у 8.b не використовувати без правки шляху; фільтр ERR_FAILED; pnpm build без блоку виводу; date відхилено хуком).
+Після вердикту (автор, 2026-11-03 22:39 – 22:40): трасування, лічильник BUG і сканер повторено о 22:39:32 (57/57 AC, 91 TC; 9 Verified, 0 Blocker/Critical; сканер 40 + 1, 0) — блок 4.2 і рядки 4.0 оновлено; TC-058 і RUN-2026-11-03-3 додано в 3.2 і рядок «Ручний прогін».
+```
+
+**Рев'ю Revise 8.a №1 (після Revise №5 етапу 7, BLOCKERS FOUND):**
+```text
+Рев'ю Revise 8.a (після Revise №5 етапу 7): BLOCKERS FOUND — independent-reviewer, 2026-11-03 (після 22:30:20 — найпізнішої позначки звіту; команду `date` хук рев'юера відхилив), Stage 8.a.
+Межі етапу: 13 файлів етапу — збігаються із 7.1 і git add 7.2; HEAD 8f0f2a5; `git status --short src` порожній; чужі зміни (project.json, 01–02, .claude/skills/verify/) у git add не входять; dist ігнорується.
+Секрети: --scan-secrets .agentic/qa — 38 файлів, 0; 08-test-plan.md — 1, 0; --scan-secrets . (у складі --stage) — 196, 0. Залежності: нових немає. Правила якості: 85 файлів, 0; оракул незмінний від f1ac4b57. Контракт: не застосовно.
+Повторний запуск: --stage 8.a — код 1, лише статус аудиту; трасування (Grep) 57/57 AC, 91 TC; BUG 9 Verified, Blocker/Critical 0; client.js не змінено з e3fb805 — підстава не повторювати TC-061 підтверджена. 4.1 збігається з JSON у support/; TC-062 відповідає UX §3 (a6719e0) і NFR-3 (9417669), очікування не послаблено.
+BLOCKER: RUN-3 позначає TC-068 Pass без кроку 2 (жодна підказка не відкрита) і без #/coin/tether, TC-059 — Pass без кроків 3–4; пристрій записано як Pixel 7, а сценарій — iPhone SE.
+WARNING: TC-086 у тест-плані не оновлено під варіант Б; немає TC на сортування з null (byChange); передумова «місце 41» проти M[3]. logo-focus-check.mjs, на якому тримається Verified, не комітиться. Старі рядки 4.0 з кодом 0 без коміту, на якому отримано (L-004). Застаріле: секція 1 без 8f0f2a5, ланцюжок статусів 8.a до 14:01, трекер «Поточний активний етап: Stage 8.b».
+INFO: хвіст «Verified — після коміту Revise №5 із хешем» у BUG-003 / BUG-009; фільтр «ERR_FAILED» у сценарії; pnpm build 22:26 без блоку виводу (хеш збігається зі звітом етапу 7).
+Після вердикту (автор, 2026-11-03 22:34 – 22:36): повтор `qa8a-retest.mjs` на 8f0f2a5 (22:34:48 – 22:34:57, EXIT=0): TC-059 кроки 1–4, TC-068 з кожною підказкою і #/coin/tether (Pixel 7, 320×640), TC-058 — Pass; RUN-3, 4.0, 4.1 (блок «потоки»), секція 5 оновлено; пристрій — iPhone SE для logo-скрипта; TC-086 — очікування варіанта Б; сортування з null — секція 6 (модульний тест lib.test.js, E2E — 8.b); копія сценарію — support/qa8a-retest3-logo.mjs (SHA-256 однаковий); старі рядки 4.0 — коміт e3fb805; секція 1, ланцюжок статусів, трекер; хвости BUG; фільтр консолі — RUN-3. Побічний ефект повтору: qa8a-retest.mjs перезаписав закомічений BUG-007-retest-chart-labels-320px.png — відновлено `git restore` (22:36), у коміт не йде.
+```
+
+
 ```text
 PASS — independent-reviewer, 2026-11-03 (після 05:11; команду `date` хук рев'юера відхилив, час — не перевірено повторно), Stage 8.a.
 Межі етапу: 37 нових файлів етапу (08-test-plan.md, 11 SES, RUN-2026-11-03.md, 7 файлів support/, 8 BUG, 1 jpg, звіт) + .agentic/pipeline-state.md. Diff трекера стосується лише 8.a: поточний етап, «Останнє оновлення» 04:59, рядок матриці 8.a PENDING → IN_PROGRESS, запис 04:59. `git diff --stat HEAD -- src acceptance a11y contract package.json pnpm-lock.yaml` порожній. Оракул не змінювався від коміту етапу 6 8720a047 (--stage 8.a). Чужі зміни (project.json: holdouts_command; 01–03; .claude/skills/) у git add секції 7.2 не входять. dist, test-results, playwright-report, node_modules ігноруються (git check-ignore). `git status` до і після аудиту однаковий.
@@ -442,7 +731,7 @@ PASS — independent-reviewer, 2026-11-03 (після 14:05 — часу пра�
 | AC-2.4 | Рівні значення — за місцем | `src/lib/sort.js` | TC-009 | ✅ Pass після Revise №4 (BUG-004 Verified) |
 | AC-3.1 – AC-3.9 | Пошук | `src/features/coin-list/ListToolbar.jsx`, `src/lib/` | TC-014 – TC-022, SES-03 | ✅ Pass |
 | AC-4.1 | Дані й графік за 7 днів | `src/features/coin-page/`, `src/chart/PriceChart7d.jsx` | TC-023 | ✅ Pass після Revise №4 (BUG-007 Verified) |
-| UX §8 | Логотип не завантажився → кружок з першою літерою | `src/features/coin-page/CoinHeader.jsx`, `src/features/coin-list/CoinParts.jsx` | TC-078 | ❌ Fail → BUG-009 (Minor / P3), на рішення власника |
+| UX §8 | Логотип не завантажився → кружок з першою літерою | `src/features/coin-page/CoinHeader.jsx`, `src/features/coin-list/CoinParts.jsx` | TC-078 | ✅ Pass після Revise №5 етапу 7 (BUG-009 Verified, RUN-2026-11-03-3; спільний `src/ui/CoinLogo.jsx`) |
 | AC-4.2 – AC-4.4 | Без інших періодів, межа топ-50, з пошуку | `src/features/coin-page/` | TC-024 – TC-026, SES-04 | ✅ Pass |
 | AC-5.1 – AC-5.7 | Обрані: додати, прибрати, межі | `src/favorites/`, `FavoriteToggle` | TC-027 – TC-033, SES-05 | ✅ Pass (BUG-008 Verified) |
 | AC-6.1 – AC-6.7 | Обрані між візитами | `src/features/favorites-view/`, `src/favorites/` | TC-034 – TC-040, SES-06 | ✅ Pass |
@@ -452,33 +741,34 @@ PASS — independent-reviewer, 2026-11-03 (після 14:05 — часу пра�
 | AC-10.1 | Тема як на пристрої | `public/theme-init.js` | TC-075 | ✅ Pass (US-10 — Should, спринт 2) |
 | AC-10.2 | Перемикання теми | — (спринт 2) | TC-076 | Not run — поза спринтом 1 |
 | UX §1 | Стан списку в межах вкладки | `src/features/coin-list/` | TC-058, SES-04, SES-10 | ✅ Pass після Revise №4 (BUG-002 Verified) |
-| UX §4 2.4.3 | Фокус на h1 після зміни маршруту | `src/app/`, `src/features/*` | TC-059 | ✅ Pass після Revise №4 (BUG-005 Verified) |
+| UX §4 2.4.3 | Фокус на h1 після зміни маршруту | `src/app/`, `src/features/*` | TC-059 | ✅ Pass після Revise №4 (BUG-005 Verified); повтор кроків 1–4 на `8f0f2a5` — Pass (RUN-2026-11-03-3) |
 | UX §3 E-STORE | ★ у пам'яті вкладки | `src/favorites/store.js` | TC-083, TC-084 | ✅ Pass після Revise №4 (BUG-006 Verified) |
 | NFR-1 | Свіжість ≤ 5 хв | `src/market-data/` | TC-050, TC-051 | ✅ Pass |
-| NFR-1 / US-8 / ADR 0005 | Неповна монета не кладе весь знімок | `src/market-data/parse.js` | TC-086 | ❌ Fail → BUG-003 (Major / P2), Confirmed — запит на зміну №4 (ADR 0005) |
-| NFR-3 | Ліміт запитів, 429 без повторів | `src/market-data/client.js` | TC-061 – TC-063, TC-091 | ✅ Pass після Revise №4 (BUG-001 Verified; офлайн-гілка — TC-091) |
+| NFR-1 / US-8 / ADR 0005 | Неповна монета не кладе весь знімок | `src/market-data/parse.js` | TC-086 | ✅ Pass після Revise №5 етапу 7 (BUG-003 Verified, варіант Б: `null` → «—», RUN-2026-11-03-3) |
+| NFR-3 | Ліміт запитів, 429 без повторів | `src/market-data/client.js` | TC-061 – TC-063, TC-091 | ✅ Pass після Revise №4 (BUG-001 Verified; офлайн-гілка — TC-091); TC-062 повторено на `8f0f2a5` за UX §3 після запиту №5 — Pass |
 | NFR-6, NFR-7 | WCAG 2.2 AA, 320 px | весь UI | TC-065 – TC-074, TC-082, `pnpm test:a11y` 40/40, SES-11 | ✅ Pass (BUG-005 Verified після Revise №4); зчитувач — TC-087 власник |
 | NFR-8, NFR-10, NFR-13, NFR-16 | CSP, приватність, консоль, атрибуція | `index.html` (збірка), `Layout.jsx` | TC-055, TC-064, TC-080, TC-081 | ✅ Pass |
-| NFR-14 | Браузери | — | TC-088, TC-089 | ⏳ Not run — чек-лист власника |
+| NFR-14 | Браузери | — | TC-088, TC-089 | ⏳ Not run — відкладено власником 2026-11-03 14:18; ризик не прийнято (L-003) |
 
 ## 6. Ризики, технічний борг і відкриті питання
 
-**Критерії виходу (тест-план, розділ 4):** Blocker / Critical — 0 ✅; axe 0 critical / serious ✅; 100 % Must TC, які може виконати агент, — виконано (72 з 74; TC-087, TC-088 чекають власника) ⚠️; рішення власника (05:30): BUG-001, BUG-002 виправлено й підтверджено ретестом; **відкритий Major лише BUG-003** — чекає вибору варіанта запиту на зміну №4; TC-087 – TC-090 — рішення «виконати / відкласти» не дано. До цих двох рішень критерії виходу не виконано.
+**Критерії виходу (тест-план, розділ 4), Revise 8.a:** Blocker / Critical — 0 ✅; axe 0 critical / serious ✅ (`pnpm test:a11y` у `--stage 7 --run` 22:21 – 22:23); усі 9 BUG — `Verified` ✅; 100 % Must TC, які може виконати агент, — виконано (72 з 74) ⚠️: TC-087, TC-088 (чек-лист власника) **відкладено рішенням власника 2026-11-03 14:18** — не виконано й не пройдено, ризик не прийнято (L-003). Критерій виходу «100 % Must» не виконано лише через ці два TC; рішення — на гейті 8.a.
 
 | Тип | Опис | Вплив | Що пропонується | Власник рішення |
 | :--- | :--- | :--- | :--- | :--- |
 | Дефект → Verified (Revise №4, ретест RUN-2026-11-03-2) | **BUG-001** (Major / P1): 429 CoinGecko без CORS → «Немає з'єднання» + 2 повтори (3 запити під лімітом) | Високий: ліміт — щоденна ситуація без ключа; хибна порада, подовження блокування; NFR-3 порушено | Варіант 1 з BUG-001: E-NET лише при `navigator.onLine === false`, інакше «Не вдалося отримати ціни» без повторів → Revise етапу 7. Для 8.b: тест через `route.abort` при `onLine=true` | Власник продукту → етап 7 |
 | Дефект → Verified (Revise №4, ретест RUN-2026-11-03-2) | **BUG-002** (Major / P2): повернення зі сторінки монети скидає сортування, пошук і «Показати більше» | Середній: головний шлях JTBD-1 втрачає контекст | Revise етапу 7 (стан списку в пам'яті вкладки за UX §1) | Власник продукту → етап 7 |
-| Дефект (відкритий) | **BUG-003** (Major / P2): одна монета з `null` у полі → увесь список у помилці | Середній (імовірність — припущення, перевірити за документацією CoinGecko): поки монета в топ-50, продукт недоступний | Відкидати неповну монету (або показувати без зміни), а весь знімок — лише при < 50 валідних; за потреби — уточнення ADR 0005 (етап 3) | Власник продукту → етап 7 / 3 |
+| Дефект → Verified (Revise №5 етапу 7, ретест RUN-2026-11-03-3) | **BUG-003** (Major / P2): одна монета з `null` у полі → увесь список у помилці | Середній | Варіант Б (тлумачення «BUG-003 - ок», підтверджено гейтом етапу 7 22:25): `null` у зміні за 7 днів → «—», монета лишається; документи (§6 архітектури, UX §3 / §5.2, TC-086) — TD-022, відкритий | Власник продукту → етап 7 |
 | Дефект → Verified (Revise №4, ретест RUN-2026-11-03-2) | **BUG-004** (Minor / P2): рівні показані значення не за місцем у рейтингу (AC-2.4) | Низький | Сортувати за округленим значенням (як бачить відвідувач) або уточнити AC-2.4 (етап 2) | Власник продукту → етап 7 / 2 |
 | Дефект → Verified (Revise №4, ретест RUN-2026-11-03-2) | **BUG-005** (Minor / P3), **BUG-006** (Minor / P3), **BUG-007** (Minor / P3), **BUG-008** (Trivial / P3) | Низький | Пакетом у наступному Revise етапу 7 або в спринті 2 | Власник продукту → етап 7 |
 | Ризик | Фікстура Playwright і оракул (jsdom) не відтворюють блокування CORS — клас дефектів BUG-001 невидимий для автотестів | Середній | На 8.b: сценарій з `route.abort` при `onLine=true` і перевіркою кількості запитів; живий smoke на staging (етап 9) | Етап 8.b |
 | Питання | Вибула з топ-50 монета в «Обраних» показується за id CoinGecko (`moneta-x`, у житті — `avalanche-2`), бо сховище має лише id (ADR 0004, P-1) | Низький | Залишити (рішення P-1) або зберігати назву поруч з id — запит на зміну ADR 0004 | Власник продукту |
 | Рішення | План етапу 8.a і вибір секції 2 — підтверджено власником (трекер 2026-11-03 05:30) | — | — | Власник продукту |
-| Дефект (відкритий) | **BUG-009** (Minor / P3, новий): логотип, що не завантажився, — значок зламаного зображення замість кружка з літерою (UX §8); TC-078 | Низький | Окремий Revise етапу 7 або спринт 2 | Власник продукту → етап 7 |
-| Спостереження | Після Revise №4: видима рамка фокуса на h1 після переходу й прокрутка списку до h1 після повернення (Red-Team №7, 7.4.1) | Низький | Рішення на гейті етапу 7 | Власник продукту |
+| Дефект → Verified (Revise №5 етапу 7, ретест RUN-2026-11-03-3) | **BUG-009** (Minor / P3): логотип, що не завантажився, — значок зламаного зображення замість кружка з літерою (UX §8); TC-078 | Низький | Виправлено спільним `src/ui/CoinLogo.jsx` | Власник продукту → етап 7 |
+| Спостереження → вирішено (Revise №5 етапу 7) | Після Revise №4: видима рамка фокуса на h1 після переходу й прокрутка списку до h1 після повернення | Низький | Рамка лише при `:focus-visible`, прокрутка списку зберігається (TC-059, RUN-2026-11-03-3); залишок — TD-023 (фокус на h1 поза екраном після повернення), відкритий, на рішення власника | Власник продукту |
+| Прогалина тест-плану | Сортування за зміною за 7 днів, коли в монети `null` (`src/lib/sort.js`, `byChange`: `null` у кінці за обох напрямів, змінено в `8f0f2a5`) — окремого TC немає, вручну не перевірялось | Низький | Покрито модульним тестом `src/lib/lib.test.js` («BUG-003: монета без зміни (null) — у кінці за зростанням і за падінням»); E2E — етап 8.b; документи — TD-022 | Етап 8.b |
 | Ризик | Під час ретесту CoinGecko знову відповідав 429 без CORS (05:38): ліміт без ключа досягається за кілька хвилин активного тестування | Середній | E2E етапу 8.b — лише на фікстурі; живий smoke — рідко, з паузами | Етап 8.b |
-| Чек-лист | TC-087 (зчитувач), TC-088 (Safari iOS), TC-089 (Firefox, Edge), TC-090 (зрозумілість підказок) | Середній (NFR-14, WCAG 4.1.3) | Власник виконує за тест-планом, результат — новий файл RUN з позначкою «виконав: власник продукту»; або явне рішення відкласти | Власник продукту |
+| Чек-лист (відкладено) | TC-087 (зчитувач), TC-088 (Safari iOS), TC-089 (Firefox, Edge), TC-090 (зрозумілість підказок) | Середній (NFR-14, WCAG 4.1.3) | Відкладено рішенням власника 2026-11-03 14:18; не виконано; ризик **не прийнято** (L-003) — підтвердити на гейті: прийняти ризик чи виконати перед етапом 9 | Власник продукту |
 | Спостереження | `aria-busy` у стані Loading стоїть на обгортці екрана всередині `<main>`, а не на `<main>` (UX §3); статус «Нічого не знайдено» обгортає й кнопку «Очистити пошук» | Низький | Перевірити зчитувачем у TC-087; без BUG до результату | Власник продукту |
 | Не застосовно | Контракт API, фазинг, BOLA, сесії, тестові акаунти | — | `has_http_api: false`, входу немає (ADR 0001, 0002) | — |
 | Борг | Нового запису в `.agentic/tech-debt.md` етап не додає: знахідки оформлено як BUG | — | — | — |
@@ -498,19 +788,30 @@ PASS — independent-reviewer, 2026-11-03 (після 14:05 — часу пра�
 ### 7.1. Список файлів для індексації (`git status --short`)
 ```text
  M .agentic/pipeline-state.md
-?? .agentic/qa/
-?? .agentic/specs/08-test-plan.md
-?? .agentic/reports/08a-qa-manual-report.md
+ M .agentic/qa/bugs/BUG-003.md
+ M .agentic/qa/bugs/BUG-009.md
+ M .agentic/reports/08a-qa-manual-report.md
+ M .agentic/specs/08-test-plan.md
+?? .agentic/qa/evidence/BUG-009-retest-coin-page-focus.png
+?? .agentic/qa/evidence/BUG-009-retest-list-320px.png
+?? .agentic/qa/evidence/RUN-3-coin-page-focus.png
+?? .agentic/qa/evidence/RUN-3-list-320-fallback.png
+?? .agentic/qa/evidence/RUN-3-list-after-back.png
+?? .agentic/qa/runs/RUN-2026-11-03-3.md
+?? .agentic/qa/runs/support/qa8a-retest3-errors-out.json
+?? .agentic/qa/runs/support/qa8a-retest3-flow-out.json
+?? .agentic/qa/runs/support/qa8a-retest3-logo-out.json
+?? .agentic/qa/runs/support/qa8a-retest3-logo.mjs
 ```
 
-`.agentic/qa/` включає ретест (RUN-2026-11-03-2, нові виводи й скриншоти, BUG-009). Код Revise №4 закомічено комітом етапу 7 `e3fb805` (14:00); трекер — у коміт 8.a.
+Попередні коміти етапу: `93d517f` (Revise №4). Код Revise №5 закомічено комітом етапу 7 `8f0f2a5` (22:25); трекер — у коміт 8.a (у ньому ще хеш `8f0f2a5`, вписаний після коміту етапу 7).
 
-Чужі незакомічені зміни, які в коміт етапу не йдуть: `.agentic/project.json`, `.agentic/reports/01-…03-*`, `.agentic/specs/01-…03-*`, `.claude/skills/`.
+Чужі незакомічені зміни, які в коміт етапу не йдуть: `.agentic/project.json` (`holdouts_command`, сесія власника), `.agentic/reports/01–02`, `.agentic/specs/01–02` (лише закінчення рядків), `.claude/skills/` (сценарій `logo-focus-check.mjs` не комітиться — пункт гейту етапу 7; його копію для відтворення доказу комітить 8.a як `.agentic/qa/runs/support/qa8a-retest3-logo.mjs`).
 
 ### 7.2. Явна індексація та коміт (Conventional Commits)
 ```bash
-git add -- .agentic/specs/08-test-plan.md .agentic/qa/sessions .agentic/qa/runs .agentic/qa/bugs .agentic/qa/evidence .agentic/reports/08a-qa-manual-report.md .agentic/pipeline-state.md
-git commit -m "test(stage-8.a): add test plan, manual test run and defect reports"
+git add -- .agentic/specs/08-test-plan.md .agentic/qa/bugs/BUG-003.md .agentic/qa/bugs/BUG-009.md .agentic/qa/evidence/BUG-009-retest-coin-page-focus.png .agentic/qa/evidence/BUG-009-retest-list-320px.png .agentic/qa/evidence/RUN-3-coin-page-focus.png .agentic/qa/evidence/RUN-3-list-320-fallback.png .agentic/qa/evidence/RUN-3-list-after-back.png .agentic/qa/runs/RUN-2026-11-03-3.md .agentic/qa/runs/support/qa8a-retest3-errors-out.json .agentic/qa/runs/support/qa8a-retest3-flow-out.json .agentic/qa/runs/support/qa8a-retest3-logo-out.json .agentic/qa/runs/support/qa8a-retest3-logo.mjs .agentic/reports/08a-qa-manual-report.md .agentic/pipeline-state.md
+git commit -m "test(stage-8.a): retest bug-003 and bug-009 after stage 7 revise"
 ```
 
 ---
@@ -521,7 +822,12 @@ git commit -m "test(stage-8.a): add test plan, manual test run and defect report
 - [ ] **Approve без коміту** — статус `APPROVED_MANUAL_COMMIT`: власник комітить самостійно.
 - [ ] **Revise** — статус `REJECTED_REVISING`: зауваження нижче, етап повертається на Фазу 3.
 
-**Передумова виконана:** Revise №4 етапу 7 схвалено й закомічено (`e3fb805`, 14:00).
+**Revise 8.a (2026-11-03 22:29) — передумова виконана:** Revise №5 етапу 7 схвалено й закомічено (`8f0f2a5`, 22:25). **На цьому гейті:**
+
+1. Схвалити ретест: BUG-003 і BUG-009 — `Verified` (RUN-2026-11-03-3); TC-061, TC-062 — за запитом на зміну №5.
+2. Чек-лист TC-087 – TC-090 (відкладено 14:18): прийняти ризик (L-003) чи виконати перед етапом 9.
+
+**Попередній гейт (Revise №4):** передумова — `e3fb805`, 14:00.
 
 **Перший гейт (05:17) — рішення власника 05:30:** «виправ все згідно твоїм рекомендаціям» (розклад — трекер). **Окремо на повторному гейті:**
 
@@ -538,4 +844,5 @@ git commit -m "test(stage-8.a): add test plan, manual test run and defect report
 5. Чек-лист TC-087 – TC-090: виконаєте ви чи відкласти.
 
 **Коментарі / Зауваження:**
-> 
+> 2026-11-03 22:25: власник — «Так, Revise 8.a» (після гейту етапу 7); статус `REJECTED_REVISING`, чекбокси знову порожні до гейту. 
+> 2026-11-03 22:43: власник — «Approve & закоміть 8.a» (Revise 8.a). Схвалено пункт 1 (ретест, BUG-003 і BUG-009 Verified). Пункт 2 (чек-лист TC-087 – TC-090) окремо не вирішено — лишається відкритим, ризик не прийнято (L-003).
