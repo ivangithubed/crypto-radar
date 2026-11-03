@@ -10,7 +10,7 @@
 - **Проєкт:** `Крипто-Радар`
 - **Поточний активний етап:** `Stage 8.a / 8.b: очікують старту`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-03 04:21`
+- **Останнє оновлення:** `2026-11-03 04:41`
 
 ---
 
@@ -24,7 +24,7 @@
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b` |
-| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | — |
+| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76` |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `PENDING` | `.agentic/reports/08a-qa-manual-report.md` | — |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
@@ -55,7 +55,7 @@
 | **7 (чекпоінти)** | `2026-11-03 00:24–00:41` | `62fe221`, `3bc6ee3`, `ccaddfb`, `871334b` | `chore(stage-7): checkpoint before wave 1…4` | `Власник продукту` (згода 00:23) |
 | **5 (Revise №2)** | `2026-11-03 01:47` | `d7d162e` | `ci(stage-5): run acceptance oracle in ci and resolve package exports` | `Власник продукту` |
 | **6 (Revise №3)** | `2026-11-03 03:23` | `8720a04` | `test(stage-6): allow IP abbreviation in AC-9.3 latin whitelist` | `Власник продукту` |
-| **7** | `2026-11-03 04:21` | див. `git log` | `feat(stage-7): implement sprint 1 mvp screens and data layer` | `Власник продукту` |
+| **7** | `2026-11-03 04:21` | `8645c76` | `feat(stage-7): implement sprint 1 mvp screens and data layer` | `Власник продукту` |
 
 ---
 
@@ -125,3 +125,4 @@
 - `2026-11-03 03:23 Stage 6 (Revise №3, запит №3): власник написав «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» → «Approve & закоміть» (APPROVED_AND_COMMITTED). Коміт: test(stage-6): allow IP abbreviation in AC-9.3 latin whitelist. Рішення про розбіжність часу звіту етапу 4 (трекер — джерело правди) прийнято на гейті етапу 5 і діє для етапу 6.`
 - `2026-11-03 03:24 Stage 7: verify-gate.py --stage 7 --run після вердикту PASS рев'ю №2 і гейту етапу 6 — код 0 (24 PASS, 1 WARN: приховані сценарії власника не задано). Статус WAITING_FOR_APPROVAL; етап винесено на гейт.`
 - `2026-11-03 04:21 Stage 7: власник — «Approve & закоміть» (APPROVED_AND_COMMITTED). Перед комітом скіл verify: pnpm verify 0, test:a11y 40/40, vitals 0, маршрути й 320 px без переповнення, 0 порушень CSP. CoinGecko під час перевірки відповідав 429 без заголовків CORS → застосунок показав «Немає з'єднання» (ризик розділу 6 звіту підтверджено, перевірка на 8.a / 8.b). Пункти 1–6 блоку гейту власник не вирішив — лишаються відкритими (TD-003, TD-004, TD-020, шрифти, компроміс ручного повтору, приховані сценарії, design-ref і SKILL.md) до окремого рішення; жоден не позначено «прийнятим» (L-003).`
+- `2026-11-03 04:41 Stage 7 (пункти 1–6 гейту): власник — «Прийми рекомендації». (1) TD-003 і TD-004 закрито. (2) TD-020: виняток для першого завантаження в NFR-3 (preload і перший запит стейблкоїнів у прихованій вкладці допустимі; поллер — як є) — текст NFR-3 змінює запит на зміну етапу 3 через project-kickoff, до того TD-020 відкритий. (3) Відхилення шрифтів від плану §4 (усі підмножини @fontsource у dist/, браузер вантажить 10 файлів, 119 040 Б) прийнято. (4) Ручний повтор, що приєднується до фонового ланцюга (результат може бути від запиту ≤ 10 с до кліку), — прийнятий компроміс. (5) Приховані сценарії для етапу 7 не задаються; власник може додати їх сам до етапу 8.b. (6) .agentic/design-ref/ (локальна копія макетів з артефактів) видалити — видаляє власник (агентові видалення заборонено); .claude/skills/verify/SKILL.md не комітиться.`
