@@ -2,13 +2,15 @@
 
 - **Етап:** `Stage 6: План реалізації: хвилі DAG і матриця перевірок`
 - **Відповідальний скіл:** `implementation-planner`
-- **Дата формування:** `2026-11-02 23:25`
-- **Статус аудиту independent-reviewer:** `PASS`
+- **Дата формування:** `2026-11-02 23:25` · **Revise (запит №5, TD-021):** `2026-11-03 14:35`
+- **Статус аудиту independent-reviewer:** `PASS` (рев'ю №3 запиту на зміну №5, 2026-11-03 16:26; рев'ю №1 і №2 повернули блокери, їх виправлено — див. 4.3)
 - **Revise №3 (2026-11-03 00:45):** також примітки в плані (§5, §13, §15.1) про опцію резолвера `.dependency-cruiser.cjs` і крок оракула в CI, додані запитом на зміну №2 (рев'ю №5 Revise №2, L-002); запит на зміну №3 (трекер, розділ 4) — у `acceptance/us-9.acceptance.test.jsx` до `ALLOWED_LATIN` додано «IP» (слово схваленого тексту UX §5.2 `footer.privacy`), у плані §12.3 рядок AC-9.3 перелічує всі дозволені слова. Решта звіту — стан на коміті `ddcdf0b`; нові факти Revise позначено «Revise №3».
 
 ---
 
 ## 1. Перевірені передумови (Pre-Flight Summary)
+
+**Revise за запитом №5:** передумова — етап 4 — зараз `REJECTED_REVISING` за тим самим запитом, тож `verify-gate.py --stage 6` до гейтів етапів 3 і 4 повертає FAIL передумови; гейти — 3 → 4 → 6 → 7.
 
 **Revise №3:** етап 5 схвалено 2026-11-03 01:47 (`d7d162e`, запит №2), передумова виконана; порядок гейтів — спершу етап 5 (запит №2), потім етап 6 (запит №3), потім `--stage 6` після вердикту.
 
@@ -38,12 +40,14 @@
 | Годинник у тестах свіжості | `vi.useFakeTimers()` повністю | Заморожений лише `Date`, справжні таймери | **Best Practice:** межі 299 / 300 / 301 с детерміновані, а повтори 2 с / 4 с і перевірка щосекунди працюють як у браузері |
 | Контракти модулів | Кожен воркер придумує інтерфейс | Публічні `index.js` із JSDoc-сигнатурами до хвиль | **Best Practice:** таблиця експорту в розділі 5 плану; воркери не змінюють сигнатур |
 | Дубль даних картки й таблиці | Обидва макети в DOM, CSS-приховування | Один макет у DOM | **Best Practice (P-3):** `useMediaQuery('(min-width: 768px)')`; зчитувач і тести бачать одну копію |
-| Повтори запитів | Повтори TanStack Query за замовчуванням | Одна політика, що відповідає NFR-3 | **Best Practice (P-4):** `retry: false` у Query, власна політика 429 → 0, 5xx / мережа → 2 |
+| Повтори запитів | Повтори TanStack Query за замовчуванням | Одна політика, що відповідає NFR-3 | **Best Practice (P-4):** `retry: false` у Query, власна політика 429 і виняток `fetch` при `onLine === true` → 0; 5xx / таймаут / мережа офлайн → 2 (запит на зміну №5) |
 | Відкат | `git reset` «на око» | Контрольна точка перед кожною хвилею, конкретна команда | **Best Practice:** коміт-точка лише за згодою власника; команда відкату з переліком каталогів (план, розділ 13) |
 
 ---
 
 ## 3. Виконаний обсяг робіт (Deliverables)
+
+**Revise (запит на зміну №5, 2026-11-03 14:35):** змінено [`.agentic/specs/implementation_plan.md`](../specs/implementation_plan.md) (P-4 і §12.3 рядок AC-8.1 – AC-8.8, виправлення 14:47 – 14:48) — повтори при мережевій помилці лише при `navigator.onLine === false`; виняток `fetch` онлайн — E-SRC, 1 запит; трекер — `.agentic/pipeline-state.md` (розділ 4).
 
 **План:**
 - [`.agentic/specs/implementation_plan.md`](../specs/implementation_plan.md) — план спринту 1: мета й обсяг, 15 розділів SDD (1–11 посиланнями), рішення P-1 – P-9, матриця AC → перевірки, Done When, Safety & Rollback, хвилі DAG з File Ownership і бюджетами.
@@ -71,6 +75,9 @@
 
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| Запит №5: нове формулювання повторів | `grep -c "onLine === true" .agentic/specs/implementation_plan.md` | 0 | 2 (P-4 і §12.3 рядок AC-8.x) | ні | вивід — 4.2, блок «Запит №5», повтор 2026-11-03 16:20:48 після правки §12.3 |
+| Запит №5: старих формулювань немає | `python -c "import sys;fs=['.agentic/specs/03-architecture.md','.agentic/specs/adr/0005-data-source-coingecko.md','.agentic/specs/04-ux-and-contract.md','.agentic/specs/implementation_plan.md'];old=['мережа після 2 повторів','5xx / мережа / таймаут','5xx, мережа, таймаут','мережа / таймаут 10 с / 5xx','на мережеву помилку, таймаут і 5xx'];n=sum(open(f,encoding='utf-8').read().count(o) for f in fs for o in old);print('старих формулювань:',n);sys.exit(n)"` | 0 | 0 у 4 документах | ні | вивід — 4.2, блок «Запит №5», повтор 2026-11-03 16:20:48; код 0 = 0 збігів (L-001) |
+| Запит №5: валідатор етапу і вердикт рев'юера | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 6`, субагент `independent-reviewer` | 0 | вердикт PASS (рев'ю №3); валідатор — 11 PASS, 0 FAIL, 0 WARN | ні | запущено 2026-11-03 20:42:48 після вердикту PASS і гейтів етапів 3 (`9417669`) та 4 (`a6719e0`) (L-004); вивід — 4.2, блок «Запит №5 — валідатор етапу» |
 | Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 6` | 0 | 10 PASS, 0 FAIL, 1 WARN (приховані сценарії власника не задані) | ні | Revise №3: запущено 2026-11-03 01:47:22 після вердикту PASS рев'ю №7 і гейту етапу 5 (`d7d162e`); вивід — 4.2, блок «Revise №3 — валідатор етапу» |
 | Сканер секретів (`ddcdf0b`, рев'ю №2) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .` | 0 | 66 файлів, 0 секретів | так | |
 | Правила якості (`ddcdf0b`, рев'ю №2) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --check-code .` | 0 | 3 правила, 6 файлів, 0 порушень | так | |
@@ -78,8 +85,8 @@
 | Оракул червоний до коду (базовий стан на `ddcdf0b`) | `pnpm exec vitest run --config acceptance/vitest.config.js --reporter=json --outputFile=test-results/oracle-baseline.json; python -I -c "import json; d=json.load(open('test-results/oracle-baseline.json',encoding='utf-8')); print(d['numFailedTests'],'of',d['numTotalTests'],'failed'); raise SystemExit(0 if d['numTotalTests']==91 and d['numFailedTests']==91 else 1)"` | 0 | 91 of 91 failed (9 файлів) | ні | лічильник замість заперечної перевірки (L-001): код 0 = усі 91 тест червоні; причина всіх 91 — відсутні елементи інтерфейсу (розділ 4.2) |
 | Межі модулів (`ddcdf0b`) | `pnpm boundaries` | не запускалось | — | ні | у Revise №3 не повторювалось (поза обсягом); на `ddcdf0b` записано код 0, «0 порушень, 8 модулів» без виводу у звіті (L-004); поточний стан — звіт етапу 5, Revise №2 |
 | Мертвий код (`ddcdf0b`) | `pnpm deadcode` | не запускалось | — | ні | у Revise №3 не повторювалось (поза обсягом); на `ddcdf0b` записано код 0 без виводу у звіті (L-004); поточний стан — `.agentic/evidence/debt-checks.md` етапу 7 |
-| Revise №3: AC-9.3 з кодом етапу 7 | `pnpm exec vitest run --config acceptance/vitest.config.js acceptance/us-9` | 0 | 7 passed / 7; повний оракул 91 passed / 91 | ні | вивід — 4.2, блок «Revise №3»; до Revise №3 — 3 failed / 88 passed на коді етапу 7 станом на 00:42 (до ремонту LCP 00:50–01:01; футер `src/app/Layout.jsx` з 00:42:49 не змінювався), вивід там само; рев'юер №3 повторити не зміг (хук read-only) |
-| Вердикт рев'юера | субагент `independent-reviewer` | не запускалось | — | ні | Revise №3: після рев'ю; попередні рев'ю (№1 BLOCKERS FOUND, №2 PASS) — розділ 4.3 |
+| Revise №3: AC-9.3 з кодом етапу 7 | `pnpm exec vitest run --config acceptance/vitest.config.js acceptance/us-9` | 0 | 7 passed / 7; повний оракул 91 passed / 91 | ні | стан: робоче дерево коду етапу 7 до коміту `8645c76`, звіт закомічено в `8720a04`; у цьому проході не повторювалось; вивід — 4.2, блок «Revise №3»; до Revise №3 — 3 failed / 88 passed на коді етапу 7 станом на 00:42 (до ремонту LCP 00:50–01:01; футер `src/app/Layout.jsx` з 00:42:49 не змінювався), вивід там само; рев'юер №3 повторити не зміг (хук read-only) |
+| Вердикт рев'юера (історичний рядок Revise №3) | субагент `independent-reviewer` | не запускалось | — | ні | Revise №3: після рев'ю (тоді — PASS, рев'ю №7); поточний — рядок «Запит №5: валідатор етапу і вердикт рев'юера»; попередні рев'ю (№1 BLOCKERS FOUND, №2 PASS) — розділ 4.3 |
 
 ### 4.1. Збірка, лінтери та автоматичні тести
 
@@ -114,6 +121,36 @@ EXIT=0
 ```
 
 ### 4.2. Валідація артефактів, контракту, інфраструктури
+
+**Запит №5 — валідатор етапу (2026-11-03 20:42:48, після вердикту PASS рев'ю №3 і комітів етапів 3 `9417669` та 4 `a6719e0`, повний вивід):**
+
+```text
+$ python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 6
+=== Перевірка етапу: Stage 6 ===
+ℹ️  [INFO] План реалізації: хвилі DAG і матриця перевірок — скіл implementation-planner
+✅ [PASS] Передумови схвалено: 4, 5
+ℹ️  [INFO] Перевірка звіту: .agentic/reports/06-plan-report.md
+✅ [PASS] Статус аудиту independent-reviewer: PASS
+✅ [PASS] «Валюта довіри»: 12 перевірок із кодами виходу
+✅ [PASS] Карта технологій заповнена (5 рядків)
+✅ [PASS] Conventional Commit у секції 7 валідний
+✅ [PASS] Артефакт .agentic/specs/implementation_plan.md знайдено
+✅ [PASS] Артефакт .agentic/project.json знайдено
+
+=== Оракул (приймальні тести) — режим define ===
+✅ [PASS] Оракул: 13 файлів приймальних тестів за acceptance/**
+✅ [PASS] Holdouts: 2 файлів (вміст не показується)
+
+=== Правила якості коду: . ===
+✅ [PASS] Перевірено файлів: 85, порушень-помилок немає
+
+=== Сканування секретів: . ===
+ℹ️  [INFO] Проскановано файлів: 193
+✅ [PASS] Відкритих секретів не виявлено
+
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+```
 
 **Revise №3 — валідатор етапу (після вердикту рев'ю №7 і гейту етапу 5, 2026-11-03 01:47:22):**
 
@@ -213,8 +250,42 @@ $ pnpm exec vitest run --config acceptance/vitest.config.js   (2026-11-03 00:42,
 AssertionError: expected [ 'IP' ] to deeply equal []
 ```
 
+**Запит на зміну №5 (TD-021; перший прогін 2026-11-03 14:35:47, нижче — повтор 2026-11-03 16:20:48 після правки §12.3 о 14:47 – 14:48):** змінено `implementation_plan.md` (P-4 і §12.3 рядок AC-8.1 – AC-8.8): повтори лише при `navigator.onLine === false`, таймауті й 5xx; виняток `fetch` при `navigator.onLine === true` — E-SRC, 0 повторів, 1 запит (як у коді після BUG-001, L-008).
+```text
+$ grep -c "onLine === true" .agentic/specs/implementation_plan.md
+2
+EXIT=0
+$ python -c "import sys;fs=['.agentic/specs/03-architecture.md','.agentic/specs/adr/0005-data-source-coingecko.md','.agentic/specs/04-ux-and-contract.md','.agentic/specs/implementation_plan.md'];old=['мережа після 2 повторів','5xx / мережа / таймаут','5xx, мережа, таймаут','мережа / таймаут 10 с / 5xx','на мережеву помилку, таймаут і 5xx'];n=sum(open(f,encoding='utf-8').read().count(o) for f in fs for o in old);print('старих формулювань:',n);sys.exit(n)"
+старих формулювань: 0
+EXIT=0
+```
+
 ### 4.3. Вердикт незалежного аудиту (`independent-reviewer`)
 
+**Рев'ю №3 запиту на зміну №5 (поточний вердикт):**
+```text
+PASS — independent-reviewer, 2026-11-03 16:26, Stage 6 (Revise за запитом на зміну №5, TD-021; рев'ю №3 запиту №5).
+Закриття рев'ю №2 (≈ 16:18) підтверджено:
+  BLOCKER 1 — `onLine === true` у implementation_plan.md: 2 рядки (P-4, рядок 93; §12.3 AC-8.1 – AC-8.8, рядок 177), збігається з 4.0 / 4.2; секція 3 і підпис блоку 4.2 називають §12.3.
+  BLOCKER 2 — рядок 4.0 «Revise №3: AC-9.3» позначено станом (робоче дерево коду етапу 7 до 8645c76, звіт у 8720a04) і «у цьому проході не повторювалось» (L-004).
+  WARNING — 7.1: «лише CRLF» тепер 01–02; 03-* мають реальний diff і віднесені до етапу 3; запис рев'ю №1 — під заголовком 4.3; 08-test-plan.md — питання на гейт у трекері (16:23).
+Межі етапу: файли Revise — implementation_plan.md (2 рядки: P-4, §12.3 AC-8.x), 06-plan-report.md, pipeline-state.md; усі в зоні етапу 6. Секція 7: git add з явним списком цих 3 файлів. Решта 42 змінених і нових файлів віднесені до етапів 3, 4, 7, 8.a і власника. acceptance/** не змінено (оракул цілий). git status до і після повторних запусків однаковий.
+Зміст: P-4 і §12.3 узгоджені з UX §3 (E-NET / E-SRC), §7.1, архітектурою (діаграма, рядок 217), ADR 0001, ADR 0005 і кодом src/market-data/client.js:96 (NetworkError(navigator.onLine === false)). Старих формулювань у .agentic/specs/ — 0 (Grep).
+Секрети: --scan-secrets у складі --stage 6 — 193 файли, 0 знахідок. Залежності: не застосовно — package.json і pnpm-lock.yaml не змінені.
+Правила якості: --check-code . у складі --stage 6 — 85 файлів, 0 помилок. Контракт: не застосовно — has_http_api: false.
+Повторний запуск: --stage 6 — код 1, лише 2 очікувані помилки (передумова: етап 4 REJECTED_REVISING до гейтів 3 → 4; статус аудиту до цього вердикту), «Валюта довіри» 12 рядків — PASS. Рядки 4.0 «Запит №5: нове формулювання» (2) і «старих формулювань немає» (0) повторено Grep-ом: результати ті самі. pnpm verify: код 0, 16 файлів / 261 passed, Start at 16:25:31, JS 105,93 kB gzip ≤ 150. Позначки звіту й трекера не пізніші за годинник (L-005).
+Не перевірено повторно (хук read-only): оригінальні команди `grep -c` і `python -c` — замість них Grep з тим самим результатом.
+Трасування: AC-8.1 – AC-8.8 — рядок §12.3 доповнено онлайн-винятком (1 запит) і офлайном (3 запити); Must-AC 55 з 55 з тестом оракула, acceptance/** не змінено.
+WARNING: шапка і 4.3 не відображали рев'ю №1 і №2 запиту №5; артефакти етапу 8.a (08-test-plan.md, BUG-003, BUG-009) змінені без етапу, який їх закомітить, — питання на гейт.
+INFO: розділ 1 без примітки про передумову Revise №5; дубль рядка 4.0 «Вердикт рев'юера»; файл project.json (команда прихованих сценаріїв) без запису власника в трекері.
+Після вердикту (автор, 2026-11-03 16:27): шапка, записи рев'ю №1 і №2 у 4.3, примітка розділу 1 про передумову Revise №5, історичний рядок 4.0 «Вердикт рев'юера» позначено; питання 8.a і project.json — на гейт.
+```
+
+**Рев'ю запиту на зміну №5, №1 (2026-11-03 ≈ 14:43, час — «Start at» з виводу рев'юера):** BLOCKERS FOUND — виправлено 14:47 – 14:48: рядок секції 2 «Повтори запитів» приведено до P-4; секція 7 — новий список і повідомлення коміту; блок «Запит №5» перенесено в 4.2; матриця AC-8.x доповнена онлайн-винятком і офлайном.
+
+**Рев'ю запиту на зміну №5, №2 (2026-11-03 ≈ 16:18):** BLOCKERS FOUND — (1) лічильник «onLine === true» 1 замість 2, секція 3 без §12.3; (2) рядок 4.0 AC-9.3 без позначки коміту; WARNING — запис рев'ю №1 поза 4.3, «CRLF у 01–03» у 7.1, 08-test-plan.md без власника коміту. Виправлено 16:20 – 16:21 (повтор команд 16:20:48).
+
+**Попередні рев'ю етапу:**
 ```text
 Рев'ю №1 (2026-11-02 23:35): BLOCKERS FOUND.
   BLOCKER: AC-2.2 (зростання, падіння) і AC-7.3 неможливо пройти — монети поза першими 25 → тести натискають «Показати більше».
@@ -257,6 +328,7 @@ WARNING: спосіб імпортів заглушок Wave 0 (no-unused-vars) 
   WARNING: план §13 «Запуск оракула в CI — пропозиція власнику» → замінено на «запит на зміну №2 (Revise етапу 5, гейт етапу 5)» (2026-11-03 01:44).
   INFO: записи 4.3 упорядковано за номером; блок 4.2 «Валідатор етапу» — замінити виводом --stage 6 після гейту етапу 5 (L-004).
 ```
+
 
 ---
 
@@ -324,28 +396,19 @@ Must-AC: 55 з 55 мають тест оракула (91 тест).
 
 ### 7.1. Список файлів для індексації (`git status --short`)
 
+Revise за запитом на зміну №5 (TD-021). Попередні коміти етапу — у журналі трекера (розділ 3). Інші зміни робочого дерева до коміту етапу 6 не належать і не індексуються: етап 3 (запит №5) — `03-architecture.md`, ADR 0001, ADR 0005, `03-architecture-report.md`; етап 4 — `04-ux-and-contract.md`, `04-ux-api-report.md`; етап 7 (Revise №5) — `src/**`, `07-implementation-report.md`, `.agentic/evidence/*`, `.agentic/tech-debt.md`; етап 8.a — `08-test-plan.md`, BUG-003, BUG-009, `.agentic/qa/evidence/*.png`; власник — `.agentic/project.json` (`holdouts_command`), `.claude/skills/verify/*`; лише CRLF — `.agentic/specs/01–02`, `.agentic/reports/01–02`.
+
 ```text
-Revise №3:
  M .agentic/specs/implementation_plan.md
  M .agentic/reports/06-plan-report.md
  M .agentic/pipeline-state.md
- M acceptance/us-9.acceptance.test.jsx
 ```
-
-Інші незакомічені файли робочого дерева належать етапу 7 (`IN_PROGRESS`) і запиту №2 (`.dependency-cruiser.cjs`, етап 5) — у коміт Revise №3 не входять. Уроки L-004 (посилено) і L-005 з рев'ю №3 ідуть у коміт Revise №2 (перший гейт).
-
-`.claude/skills/verify/SKILL.md` не індексується (без окремого запиту власника). 10 файлів `.agentic/` етапів 1–4 з позначкою `M` мають порожній `git diff` і не індексуються.
 
 ### 7.2. Явна індексація та коміт (Conventional Commits)
 
 ```bash
-# Revise №3
-git add acceptance/us-9.acceptance.test.jsx .agentic/specs/implementation_plan.md .agentic/reports/06-plan-report.md .agentic/pipeline-state.md
-git commit -m "test(stage-6): allow IP abbreviation in AC-9.3 latin whitelist"
-
-# Початковий коміт етапу 6 (ddcdf0b)
-git add .agentic/specs/implementation_plan.md acceptance/vitest.config.js acceptance/support/setup.js acceptance/support/fake-coingecko.js acceptance/support/app.jsx acceptance/us-1.acceptance.test.jsx acceptance/us-2.acceptance.test.jsx acceptance/us-3.acceptance.test.jsx acceptance/us-4.acceptance.test.jsx acceptance/us-5.acceptance.test.jsx acceptance/us-6.acceptance.test.jsx acceptance/us-7.acceptance.test.jsx acceptance/us-8.acceptance.test.jsx acceptance/us-9.acceptance.test.jsx .agentic/project.json .agentic/backlog.md .agentic/reports/06-plan-report.md .agentic/pipeline-state.md
-git commit -m "docs(stage-6): add sprint 1 implementation plan and acceptance oracle"
+git add .agentic/specs/implementation_plan.md .agentic/reports/06-plan-report.md .agentic/pipeline-state.md
+git commit -m "docs(stage-6): align p-4 retry policy with client after bug-001"
 ```
 
 ---
@@ -362,3 +425,5 @@ git commit -m "docs(stage-6): add sprint 1 implementation plan and acceptance or
 > Початковий гейт: «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» (2026-11-02 ≤ 23:48; час уточнено 2026-11-03 01:31 за git log ddcdf0b 23:48:12; у первинному записі стояло 23:55) → `ddcdf0b`.
 > Revise №3: «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» (2026-11-03 03:23) → «Approve & закоміть»; рішення щодо часу звіту етапу 4 — трекер є джерелом правди (гейт етапу 5). Порядок: спершу гейт етапу 5 (запит №2), потім цей гейт; після вердикту рев'юера — `--stage 6` (L-004).
 > На гейті: розбіжність часу у звіті етапу 4 (секція 6): позначки 00:10, 00:20, 00:40 пізніші за `f689fc3` — власник вирішує один раз для етапів 5 і 6.
+> 2026-11-03 14:35: Revise за запитом на зміну №5 (TD-021, рішення власника «Оновити документи»): документи про повтори приведено до коду; статус `REJECTED_REVISING`, чекбокси знову порожні до гейту (порядок гейтів 3 → 4 → 6 → 7).
+> 2026-11-03 20:59: власник — «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» → «Approve & закоміть» (запит на зміну №5). Відкриті пункти — TD-022, TD-023 (L-003).

@@ -10,7 +10,7 @@
 - **Проєкт:** `Крипто-Радар`
 - **Поточний активний етап:** `Запит на зміну №5 (етапи 3, 4, 6 — Revise) і Stage 7: Revise №5; гейти в порядку 3 → 4 → 6 → 7, далі Stage 8.b`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-03 19:00`
+- **Останнє оновлення:** `2026-11-03 20:59`
 
 ---
 
@@ -21,9 +21,9 @@
 | **1** | Discovery: від ідеї до продуктового брифу | `product-discovery` | — | `APPROVED_AND_COMMITTED` | `.agentic/reports/01-discovery-report.md` | `04c6271` |
 | **2** | Вимоги: User Stories та Gherkin-критерії | `ba-requirements` | `1` | `APPROVED_AND_COMMITTED` | `.agentic/reports/02-requirements-report.md` | `2ff839a` |
 | **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f`, запит №5 — `9417669` |
-| **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал |
+| **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0` |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
-| **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `REJECTED_REVISING` | `.agentic/reports/06-plan-report.md` | `ddcdf0b` |
+| **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b` |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `REJECTED_REVISING` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805` |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f` |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
@@ -59,6 +59,7 @@
 | **7 (Revise №4)** | `2026-11-03 14:00` | `e3fb805` | `fix(stage-7): fix qa defects bug-001 to bug-008 except bug-003` | `Власник продукту` |
 | **8.a** | `2026-11-03 14:12` | `93d517f` | `test(stage-8.a): add test plan, manual test run and defect reports` | `Власник продукту` |
 | **3 (запит №5)** | `2026-11-03 17:18` | `9417669` | `docs(stage-3): align retry policy with client after bug-001` | `Власник продукту` |
+| **4 (запит №5)** | `2026-11-03 19:01` | `a6719e0` | `docs(stage-4): align network error retries with client after bug-001` | `Власник продукту` |
 
 ---
 
@@ -150,3 +151,4 @@
 - `2026-11-03 16:28 Запит на зміну №5: рев'ю №3 етапів 3, 4, 6 — PASS (WARNING виправлено після вердикту: шапки звітів, записи рев'ю №1 і №2 у 4.3, етап 3 — повтор 4 команд 4.0 о 16:27:31 після правки STRIDE о 16:22, TD-021 у tech-debt.md з ADR 0001). Ризик Safari у звіті етапу 3 знову «прийнятий»: він має запис власника 2026-11-02 (розділ 4, Stage 3 «Must US-5/US-6 … прийнятий ризик в ADR»), позначка «підтвердити на гейті» 14:48 була зайвою. Валідатори --stage 3/4/6 запускаються після вердиктів у порядку гейтів (етапам 4 і 6 потрібен гейт попереднього). Рев'ю №6 етапу 7 — триває.`
 - `2026-11-03 17:18 Stage 3 (запит на зміну №5): власник — «Approve & закоміть 3» (APPROVED_AND_COMMITTED). TD-021 закрито для етапу 3 (NFR-3, діаграма 7.1, ADR 0005, ADR 0001 приведено до коду). Пункти гейту, які власник окремо не вирішив, лишаються відкритими (L-003): прийняття ризиків «CoinGecko / GitHub бачать IP» (STRIDE I) — «підтвердити на гейті»; TD-022 (§6 change7dPct і null) — відкритий; TD-020 — відкритий. Далі — гейт етапу 4 (повтор --stage 4).`
 - `2026-11-03 19:00 Stage 4 (запит на зміну №5): власник — «Approve & закоміть 4» (APPROVED_AND_COMMITTED). TD-021 закрито для етапу 4 (повтори мережевої помилки в UX приведено до коду); валідатор --stage 4 exit 0. Відкритими лишаються (L-003): TD-022 (UX §3 / §5.2, change7dPct = null → «—») і TD-023. Далі — гейт етапу 6 (повтор --stage 6).`
+- `2026-11-03 20:59 Stage 6 (запит на зміну №5): власник — «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» → «Approve & закоміть» (APPROVED_AND_COMMITTED). TD-021 закрито для етапу 6 (P-4 і §12.3 приведено до коду); валідатор --stage 6 exit 0 (20:42:48). Відкритими лишаються (L-003): TD-022, TD-023. Далі — повторне рев'ю етапу 7 (Revise №5), --stage 7 --run і гейт етапу 7.`
