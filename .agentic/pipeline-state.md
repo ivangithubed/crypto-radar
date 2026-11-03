@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Рішення щодо BUG-010 (Revise етапу 7), далі Stage 9`
+- **Поточний активний етап:** `Revise 8.b (e2e без карантину) і Revise 8.a (ретест BUG-010, BUG-011, TC-059); запит на зміну №6 (TD-022, TD-024, TD-020 — етапи 3 і 4); далі Stage 9`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-03 23:38`
+- **Останнє оновлення:** `2026-11-04 01:10`
 
 ---
 
@@ -26,7 +26,7 @@
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5` |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5` |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f`, Revise 8.a — `8755fb3` |
-| **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08b-qa-automation-report.md` | — |
+| **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08b-qa-automation-report.md` | `f52746a` |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
 
 > **Статуси:**
@@ -63,6 +63,7 @@
 | **6 (запит №5)** | `2026-11-03 20:59` | `f1ac4b5` | `docs(stage-6): align p-4 retry policy with client after bug-001` | `Власник продукту` |
 | **7 (Revise №5)** | `2026-11-03 22:25` | `8f0f2a5` | `fix(stage-7): fix bug-003 and bug-009, keep list scroll on navigation` | `Власник продукту` |
 | **8.a (Revise 8.a)** | `2026-11-03 22:43` | `8755fb3` | `test(stage-8.a): retest bug-003 and bug-009 after stage 7 revise` | `Власник продукту` |
+| **8.b** | `2026-11-03 23:38` | `f52746a` | `test(stage-8.b): add e2e acceptance suite with axe in three browsers` | `Власник продукту` |
 
 ---
 
@@ -167,3 +168,9 @@
 - `2026-11-03 23:26 Stage 8.b: рев'ю №2 — PASS (2 WARNING: застаріле «fixme» у секції 6; негативні перевірки без точки синхронізації). Виправлено 23:27 – 23:32: expectNoRetryWithinWindow (waitForRequest до runFor), мутаційна перевірка ловить повтор; US-8 × 5 — 150 passed; повні прогони — 279 passed, 3 skipped; BUG-010 — примітка про load. Час — зі звіту рев'юера (vitest 23:26:09).`
 - `2026-11-03 23:34 Stage 8.b: verify-gate.py --stage 8.b --run — EXIT 0 (23:33:39 – 23:34:32). Статус — WAITING_FOR_APPROVAL. Нові BUG: BUG-010 (Major / P1, WebKit preload, етап 7), BUG-011 (Minor / P3, текст поради Safari, етап 7). На гейт: набір, job e2e, verify_commands["8.b"]; рішення щодо BUG-010 і BUG-011; рядок project.json власника.`
 - `2026-11-03 23:38 Stage 8.b: власник — «Approve & закоміть 8.b» (APPROVED_AND_COMMITTED). Схвалено набір E2E, job e2e у CI, verify_commands["8.b"]. Відкритими лишаються (L-003, окремо не вирішено): BUG-010 (Major / P1, WebKit preload — рекомендовано Revise етапу 7 до етапу 9), BUG-011 (Minor / P3), чек-лист TC-087 – TC-090, TD-022, TD-023, ризики IP (STRIDE I), рядок власника в .agentic/project.json, .claude/skills/verify/**. Далі — рішення щодо BUG-010, потім етап 9.`
+- `2026-11-04 00:11 Рішення власника щодо відкритих пунктів після гейту 8.b (відповідь «1-1А … 8А»): (1) BUG-010 — прибрати `<link rel="preload">` з index.html (Revise етапу 7; закриває й TD-020; повторити pnpm vitals, зняти test.fail у e2e/us-8); (2) BUG-011 — виправити разом із BUG-010; (3) чек-лист TC-087 – TC-090 — ризик ПРИЙНЯТО власником (не виконується; WebKit і Firefox частково покриває E2E етапу 8.b); (4) TD-022 — запит на зміну документів етапів 3 і 4: `null` у зміні за 7 днів показується як «—»; (5) TD-023 — фокус після повернення до списку ставити на посилання монети, з якої повернулись (Revise етапу 7); (6) ризики STRIDE I «CoinGecko / GitHub бачать IP відвідувачів» — ПРИЙНЯТО власником; (7) рядок oracle.holdouts_command — рішення не дано, власник просить пояснення; (8) `.claude/skills/` — додати в .git/info/exclude (не комітити).`
+- `2026-11-04 00:15 Пункт (7): власник — «коміть» після пояснення механізму прихованих сценаріїв; рядок oracle з командою запуску закомічено окремим комітом `b8e23ff`. Сценарії лишаються в .gitignore; перевіряються на гейтах етапу 7 (--stage 7 --run, лише код виходу).`
+- `2026-11-04 00:30 Stage 7: Revise №6 розпочато (власник — «Start Revise №6 of stage 7?», рішення 00:11, пункти 1, 2, 5): статус REJECTED_REVISING; базовий хеш відкату b8e23ff. Головний агент без воркерів (3 малі правки): BUG-010 — прибрано preload топ-50 з index.html; BUG-011 — текст safariText за UX §5.2; TD-023 — фокус на посиланні монети після повернення (FocusOnNavigate.jsx, тести App.navigation.test.jsx); e2e/us-8 і e2e/support/app.js — знято карантин WebKit (зона 8.b, рішення власника 00:11 пункт 1). Також виправлено зайвий роздільник у рядку 8.b матриці.`
+- `2026-11-04 00:55 Stage 7 (Revise №6): Red-Team №9 — PASS, D, P2 = 14 (TD-023 закрито; нові TD-024 — UX §6 2.4.3 і TC-059 «фокус на h1», TD-025 — фокус на посиланні поза екраном); TD-025 закрито головним агентом (inViewport) → P2 = 13. TD-020 прибиранням preload НЕ закрито (2 запити в прихованій вкладці) — запис 00:11 «закриває й TD-020» кодом не підтверджено. Рев'ю №9 — BLOCKERS FOUND: BUG-010.md / BUG-011.md — зона 8.a (правки скасовано), фокус на посиланні лише при поверненні до списку, браузерний скрипт звіряє очікування, e2e/ — лише через Revise 8.b. Виправлено й повторено (verify 265, E2E 279, оракул 91, --debt 0); далі рев'ю №10.`
+- `2026-11-04 00:59 Stage 7 (Revise №6): рев'ю №10 — PASS (1 WARNING — LCP у секції 5, виправлено). verify-gate.py --stage 7 --run — EXIT 0 (00:58:16 – 00:59:24; приховані сценарії — 2 файли, код 0). Статус — WAITING_FOR_APPROVAL. На гейт: Revise №6 (BUG-010, BUG-011, TD-023 + TD-025); далі Revise 8.b (e2e/us-8, e2e/support/app.js) і Revise 8.a (ретест BUG-010, BUG-011, TC-059); TD-020 (NFR-3) і TD-024 (UX §6 2.4.3) — у запит на зміну №6 разом із TD-022; BUG-010 у справжньому Safari не перевірено.`
+- `2026-11-04 01:10 Stage 7: власник — «Approve & закоміть 7» (Revise №6, APPROVED_AND_COMMITTED). Схвалено BUG-010, BUG-011, TD-023 + TD-025. Відкритими лишаються (L-003): Revise 8.b (e2e/us-8, e2e/support/app.js — поза комітом), Revise 8.a (ретест BUG-010, BUG-011, TC-059), TD-020 і TD-024 — для запиту на зміну №6 разом із TD-022, BUG-010 у справжньому Safari.`

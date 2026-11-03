@@ -86,3 +86,18 @@
 - **Хвиля або весь етап (лише за явною згодою власника — знищує незакомічені зміни):** `git reset --hard <чекпоінт або f689fc3> && git clean -fd -- src acceptance a11y scripts public`, далі `pnpm install --frozen-lockfile`.
 - **Після коміту етапу 7:** `git revert <коміт етапу 7>` (безпечно, нова історія).
 - **Репетиція виконана** без втрати роботи: `git worktree add --detach <scratchpad>/rollback-f689fc3 f689fc3` → `pnpm install --frozen-lockfile && pnpm verify` — код 0 → копію видалено, `git worktree prune`; у робочому дереві сміттєвих файлів немає (`git worktree list` — лише основне дерево).
+
+## 7. Revise №6 (2026-11-04): BUG-010, BUG-011, TD-023
+
+| Пункт | Що змінено | Чим перевірено |
+| :--- | :--- | :--- |
+| BUG-010 (WebKit повторно віддавав відповідь `preload`) | `index.html` — прибрано `<link rel="preload" as="fetch">` топ-50 | E2E без карантину WebKit: 279 passed, 3 skipped (00:37:05 – 00:37:58); US-8 WebKit × 5 — 50 passed; LCP 906 мс (до правки 905 мс) |
+| BUG-011 (текст поради Safari) | `src/features/favorites-view/model.js` — `safariText` дослівно за UX §5.2 | збіг рядка з `04-ux-and-contract.md:326` (Red-Team №9) |
+| TD-023 (фокус після повернення до списку) | `src/app/FocusOnNavigate.jsx` — після повернення до списку фокус на посиланні монети, з якої повернулись, якщо воно на екрані (TD-025), інакше h1; інші екрани — h1 | `App.navigation.test.jsx` (4 нові тести, 2 оновлені; мутаційні перевірки); `logo-focus-check.mjs`: мишею без рамки, клавіатурою `solid 2px`, у межах екрана, `scrollY` збережено; S-3 → h1 |
+| e2e (зона 8.b, рішення власника 00:11, п. 1) | `e2e/us-8.e2e.spec.js` — без `test.fail` і гілки WebKit; `e2e/support/app.js` — `page.goto` чекає `load` | повний набір і smoke (вище) |
+
+- **Quality Gates:** `pnpm verify` 0 (16 файлів, 265 passed; NFR-5 106,08 кБ; 00:50:10); оракул 91 / 91 (00:51:33); E2E 279 passed / 3 skipped (00:50:15); `--debt` 0 (00:51:42 – 00:52:31, `.agentic/evidence/debt-checks.md`); `test:a11y` 40 passed; браузер CHECKS 21/21 (00:49:45).
+- **Red-Team №9:** PASS, D; аудитор — P2 = 14, після ремонту TD-025 — 13; TD-023, TD-025 закрито; новий TD-024; TD-020 не закрито (`.agentic/evidence/red-team-report.md`, «Прохід №9»).
+- **Бюджет:** Red-Team №9 — 155 463 токени / 44 ходи (план ~150k); воркерів не було.
+- **Відкат:** до коміту — `git restore -- index.html src/app/FocusOnNavigate.jsx src/app/App.navigation.test.jsx src/features/favorites-view/model.js e2e/us-8.e2e.spec.js e2e/support/app.js` (лише за згодою власника); після коміту — `git revert <коміт>`. Базовий хеш — `b8e23ff`.
+- **Рев'ю №9 — BLOCKERS FOUND (виправлено):** BUG-файли зони 8.a прибрано з коміту етапу 7; фокус обмежено поверненням до списку; скрипт браузера звіряє очікування; `e2e/` — лише через Revise 8.b.

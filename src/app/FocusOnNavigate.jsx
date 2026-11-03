@@ -2,12 +2,27 @@ import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 
 const LIST_PATH = "/";
+const COIN_PATH = "/coin/";
 
-function focusHeading() {
-  const heading = document.querySelector("#main h1");
-  if (!heading) return false;
-  // Прокрутку задає FocusOnNavigate, а не focus(): інакше повернення до списку стрибає до h1.
-  heading.focus({ preventScroll: true });
+/** Елемент у межах екрана після прокрутки (межа — `clientHeight`, L-007). */
+function inViewport(element) {
+  const { top, bottom } = element.getBoundingClientRect();
+  return top >= 0 && bottom <= document.documentElement.clientHeight;
+}
+
+/**
+ * Фокус без прокрутки: прокрутку задає FocusOnNavigate, а не focus(), інакше повернення до списку стрибає.
+ * Після повернення до списку — на посилання монети, з якої повернулись, якщо воно на екрані (TD-023, TD-025), інакше на h1.
+ * @param {string} fromCoinId монета, з якої повернулись, або ""
+ */
+function focusTarget(fromCoinId) {
+  const href = `#${COIN_PATH}${fromCoinId}`;
+  const link =
+    fromCoinId &&
+    [...document.querySelectorAll("#main a")].find((a) => a.getAttribute("href") === href);
+  const target = link && inViewport(link) ? link : document.querySelector("#main h1");
+  if (!target) return false;
+  target.focus({ preventScroll: true });
   return true;
 }
 
@@ -32,8 +47,9 @@ function useListScroll() {
 }
 
 /**
- * Після зміни маршруту фокус на h1 нового екрана (UX §4, 2.4.3) без прокрутки до нього; список повертається
- * на збережену позицію, інші екрани — на початок. Перше відкриття сторінки фокус не забирає.
+ * Після зміни маршруту фокус на h1 нового екрана (UX §6, 2.4.3) без прокрутки до нього, а після повернення
+ * зі сторінки монети до списку — на посилання цієї монети, якщо воно на екрані (TD-023, TD-025); список повертається на збережену позицію,
+ * інші екрани — на початок. Перше відкриття сторінки фокус не забирає.
  * Якщо h1 ще немає (скелетон S-2), чекаємо його появи, але не відбираємо фокус, який відвідувач уже поставив.
  */
 export function FocusOnNavigate() {
@@ -42,15 +58,20 @@ export function FocusOnNavigate() {
   const listScroll = useListScroll();
   useEffect(() => {
     if (previous.current === pathname) return undefined;
+    // Лише повернення до списку (рішення власника 2026-11-04, TD-023); інші екрани — фокус на h1.
+    const fromCoinId =
+      pathname === LIST_PATH && previous.current.startsWith(COIN_PATH)
+        ? previous.current.slice(COIN_PATH.length)
+        : "";
     previous.current = pathname;
     window.scrollTo(0, pathname === LIST_PATH ? listScroll.current : 0);
-    if (focusHeading()) return undefined;
+    if (focusTarget(fromCoinId)) return undefined;
     const main = document.getElementById("main");
     if (!main) return undefined;
     const observer = new MutationObserver(() => {
       if (document.activeElement && document.activeElement !== document.body) {
         observer.disconnect();
-      } else if (focusHeading()) {
+      } else if (focusTarget(fromCoinId)) {
         observer.disconnect();
       }
     });

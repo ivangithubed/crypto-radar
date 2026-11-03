@@ -234,3 +234,38 @@ $ pnpm verify     (14:53:43 – 14:53:51; повтор 16:23:09 – 16:23:17, St
 $ pnpm test:a11y  (14:44:22 – 14:44:52) → 40 passed — EXIT=0
 $ pnpm exec vitest run --config acceptance/vitest.config.js   (14:53:51 – 14:54:00) → Tests 91 passed — EXIT=0
 ```
+
+## Revise №6 етапу 7 (2026-11-04): BUG-010, BUG-011, TD-023
+
+```text
+$ pnpm verify     (2026-11-04 00:24:36; vitest Start at 00:24:38) → oxlint без помилок; «All matched files use the correct format»; Test Files 16 passed, Tests 263 passed; NFR-5: JS головного екрана 106.01 kB gzip (ліміт 150 kB) — EXIT=0
+$ python verify-gate.py --debt   (start 2026-11-04 00:28:44, end 00:29:33)
+✅ [PASS] Команда успішна: pnpm lint
+✅ [PASS] Команда успішна: pnpm dup
+✅ [PASS] Команда успішна: pnpm deadcode
+✅ [PASS] Команда успішна: pnpm boundaries
+✅ [PASS] Команда успішна: pnpm audit --audit-level high
+✅ [PASS] Команда успішна: pnpm sbom:write
+✅ [PASS] Команда успішна: pnpm test:a11y
+✅ [PASS] Команда успішна: pnpm vitals
+✅ [PASS] debt_commands: 7 аспектів задано
+EXIT=0
+# лічильники окремими прогонами (vitals 00:26:05 і test:a11y 00:28:04 — до --debt; dup / deadcode / boundaries / audit — 00:29 – 00:30):
+$ pnpm dup        → Total: 74 файли, 5953 рядки, 8 клонів, 65 рядків (1.09%), 543 токени (1.29%) — поріг ≤ 3 % — EXIT=0
+$ pnpm deadcode   → knip: «Configuration hints (1)» — EXIT=0
+$ pnpm boundaries → ✔ no dependency violations found (93 modules, 238 dependencies cruised) — EXIT=0
+$ pnpm audit --audit-level high → 2 vulnerabilities found, Severity: 2 moderate (TD-001) — EXIT=0
+$ pnpm vitals     (00:26:05, без preload) → LCP медіана 906.348 мс (прогони 907.455, 902.619, 906.348); CLS 0.000; TBT 6.500 мс — EXIT=0 (до правки: LCP 905.346 мс, Revise №4)
+$ pnpm test:a11y  (00:28:04) → 40 passed — EXIT=0
+$ pnpm exec vitest run --config acceptance/vitest.config.js   (00:30:08 – 00:30:17) → Test Files 9 passed, Tests 91 passed — EXIT=0
+```
+
+```text
+# повтор після обмеження фокуса списком (рев'ю №9), остання зміна коду 00:46 – 00:49:
+$ python verify-gate.py --debt   (start 2026-11-04 00:51:42, end 00:52:31) → 8 команд ✅ [PASS], debt_commands: 7 аспектів — EXIT=0
+$ pnpm dup        (00:52:34) → Total: 74 файли, 6003 рядки, 9 клонів, 72 рядки (1.20%), 600 токенів (1.41%) — поріг ≤ 3 % — EXIT=0
+$ pnpm vitals     → LCP медіана 905.954 мс (прогони 905.954, 902.732, 906.110); CLS 0.000; TBT 6.500 мс — EXIT=0
+$ pnpm test:a11y  (до 00:53:20) → 40 passed — EXIT=0
+$ pnpm verify     (00:50:08, Start at 00:50:10) → Tests 265 passed; NFR-5 106.08 kB — EXIT=0
+$ pnpm exec vitest run --config acceptance/vitest.config.js   (00:51:32) → Tests 91 passed — EXIT=0
+```

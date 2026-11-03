@@ -77,15 +77,84 @@ describe("BUG-005: фокус на h1 після зміни маршруту", (
     expect(await heading("Bitcoin")).toHaveFocus();
 
     fireEvent.click(screen.getByRole("link", { name: "← До списку монет" }));
-    expect(await heading("Топ-50 монет")).toHaveFocus();
+    await heading("Топ-50 монет");
+    expect(await screen.findByRole("link", { name: "Bitcoin" })).toHaveFocus();
 
     fireEvent.click(screen.getByRole("link", { name: /^Обрані/ }));
     expect(await heading("Обрані")).toHaveFocus();
   });
 });
 
+describe("TD-023: фокус після повернення зі сторінки монети", () => {
+  it("стоїть на посиланні цієї монети без прокрутки до нього; «Назад» браузера — так само", async () => {
+    vi.stubGlobal("scrollTo", vi.fn());
+    const focus = vi.spyOn(HTMLElement.prototype, "focus");
+    try {
+      render(<App />);
+      fireEvent.click(await screen.findByRole("link", { name: "Ethereum" }));
+      await heading("Ethereum");
+      window.history.back();
+      await waitFor(() => expect(screen.getByRole("link", { name: "Ethereum" })).toHaveFocus());
+      const linkFocus = focus.mock.calls.filter((_, i) => focus.mock.instances[i]?.tagName === "A");
+      expect(linkFocus.length).toBeGreaterThanOrEqual(1);
+      expect(linkFocus.every(([options]) => options?.preventScroll === true)).toBe(true);
+    } finally {
+      focus.mockRestore();
+    }
+  });
+
+  it("монети немає серед показаних у списку → фокус на h1", async () => {
+    vi.stubGlobal("scrollTo", vi.fn());
+    window.location.hash = "#/coin/shiba-inu";
+    render(<App />);
+    await heading("Shiba Inu");
+    fireEvent.click(screen.getByRole("link", { name: "← До списку монет" }));
+    expect(await heading("Топ-50 монет")).toHaveFocus();
+    expect(rows().some((a) => a.textContent.includes("Shiba Inu"))).toBe(false);
+  });
+
+  it("TD-025: посилання монети поза екраном після повернення → фокус на h1, а не нижче екрана", async () => {
+    vi.stubGlobal("scrollTo", vi.fn());
+    const rect = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockImplementation(function () {
+        const below = this.tagName === "A" && this.getAttribute("href") === "#/coin/ethereum";
+        return {
+          top: below ? 2000 : 0,
+          bottom: below ? 2040 : 0,
+          left: 0,
+          right: 0,
+          width: 0,
+          height: 0,
+        };
+      });
+    try {
+      render(<App />);
+      fireEvent.click(await screen.findByRole("link", { name: "Ethereum" }));
+      await heading("Ethereum");
+      window.history.back();
+      await waitFor(() =>
+        expect(screen.getByRole("heading", { level: 1, name: "Топ-50 монет" })).toHaveFocus(),
+      );
+    } finally {
+      rect.mockRestore();
+    }
+  });
+
+  it("зі сторінки монети на вкладку «Обрані» → фокус на h1, хоча картка цієї монети є", async () => {
+    vi.stubGlobal("scrollTo", vi.fn());
+    window.localStorage.setItem("crypto-radar:favorites", JSON.stringify(["bitcoin", "ethereum"]));
+    window.location.hash = "#/coin/ethereum";
+    render(<App />);
+    await heading("Ethereum");
+    fireEvent.click(screen.getByRole("link", { name: /^Обрані/ }));
+    expect(await heading("Обрані")).toHaveFocus();
+    expect(screen.getByRole("link", { name: "Ethereum" })).not.toHaveFocus();
+  });
+});
+
 describe("Фокус без стрибка: прокрутка після переходу (рішення власника 2026-11-03)", () => {
-  it("h1 отримує фокус без прокрутки до нього; список повертається на свою позицію, сторінка монети — на початок", async () => {
+  it("фокус (h1, посилання монети) без прокрутки до нього; список повертається на свою позицію, сторінка монети — на початок", async () => {
     const scrollTo = vi.fn((x, y) => {
       window.scrollY = y;
     });
@@ -102,13 +171,14 @@ describe("Фокус без стрибка: прокрутка після пер
 
     fireEvent.scroll(window);
     fireEvent.click(screen.getByRole("link", { name: "← До списку монет" }));
-    expect(await heading("Топ-50 монет")).toHaveFocus();
+    await heading("Топ-50 монет");
+    expect(await screen.findByRole("link", { name: "Bitcoin" })).toHaveFocus();
     expect(scrollTo).toHaveBeenLastCalledWith(0, 1240);
-    const headingFocus = focus.mock.calls.filter(
-      (_, i) => focus.mock.instances[i]?.tagName === "H1",
+    const routeFocus = focus.mock.calls.filter((_, i) =>
+      ["H1", "A"].includes(focus.mock.instances[i]?.tagName),
     );
-    expect(headingFocus.length).toBeGreaterThanOrEqual(2);
-    expect(headingFocus.every(([options]) => options?.preventScroll === true)).toBe(true);
+    expect(routeFocus.length).toBeGreaterThanOrEqual(2);
+    expect(routeFocus.every(([options]) => options?.preventScroll === true)).toBe(true);
     focus.mockRestore();
     window.scrollY = 0;
   });
