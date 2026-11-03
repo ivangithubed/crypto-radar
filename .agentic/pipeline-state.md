@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Revise 8.b (e2e без карантину) і Revise 8.a (ретест BUG-010, BUG-011, TC-059); запит на зміну №6 (TD-022, TD-024, TD-020 — етапи 3 і 4); далі Stage 9`
+- **Поточний активний етап:** `Revise 8.a (TC-059, BUG-010 на Safari) і запит на зміну №6 (TD-020, TD-022, TD-024 — етапи 3 і 4); далі Stage 9`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-04 01:10`
+- **Останнє оновлення:** `2026-11-04 01:31`
 
 ---
 
@@ -24,7 +24,7 @@
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0` |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5` |
-| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5` |
+| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5`, Revise №6 — `8c68680` |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f`, Revise 8.a — `8755fb3` |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08b-qa-automation-report.md` | `f52746a` |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
@@ -64,6 +64,7 @@
 | **7 (Revise №5)** | `2026-11-03 22:25` | `8f0f2a5` | `fix(stage-7): fix bug-003 and bug-009, keep list scroll on navigation` | `Власник продукту` |
 | **8.a (Revise 8.a)** | `2026-11-03 22:43` | `8755fb3` | `test(stage-8.a): retest bug-003 and bug-009 after stage 7 revise` | `Власник продукту` |
 | **8.b** | `2026-11-03 23:38` | `f52746a` | `test(stage-8.b): add e2e acceptance suite with axe in three browsers` | `Власник продукту` |
+| **7 (Revise №6)** | `2026-11-04 01:10` | `8c68680` | `fix(stage-7): fix bug-010 and bug-011, focus the returned coin link` | `Власник продукту` |
 
 ---
 
@@ -173,4 +174,8 @@
 - `2026-11-04 00:30 Stage 7: Revise №6 розпочато (власник — «Start Revise №6 of stage 7?», рішення 00:11, пункти 1, 2, 5): статус REJECTED_REVISING; базовий хеш відкату b8e23ff. Головний агент без воркерів (3 малі правки): BUG-010 — прибрано preload топ-50 з index.html; BUG-011 — текст safariText за UX §5.2; TD-023 — фокус на посиланні монети після повернення (FocusOnNavigate.jsx, тести App.navigation.test.jsx); e2e/us-8 і e2e/support/app.js — знято карантин WebKit (зона 8.b, рішення власника 00:11 пункт 1). Також виправлено зайвий роздільник у рядку 8.b матриці.`
 - `2026-11-04 00:55 Stage 7 (Revise №6): Red-Team №9 — PASS, D, P2 = 14 (TD-023 закрито; нові TD-024 — UX §6 2.4.3 і TC-059 «фокус на h1», TD-025 — фокус на посиланні поза екраном); TD-025 закрито головним агентом (inViewport) → P2 = 13. TD-020 прибиранням preload НЕ закрито (2 запити в прихованій вкладці) — запис 00:11 «закриває й TD-020» кодом не підтверджено. Рев'ю №9 — BLOCKERS FOUND: BUG-010.md / BUG-011.md — зона 8.a (правки скасовано), фокус на посиланні лише при поверненні до списку, браузерний скрипт звіряє очікування, e2e/ — лише через Revise 8.b. Виправлено й повторено (verify 265, E2E 279, оракул 91, --debt 0); далі рев'ю №10.`
 - `2026-11-04 00:59 Stage 7 (Revise №6): рев'ю №10 — PASS (1 WARNING — LCP у секції 5, виправлено). verify-gate.py --stage 7 --run — EXIT 0 (00:58:16 – 00:59:24; приховані сценарії — 2 файли, код 0). Статус — WAITING_FOR_APPROVAL. На гейт: Revise №6 (BUG-010, BUG-011, TD-023 + TD-025); далі Revise 8.b (e2e/us-8, e2e/support/app.js) і Revise 8.a (ретест BUG-010, BUG-011, TC-059); TD-020 (NFR-3) і TD-024 (UX §6 2.4.3) — у запит на зміну №6 разом із TD-022; BUG-010 у справжньому Safari не перевірено.`
-- `2026-11-04 01:10 Stage 7: власник — «Approve & закоміть 7» (Revise №6, APPROVED_AND_COMMITTED). Схвалено BUG-010, BUG-011, TD-023 + TD-025. Відкритими лишаються (L-003): Revise 8.b (e2e/us-8, e2e/support/app.js — поза комітом), Revise 8.a (ретест BUG-010, BUG-011, TC-059), TD-020 і TD-024 — для запиту на зміну №6 разом із TD-022, BUG-010 у справжньому Safari.`
+- `2026-11-04 01:10 Stage 7: власник — «Approve & закоміть 7» (Revise №6, APPROVED_AND_COMMITTED). Схвалено BUG-010, BUG-011, TD-023 + TD-025. Відкритими лишаються (L-003): Revise 8.b (e2e/us-8, e2e/support/app.js — поза комітом), Revise 8.a (ретест BUG-010, BUG-011, TC-059), TD-020 і TD-024 — для запиту на зміну №6 разом із TD-022, BUG-010 у справжньому Safari. Коміт `8c68680` fix(stage-7): fix bug-010 and bug-011, focus the returned coin link.`
+- `2026-11-04 01:19 Stage 8.b: власник — «Так, Revise 8.b» (REJECTED_REVISING). Зміст: e2e/us-8 і e2e/support/app.js (знято карантин WebKit — зроблено під час Revise №6 етапу 7, рішення 00:11 п. 1, поза комітом етапу 7), новий тест тексту поради Safari в e2e/us-6 (BUG-011 — Verified), BUG-010 — Fixed (ретест у WebKit Pass, справжній Safari не перевірено). Прогони: E2E 282 passed / 3 skipped, smoke 39, US-8 WebKit × 5 — 50, verify 265. Далі — рев'ю і --stage 8.b --run.`
+- `2026-11-04 01:28 Stage 8.b (Revise 8.b): рев'ю №3 — BLOCKERS FOUND (рядок мутаційної перевірки з кодом 0 без EXIT=; застарілий опис карантину в секціях 2, 5 і BUG-010.md) — виправлено 01:23 – 01:24 (негативний контроль EXIT=1, page.reload() у WebKit перевірено пробою — обмеження знято); рев'ю №4 — PASS (1 WARNING — коментар у e2e/us-6, виправлено). Далі — --stage 8.b --run.`
+- `2026-11-04 01:29 Stage 8.b (Revise 8.b): verify-gate.py --stage 8.b --run — EXIT 0 (01:28:34 – 01:29:29). Статус — WAITING_FOR_APPROVAL. На гейт: зняття карантину WebKit і тест тексту поради Safari (BUG-011 — Verified); BUG-010 — Fixed, справжній Safari не перевірено.`
+- `2026-11-04 01:31 Stage 8.b: власник — «Approve & закоміть 8.b» (Revise 8.b, APPROVED_AND_COMMITTED). Схвалено зняття карантину WebKit і тест тексту поради Safari. Відкритими лишаються (L-003): BUG-010 у справжньому Safari; Revise 8.a (TC-059 — TD-024, ретест на Safari TC-088); запит на зміну №6 (TD-020, TD-022, TD-024).`

@@ -2,12 +2,14 @@
 
 - **Етап:** `Stage 8.b: QA B — автоматизація E2E і контрактні тести`
 - **Відповідальний скіл:** `qa-engineer`
-- **Дата формування:** `2026-11-03 23:06` (план схвалено ≈ 22:50; Wave 0 — 22:50 – 22:55; Wave 1 — 22:55 – 23:00; прогони — 23:00 – 23:04; правки за рев'ю №1 і №2, повторні прогони — 23:12 – 23:32)
-- **Статус аудиту independent-reviewer:** `PASS` (рев'ю №2; рев'ю №1 повернуло блокери, їх виправлено — див. 4.3)
+- **Дата формування:** `2026-11-03 23:06` (план схвалено ≈ 22:50; Wave 0 — 22:50 – 22:55; Wave 1 — 22:55 – 23:00; прогони — 23:00 – 23:04; правки за рев'ю №1 і №2, повторні прогони — 23:12 – 23:32); Revise 8.b (карантин WebKit знято після BUG-010, тест тексту поради Safari — BUG-011) — `2026-11-04 01:19`
+- **Статус аудиту independent-reviewer:** `PASS` (Revise 8.b, рев'ю №4; рев'ю №3 повернуло блокери, їх виправлено — див. 4.3)
 
 ---
 
 ## 1. Перевірені передумови (Pre-Flight Summary)
+
+**Revise 8.b (2026-11-04, команда власника «Так, Revise 8.b»):** етап 7 — `APPROVED_AND_COMMITTED`, Revise №6 — `8c68680` (BUG-010 — preload прибрано, BUG-011 — текст за UX §5.2); 8.a — `APPROVED_AND_COMMITTED` (`8755fb3`). Зміни `e2e/us-8.e2e.spec.js` і `e2e/support/app.js` зроблено під час Revise №6 етапу 7 за рішенням власника 2026-11-04 00:11, п. 1, і лишено поза комітом етапу 7 (§10.6) — їх комітить цей Revise. Інструменти без змін (Playwright 1.64.1, браузери встановлено).
 
 Передумова трекера: етап 7 — `APPROVED_AND_COMMITTED` (Revise №5 — `8f0f2a5`); 8.a — `APPROVED_AND_COMMITTED` (Revise 8.a — `8755fb3`). Набір запускався на HEAD `8755fb3`; `git status --short src acceptance a11y` порожній — продуктовий код, оракул і a11y не змінювались. Застосунок: `pnpm build` + `vite preview` на :4174 (окремо від a11y :4173).
 
@@ -34,8 +36,8 @@
 | Тестові дані | Живий CoinGecko | Фікстури з прибиранням | `e2e/support/coingecko.js`: дані «Передумов» Gherkin (Bitcoin, Ethereum, Solana…), годинник `page.clock.setFixedTime(NOW)`, лічильник запитів; кожен тест — свій контекст. Живого API немає (ліміт без ключа, L-008). |
 | Сесія | — | — | Не застосовно: входу немає (ADR 0002). Обрані — `localStorage` через `addInitScript`. |
 | CORS / 429 | `route.fulfill` без CORS-заголовка | Обрив `route.abort` при `onLine=true` + лічильник запитів (L-008) | `mode: "abort"` у фікстурі; сценарії AC-2.6, AC-8.2 перевіряють «1 запит». |
-| Нестабільність | Ретраї всюди, фіксовані паузи | Ретраї лише в CI, trace при першому ретраї, керований годинник замість пауз | `retries: CI ? 2 : 0`, `trace: "on-first-retry"`; `waitForTimeout` — 0: вікна повторів перевіряються `page.clock.install` + `runFor` (рев'ю №1). Нестабільний AC-8.8 у WebKit (прогін 23:15:46) знайдено й виправлено (`waitUntil: "domcontentloaded"` для режиму pending); після цього 3 повні прогони поспіль і US-8 у WebKit × 10 — без падінь. |
-| Карантин | `skip` | Тест виконується й позначає відомий дефект | BUG-010: AC-8.2, AC-8.3, AC-8.6 у WebKit — `test.fail(browserName === "webkit", …)` (виконуються, «неочікуваний успіх» після виправлення нагадає зняти позначку); AC-8.1 у WebKit виконується повністю (стан помилки, без цін, axe), лише лічильник запитів фіксує дефект (1 замість 3) з анотацією BUG-010. AC-10.2 — `test.fixme` (функції немає: спринт 2, Should). `skip`, `.only`, `force` — 0. |
+| Нестабільність | Ретраї всюди, фіксовані паузи | Ретраї лише в CI, trace при першому ретраї, керований годинник замість пауз | `retries: CI ? 2 : 0`, `trace: "on-first-retry"`; `waitForTimeout` — 0: вікна повторів перевіряються `page.clock.install` + `runFor` (рев'ю №1). Нестабільний AC-8.8 у WebKit (прогін 23:15:46, `load` чекав запиту preload) тоді обійдено `waitUntil: "domcontentloaded"`; у Revise 8.b preload прибрано (BUG-010, `8c68680`), обхід знято — US-8 у WebKit × 5 — 50 passed, повний набір — 282 passed. |
+| Карантин | `skip` | Тест виконується й позначає відомий дефект | Первинний коміт: BUG-010 — AC-8.2, AC-8.3, AC-8.6 у WebKit `test.fail(browserName === "webkit", …)`, лічильник AC-8.1 фіксував дефект. **Revise 8.b:** BUG-010 виправлено (`8c68680`), карантин знято — `test.fail` 0, AC-8.1 вимагає 3 запити в кожному браузері. AC-10.2 — `test.fixme` (функції немає: спринт 2, Should). `skip`, `.only`, `force` — 0. |
 | Доступність | Перевірка «на око» | axe WCAG 2.2 AA у потоках | `expectNoA11yViolations` (0 critical / serious; правила не вимикались) на списку, «Нічого не знайдено», сторінці монети, «поза топ-50», «Обраних» (з монетами й порожніх), відкритій підказці, стані помилки (AC-8.1), головній — у трьох браузерах (у WebKit AC-8.1 після правок рев'ю №1 виконується повністю). |
 | Контракт | — | Фазинг за OpenAPI | Не застосовно: `has_http_api: false`. |
 | Вивід для агента | Скриншоти | Текстовий репортер | `list` локально, `list` + `html` у CI (artifact). |
@@ -46,13 +48,21 @@
 
 - [`e2e/playwright.config.js`](../../e2e/playwright.config.js) — конфіг: проєкти chromium / webkit / firefox, `webServer` (`pnpm build && pnpm preview --port 4174`), ретраї лише в CI, `forbidOnly` у CI, `locale: uk-UA`.
 - [`e2e/support/coingecko.js`](../../e2e/support/coingecko.js) — підміна CoinGecko: `topMarkets` з даними Gherkin, режими `ok / 429 / 503 / 500 / abort / pending`, лічильник `topRequests`, логотипи — PNG 1×1.
-- [`e2e/support/app.js`](../../e2e/support/app.js) — `openApp` (опція `fakeTimers` — керовані таймери; для режиму pending — `waitUntil: "domcontentloaded"`), локатори за ролями, `expectNoPrices`, `expectNoA11yViolations` (axe).
-- `e2e/us-1.e2e.spec.js` … `e2e/us-10.e2e.spec.js` — 94 тести на браузер (US-1 17, US-2 10, US-3 15, US-4 5, US-5 9, US-6 9, US-7 9, US-8 10, US-9 7, US-10 3); @smoke — 8 сценаріїв (13 тестів на браузер). Wave 1 — 3 паралельні субагенти (US-1–3, US-4–6, US-7–10), зони файлів не перетинались.
+- [`e2e/support/app.js`](../../e2e/support/app.js) — `openApp` (опція `fakeTimers` — керовані таймери; обхід `waitUntil: "domcontentloaded"` для режиму pending прибрано в Revise 8.b), локатори за ролями, `expectNoPrices`, `expectNoA11yViolations` (axe).
+- `e2e/us-1.e2e.spec.js` … `e2e/us-10.e2e.spec.js` — 94 тести на браузер у первинному коміті, 95 після Revise 8.b (US-1 17, US-2 10, US-3 15, US-4 5, US-5 9, US-6 9 → 10, US-7 9, US-8 10, US-9 7, US-10 3); @smoke — 8 сценаріїв (13 тестів на браузер). Wave 1 — 3 паралельні субагенти (US-1–3, US-4–6, US-7–10), зони файлів не перетинались.
 - [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — новий job `e2e` (`needs: verify`): install, `playwright install --with-deps chromium firefox webkit`, повний набір, звіт як artifact (`actions/upload-artifact` v7.0.2, закріплено SHA). Інші job-и не змінено.
 - [`.agentic/project.json`](../project.json) — лише `verify_commands["8.b"]`.
 - [`.agentic/qa/bugs/BUG-010.md`](../qa/bugs/BUG-010.md) + `BUG-010-repro.mjs` (відносні імпорти, передумова — `pnpm preview --port 4174`) — WebKit: повтори й оновлення бере відповідь preload (Major / P1, етап 7).
 - [`.agentic/qa/bugs/BUG-011.md`](../qa/bugs/BUG-011.md) — текст поради Safari розходиться з UX §5.2 (Minor / P3, етап 7).
 - `.agentic/pipeline-state.md` — статус 8.b: `PENDING` → `IN_PROGRESS` (22:51) → `WAITING_FOR_APPROVAL` (після вердикту рев'ю).
+
+**Revise 8.b (2026-11-04):**
+
+- `e2e/us-8.e2e.spec.js` — знято `test.fail(browserName === "webkit")` з AC-8.2, AC-8.3, AC-8.6, гілку WebKit в AC-8.1 (тепер 3 запити в кожному браузері) і константу `WEBKIT_PRELOAD_BUG`.
+- `e2e/support/app.js` — `page.goto(hash)` знову чекає `load` (обхід `domcontentloaded` для режиму pending був потрібен лише через preload).
+- `e2e/us-6.e2e.spec.js` — новий тест «@US-6 Порада Safari на «Обраних» — текст за UX §5.2»: у WebKit заголовок, дослівний `safari.text` і кнопка «Закрити пораду»; у Chromium і Firefox поради немає. Негативний контроль: зі старим текстом BUG-011 — 1 failed, EXIT=1 (01:23:41; 4.1).
+- `.agentic/qa/bugs/BUG-010.md` — Fixed (етап 7, `8c68680`), ретест E2E у WebKit — Pass; справжній Safari не перевірено. `.agentic/qa/bugs/BUG-011.md` — Verified (E2E, текст дослівно).
+- Тестів на браузер — 95 (US-6 — 10); smoke без змін (13 на браузер).
 - [`.agentic/reports/08b-qa-automation-report.md`](08b-qa-automation-report.md) — цей звіт.
 
 Тимчасово (не в коміті, відкочено): `.claude/launch.json` — конфігурація `e2e-preview` (:4174) для спільного сервера субагентів; відкочено `git restore` о 23:02, бо ламала `pnpm fmt:check`.
@@ -63,8 +73,20 @@
 
 ### 4.0. Валюта довіри (Trust Receipt)
 
+Рядки з позначкою «(Revise 8.b)» — прогони 2026-11-04 01:15 – 01:18 після зняття карантину; інші — первинний прогін етапу (коміт `f52746a`), у Revise не повторювались, якщо не сказано інше.
+
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| Валідатор етапу (Revise 8.b) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 8.b --run` | 0 | 10 PASS, 0 FAIL: передумова 7; статус аудиту PASS; «Валюта довіри» 26; оракул незмінний; 85 файлів правил якості; секрети; `verify_commands["8.b"]` — `pnpm install --frozen-lockfile` і повний набір E2E (після правки коментаря в us-6) — успішні | ні | 2026-11-04 01:28:34 – 01:29:29 після вердикту PASS рев'ю №4 (L-004); вивід — 4.2, блок «Revise 8.b — валідатор етапу» |
+| Вердикт рев'юера (Revise 8.b) | субагент `independent-reviewer` | 0 | рев'ю №4 — PASS (1 WARNING — коментар у us-6 і вивід проби, виправлено); рев'ю №3 — BLOCKERS FOUND (виправлено) | так | рев'ю №4 — 01:25 (vitest 01:25:56); записи — 4.3 |
+| Повний набір E2E (Revise 8.b) | `pnpm exec playwright test -c e2e/playwright.config.js` | 0 | 285 тестів: 282 passed, 0 failed, 0 flaky, 3 skipped (`fixme` AC-10.2); `test.fail` — 0 | ні | 01:15:59 – 01:16:53; вивід — 4.1, блок «Revise 8.b» |
+| Smoke (Revise 8.b) | `pnpm exec playwright test -c e2e/playwright.config.js --grep @smoke` | 0 | 39 passed | ні | 01:16:54; вивід — 4.1 |
+| Повтор US-8 у WebKit (Revise 8.b) | `pnpm exec playwright test -c e2e/playwright.config.js --project=webkit e2e/us-8.e2e.spec.js --repeat-each=5` | 0 | 50 passed, 0 failed | ні | 01:17:16; вивід — 4.1 |
+| Гейт готовності (Revise 8.b) | `pnpm verify` | 0 | 16 файлів, 265 passed; NFR-5 106,08 кБ | ні | 01:17:35; вивід — 4.1 |
+| Трасування AC → тег, послаблення (Revise 8.b) | та сама команда `python -c …`, що в рядку «Трасування» нижче | 0 | AC 57, з тегом 57, без тегу 0; `.only` 0, `test.skip` 0, `test.fixme` 1, `test.fail` 0, `force: true` 0, `waitForTimeout` 0 | ні | 01:17:52; вивід — 4.2, блок «Revise 8.b» |
+| Лінт і формат E2E (Revise 8.b) | `pnpm exec oxlint --deny-warnings e2e`; `pnpm exec oxfmt --check e2e .github/workflows/ci.yml` | 0 | 0 попереджень; 14 файлів, `All matched files use the correct format` | ні | 01:17:52; вивід — 4.2 |
+| Сканер секретів (Revise 8.b) | `verify-gate.py --scan-secrets e2e` | 0 | 13 файлів, 0 | ні | 01:17:52; вивід — 4.2 |
+| Межі етапу (Revise 8.b) | `git status --short src acceptance a11y package.json pnpm-lock.yaml index.html .claude/launch.json` | 0 | порожній вивід | ні | 01:17:52; вивід — 4.2 |
 | Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 8.b --run` | 0 | 10 PASS, 0 FAIL: передумова 7; «Валюта довіри» 16; оракул незмінний; 85 файлів правил якості; 215 файлів секретів; `verify_commands["8.b"]` — `pnpm install --frozen-lockfile` і повний набір E2E — успішні | ні | 23:33:39 – 23:34:32, після вердикту PASS рев'ю №2 (L-004); вивід — 4.2, блок «Валідатор етапу» |
 | Вердикт рев'юера | субагент `independent-reviewer` | 0 | рев'ю №2 — PASS (0 BLOCKER, 2 WARNING — виправлено); рев'ю №1 — BLOCKERS FOUND (виправлено) | ні | записи — 4.3 |
 | Повний набір E2E (прогони 4–5) | `pnpm exec playwright test -c e2e/playwright.config.js` | 0 | 282 тести: 279 passed, 0 failed, 0 flaky, 3 skipped (`fixme` AC-10.2) — у кожному з 2 прогонів; `test.fail` WebKit (AC-8.2, AC-8.3, AC-8.6) зараховано як очікуване падіння | так (рев'ю №2, 23:26 — до точки синхронізації: 279 passed, 3 skipped) | 23:29:37 – 23:31:33, HEAD `8755fb3` + робоча копія e2e/ (після правок рев'ю №2); повний вивід прогону 5 і підсумок 4 — 4.1. Раніше (до точки синхронізації) прогони 3–5 23:17:57 – 23:20:32 — те саме |
@@ -554,6 +576,47 @@ END 23:16:40
 
 **Історія — перші прогони до рев'ю №1:** повний набір 23:00:26 – 23:01:18 і 23:03:09 – 23:04:02 — 275 passed, 7 skipped, EXIT=0; smoke 23:02:49 – 23:03:09 — 38 passed, 1 skipped, EXIT=0; `pnpm verify` 23:02:35 – 23:02:42 — EXIT=0.
 
+**Revise 8.b (2026-11-04):**
+
+```text
+$ pnpm exec playwright test -c e2e/playwright.config.js -g "Порада Safari" --reporter=line      (новий тест; час не зафіксовано — повторено в повному наборі 01:15:59)
+  3 passed (6.2s)
+
+# негативний контроль (не рядок 4.0): у src/features/favorites-view/model.js тимчасово старий текст BUG-011, потім відновлено
+$ date "+%H:%M:%S" && pnpm exec playwright test -c e2e/playwright.config.js -g "Порада Safari" --project=webkit --reporter=line
+01:23:41
+    Error: expect(locator).toBeVisible() failed
+    Error: element(s) not found
+  1 failed
+EXIT=1          # очікувано: тест ловить старий текст
+$ git status --short src        (01:23:50 — порожньо, model.js відновлено)
+
+# тимчасова проба page.reload() (e2e/zz-probe.e2e.spec.js; видалено одразу після прогону): openApp ok → waitForList → page.reload() → waitForList → лічильник topRequests до / після
+$ date +%H:%M:%S; pnpm exec playwright test -c e2e/playwright.config.js e2e/zz-probe.e2e.spec.js --reporter=line
+01:23:28
+PROBE 1 2
+PROBE 1 2
+PROBE 1 2
+  3 passed (6.2s)
+EXIT=0
+$ rm e2e/zz-probe.e2e.spec.js; git status --short e2e        (лише us-6, us-8, support/app.js)
+
+$ pnpm exec playwright test -c e2e/playwright.config.js --reporter=line      (01:15:59)
+  3 skipped
+  282 passed (54.3s)
+EXIT=0
+$ pnpm exec playwright test -c e2e/playwright.config.js --grep @smoke --reporter=line      (01:16:54)
+  39 passed (21.1s)
+EXIT=0
+$ pnpm exec playwright test -c e2e/playwright.config.js --project=webkit e2e/us-8.e2e.spec.js --repeat-each=5 --reporter=line   (01:17:16)
+  50 passed (18.0s)
+EXIT=0
+$ pnpm verify      (01:17:35)
+      Tests  265 passed (265)
+NFR-5: JS головного екрана 106.08 kB gzip (ліміт 150 kB)
+EXIT=0
+```
+
 ### 4.2. Валідація артефактів, контракту, інфраструктури
 
 **Валідатор етапу (2026-11-03 23:33:39 – 23:34:32, після вердикту PASS рев'ю №2; рядки окремих тестів прогону згорнуто — повний список у 4.1):**
@@ -656,7 +719,85 @@ EXIT=0
 
 Контракт і фазинг: не застосовно — `has_http_api: false` (ADR 0001). axe — у складі E2E (4.1): кожен виклик `expectNoA11yViolations` дав 0 critical / serious.
 
+**Revise 8.b (2026-11-04 01:17:52):**
+
+```text
+$ python -c "…трасування, як вище…"
+AC 57 з тегом 57 без тегу []
+{'only': 0, 'skip': 0, 'fixme': 1, 'fail': 0, 'force': 0, 'waitForTimeout': 0}
+EXIT=0
+$ pnpm exec oxlint --deny-warnings e2e
+EXIT=0
+$ pnpm exec oxfmt --check e2e .github/workflows/ci.yml
+All matched files use the correct format.
+Finished in 6ms on 14 files using 24 threads.
+EXIT=0
+$ python verify-gate.py --scan-secrets e2e
+ℹ️  [INFO] Проскановано файлів: 13
+✅ [PASS] Відкритих секретів не виявлено
+EXIT=0
+$ git status --short src acceptance a11y package.json pnpm-lock.yaml index.html .claude/launch.json
+(порожньо)
+EXIT=0
+```
+
+`node .agentic/qa/bugs/BUG-010-repro.mjs` після виправлення не запускалось (потребує preview на :4174); ретест BUG-010 — повний набір і US-8 × 5 у WebKit вище.
+
+**Revise 8.b — валідатор етапу:**
+
+```text
+$ python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 8.b --run      (2026-11-04 01:28:34 – 01:29:29)
+✅ [PASS] Передумови схвалено: 7
+✅ [PASS] Статус аудиту independent-reviewer: PASS
+✅ [PASS] «Валюта довіри»: 26 перевірок із кодами виходу
+✅ [PASS] Карта технологій заповнена (5 рядків)
+✅ [PASS] Conventional Commit у секції 7 валідний
+✅ [PASS] Оракул незмінний від коміту етапу 6 (f1ac4b57)
+✅ [PASS] Перевірено файлів: 85, порушень-помилок немає
+✅ [PASS] Відкритих секретів не виявлено
+✅ [PASS] Команда успішна: pnpm install --frozen-lockfile
+✅ [PASS] Команда успішна: pnpm exec playwright test -c e2e/playwright.config.js
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+```
+
 ### 4.3. Вердикт незалежного аудиту (`independent-reviewer`)
+
+**Рев'ю №4 (поточний вердикт Revise 8.b): PASS**
+
+```text
+PASS — independent-reviewer, 2026-11-04 01:25 (час старту vitest у повторному pnpm verify), Stage 8.b, Revise 8.b, рев'ю №4.
+Валідатор: verify-gate.py --stage 8.b — 1 помилка, очікувана до вердикту («Статус аудиту» — очікує рев'ю); «Валюта довіри» 26 перевірок; передумови 7; оракул незмінний від f1ac4b57; правила якості — 85 файлів, 0 помилок; секрети — 213 файлів, 0.
+Закриття рев'ю №3: BLOCKER 1 — закрито: рядка «Мутаційна перевірка» в 4.0 немає; у 4.1 негативний контроль (01:23:41, 1 failed, EXIT=1, очікувано) і git status --short src порожній (01:23:50); src/ без змін. BLOCKER 2 — закрито: секції 2 і 5 описують поточний стан без карантину, первинний стан позначено «Первинний коміт» / «до Revise 8.b»; BUG-010.md — поле «Вимога / тест» поточне, історичні рядки позначено. WARNING — обмеження page.reload() знято в секції 6; e2e/ без файлів *probe* (Glob — 0); проба без виводу у звіті, коментар us-6:287 досі описує старе обмеження (WARNING 1 цього рев'ю). INFO 6.1 — test.fail «використовувалась до Revise 8.b».
+Межі етапу: git status --short --untracked-files=all — 11 записів; у коміт ідуть 7 файлів — збігається з 7.1 / 7.2; src/, acceptance/, a11y/, package.json, pnpm-lock.yaml не змінено.
+Секрети: --scan-secrets . — 213 файлів, 0. Залежності: нових пакетів немає.
+Правила якості: Grep у e2e/ — test.fail 0, WEBKIT_PRELOAD_BUG 0, domcontentloaded 0, waitForTimeout 0, .only 0, test.skip 0, force: true 0; test.fixme 1 (AC-10.2). Перевірки не послаблено.
+Контракт: не застосовно — has_http_api: false.
+Повтор рядків 4.0: (1) «Гейт готовності (Revise 8.b)» — pnpm verify: EXIT 0, 16 файлів / 265 passed, NFR-5 106.08 kB; збігається. (2) «Повний набір E2E (Revise 8.b)» — EXIT 0, 285 тестів, 282 passed, 3 skipped (54.0s); збігається. (3) Smoke еквівалентом — 39 @smoke у повному прогоні ok. (4) Сканер секретів — --scan-secrets . (213, 0). (5) Межі етапу — git status. Не перевірено повторно: US-8 WebKit × 5, oxlint / oxfmt по e2e, python -c трасування (хук read-only); негативний контроль — потребує зміни src/.
+Трасування: 57 з 57 AC; 95 тестів на браузер, 285 / 282 / 3 skipped, 13 smoke (39 / 3); числа узгоджені.
+Уроки: L-002 — залишок — коментар us-6:287 (WARNING 1). L-004 — дотримано. L-005 — найпізніша позначка 01:24, раніше за годинник (vitest 01:25:56). L-008 — AC-8.2 abort + лічильник без змін.
+WARNING: e2e/us-6.e2e.spec.js:287 — застарілий коментар про page.reload() у WebKit, проба без виводу у звіті. INFO: BUG-010.md:5 — час 01:24 замість часу прогону; журнал трекера без записів рев'ю №3 і №4; «На цьому гейті» — перелік первинного гейту.
+```
+
+**Після рев'ю №4 (автор, 2026-11-04 01:28):** WARNING — коментар про кеш `page.reload()` у `e2e/us-6.e2e.spec.js` прибрано; вивід проби — у 4.1. INFO — `BUG-010.md`: час ретесту — прогонів 01:15:59 – 01:17:16; трекер — записи рев'ю №3 і №4.
+
+**Рев'ю №3 (Revise 8.b): BLOCKERS FOUND** — виправлено:
+
+```text
+BLOCKERS FOUND — independent-reviewer, 2026-11-04 01:21 (час старту vitest у повторному pnpm verify), Stage 8.b, Revise 8.b.
+Валідатор: verify-gate.py --stage 8.b — 1 помилка, очікувана до вердикту («Статус аудиту» — очікує рев'ю); «Валюта довіри» 27 перевірок; оракул незмінний від f1ac4b57; правила якості — 85 файлів, 0 помилок; секрети — 213 файлів, 0.
+Межі етапу: git status --short --untracked-files=all — 11 записів; у коміт ідуть 7 файлів, збігається з 7.1 / 7.2. src/, acceptance/, a11y/, package.json, pnpm-lock.yaml, index.html, .claude/ не змінено; файли 01–02 — лише закінчення рядків.
+Секрети: --scan-secrets . — 213 файлів, 0. Залежності: нових пакетів немає.
+Правила якості: Grep у e2e/ — .only 0, test.skip 0, test.fail 0, force: true 0, waitForTimeout 0, WEBKIT_PRELOAD_BUG 0, domcontentloaded 0; test.fixme 1 (AC-10.2, спринт 2). Перевірки не послаблено: AC-8.1 вимагає 3 запити в кожному браузері, тест Safari звіряє дослівний safari.text (UX §5.2:326 = model.js:32 = us-6:331).
+Контракт: не застосовно — has_http_api: false.
+Повтор рядків 4.0: (1) «Повний набір E2E (Revise 8.b)» — EXIT 0, 285 тестів, 282 passed, 3 skipped (53.7s); збігається. (2) «Гейт готовності (Revise 8.b)» — pnpm verify: EXIT 0, 265 passed, NFR-5 106.08 kB; збігається. Еквівалентом: трасування (57 з 57), сканер секретів, межі етапу. Не перевірено повторно: smoke, US-8 WebKit × 5, oxlint / oxfmt по e2e, python -c (хук read-only); мутаційну перевірку — бо потребує зміни src/.
+Трасування: 57 з 57 AC; 95 тестів на браузер (285 / 3), 13 smoke (39 / 3).
+Уроки: L-005 — не з майбутнього. L-004 — порушення: рядок «Мутаційна перевірка» з кодом 0 без EXIT= і з часом «≈01:14», фактичний код — 1 (BLOCKER 1). L-002 — застарілий опис карантину й domcontentloaded у секції 2, NFR-3 / NFR-14 «WebKit — BUG-010» у секції 5, BUG-010.md:5 (BLOCKER 2).
+WARNING: секція 6 — обмеження page.reload() у WebKit «переглянути після виправлення BUG-010» не переглянуто. INFO: 6.1 test.fail як чинний прийом; статуси BUG-010 Fixed / BUG-011 Verified узгодити з Revise 8.a; --check-code не охоплює e2e/.
+```
+
+**Виправлення після рев'ю №3 (автор, 2026-11-04 01:23 – 01:24):** BLOCKER 1 — рядок мутаційної перевірки прибрано з 4.0; у 4.1 — негативний контроль з часом 01:23:41 і `EXIT=1`. BLOCKER 2 — секція 2 («Нестабільність», «Карантин»), секція 5 (NFR-3, NFR-14) і `BUG-010.md` (поле «Вимога / тест», рядок прогонів 23:17 – 23:20 і спостереження про `load` — позначено історією) оновлено одним проходом. WARNING — `page.reload()` у WebKit перевірено (лічильник 1 → 2 у трьох браузерах), обмеження знято. INFO — 6.1: `test.fail` «використовувалась до Revise 8.b».
+
 
 **Рев'ю №2 (поточний вердикт):**
 
@@ -710,15 +851,15 @@ WARNING: карантин AC-8.1 у WebKit ширший за дефект (ли�
 | AC-6.1 – AC-6.7 | Обрані між візитами | `src/features/favorites-view/` | `e2e/us-6.e2e.spec.js` — 9 × 3 | ✅ Pass (27/27) |
 | AC-7.1 – AC-7.4 | Підказки | `src/ui/TermHintButton.jsx`, `src/glossary/` | `e2e/us-7.e2e.spec.js` — 9 × 3 | ✅ Pass (27/27) |
 | AC-8.4, AC-8.5, AC-8.7, AC-8.8 | Свіжість, графік недоступний, завантаження | `src/market-data/` | `e2e/us-8.e2e.spec.js` — 6 × 3 | ✅ Pass (18/18) |
-| AC-8.1 | Джерело недоступне | `src/market-data/client.js`, `index.html` (preload) | `e2e/us-8.e2e.spec.js` — 1 × 3 | ✅ Pass у трьох (стан помилки, без цін, axe); ⚠️ WebKit — лічильник 1 запит замість 3 (BUG-010, анотація) |
-| AC-8.2, AC-8.3, AC-8.6 | «Спробувати ще раз», обрані під час помилки | `src/market-data/client.js`, `index.html` (preload) | `e2e/us-8.e2e.spec.js` — 3 × 3 | ⚠️ Chromium, Firefox — Pass (6/6); WebKit — `test.fail` → BUG-010 (Major / P1) — падає, як очікується |
+| AC-8.1 | Джерело недоступне | `src/market-data/client.js` (preload прибрано — BUG-010, `8c68680`) | `e2e/us-8.e2e.spec.js` — 1 × 3 | ✅ Pass у трьох браузерах, 3 запити (Revise 8.b) |
+| AC-8.2, AC-8.3, AC-8.6 | «Спробувати ще раз», обрані під час помилки | `src/market-data/client.js` | `e2e/us-8.e2e.spec.js` — 3 × 3, без `test.fail` | ✅ Pass у трьох браузерах (Revise 8.b; BUG-010 — `8c68680`) |
 | AC-9.1 – AC-9.3 | Дисклеймер, джерело, мова | `src/app/Layout.jsx` | `e2e/us-9.e2e.spec.js` — 7 × 3 | ✅ Pass (21/21) |
 | AC-10.1 | Тема як на пристрої | `public/theme-init.js` | `e2e/us-10.e2e.spec.js` — 2 × 3 | ✅ Pass (6/6) |
 | AC-10.2 | Перемикання теми | — (спринт 2, US-10 Should) | `e2e/us-10.e2e.spec.js` — `test.fixme` | Not run — поза спринтом 1 |
-| NFR-3 | 429 / обрив → 1 запит; 5xx → 3 | `src/market-data/client.js` | AC-2.6, AC-8.1 – AC-8.3, AC-8.6, AC-9.2 — лічильник `topRequests` | ✅ Chromium, Firefox; WebKit — BUG-010 |
+| NFR-3 | 429 / обрив → 1 запит; 5xx → 3 | `src/market-data/client.js` | AC-2.6, AC-8.1 – AC-8.3, AC-8.6, AC-9.2 — лічильник `topRequests` | ✅ Chromium, Firefox, WebKit (Revise 8.b; BUG-010 — Fixed, `8c68680`) |
 | NFR-6 | WCAG 2.2 AA (axe) | весь UI | `expectNoA11yViolations` на 9 станах екранів × 3 браузери | ✅ 0 critical / serious (стан помилки AC-8.1 — у трьох браузерах) |
-| NFR-14 | Браузери | — | E2E у WebKit і Firefox (рушії); справжні Safari iOS / Edge — TC-088 / TC-089 (відкладено власником) | ⚠️ Частково; WebKit — BUG-010 |
-| UX §5.2 `safari.text` | Текст поради Safari | `src/features/favorites-view/model.js` | ручне порівняння (4.2 / BUG-011) | ❌ BUG-011 (Minor / P3) |
+| NFR-14 | Браузери | — | E2E у WebKit і Firefox (рушії); справжні Safari iOS / Edge — TC-088 / TC-089 (відкладено власником) | ⚠️ Частково: рушії — Pass (Revise 8.b); BUG-010 — Fixed, справжній Safari не перевірено |
+| UX §5.2 `safari.text` | Текст поради Safari | `src/features/favorites-view/model.js` | `e2e/us-6.e2e.spec.js` — «Порада Safari на «Обраних» — текст за UX §5.2» × 3 (WebKit — дослівний текст; Chromium, Firefox — поради немає) | ✅ Pass (Revise 8.b; BUG-011 — Verified) |
 
 ---
 
@@ -726,14 +867,14 @@ WARNING: карантин AC-8.1 у WebKit ширший за дефект (ли�
 
 | Тип | Опис | Вплив | Що пропонується | Власник рішення |
 | :--- | :--- | :--- | :--- | :--- |
-| Дефект (новий) | **BUG-010** (Major / P1): у WebKit повтори, «Спробувати ще раз» і (імовірно) оновлення щохвилини отримують першу відповідь `<link rel="preload" as="fetch">`, у мережу не йдуть; 4 тести WebKit у карантині | Високий для Safari iOS (основний пристрій персони): ціни не оновлюються, після помилки джерела відновлення лише перезавантаженням. На справжньому Safari не перевірено. 3 тести WebKit — `test.fail`, AC-8.1 — лічильник з анотацією | Revise етапу 7: прибрати preload (закриває й TD-020) або запити повторів / опитування з `cache: "no-store"`; перевірити на справжньому Safari; зняти `test.fail` (AC-8.2, AC-8.3, AC-8.6) і гілку WebKit в AC-8.1 у `e2e/us-8.e2e.spec.js` | Власник продукту → етап 7 |
-| Дефект (новий) | **BUG-011** (Minor / P3): текст поради Safari «якщо ви не відкривали його 7 днів» замість UX §5.2 «якщо 7 днів ви нічого на ньому не натискали» | Низький: хибна порада щодо збереження обраних | Revise етапу 7 (текст з UX §5.2); після — перевірка в `e2e/us-6.e2e.spec.js` (WebKit) | Власник продукту → етап 7 |
-| Карантин | WebKit: AC-8.2, AC-8.3, AC-8.6 — `test.fail` з BUG-010; AC-8.1 — лічильник запитів фіксує дефект (1 замість 3) з анотацією | Середній: відновлення після помилки в WebKit не підтверджене до виправлення; тести виконуються й самі сигналізують про виправлення | Зняти `test.fail` і гілку WebKit в AC-8.1 разом із виправленням BUG-010 (строк — Revise етапу 7) | Етап 7 / 8.b |
+| Дефект → виправлено | **BUG-010** (Major / P1): WebKit повторно віддавав відповідь preload — виправлено на етапі 7 (Revise №6, `8c68680`, preload прибрано); ретест E2E у WebKit — Pass (282 passed, US-8 × 5 — 50 passed). Статус — Fixed: справжній Safari (iOS / macOS) не перевірено | Середній | Ретест на справжньому Safari (8.a, TC-088) або рішення власника прийняти WebKit Playwright | Власник продукту |
+| Дефект → Verified | **BUG-011** (Minor / P3): текст поради Safari — виправлено на етапі 7 (`8c68680`); E2E-тест дослівного тексту в WebKit — Pass, мутаційна перевірка — Fail зі старим текстом | — | — | — |
+| Карантин → знято | WebKit: `test.fail` AC-8.2, AC-8.3, AC-8.6 і гілку лічильника AC-8.1 прибрано (Revise 8.b); `test.fail` у наборі — 0 | — | — | — |
 | Не автоматизовано | AC-10.2 — перемикач теми, спринт 2 (US-10 Should) | Низький | E2E — разом із реалізацією у спринті 2 | Власник продукту |
 | Не автоматизовано | TC-087 (зчитувач), TC-090 (зрозумілість підказок) — потребують людини; TC-088 / TC-089 (справжні Safari iOS, Edge) — відкладено власником 14:18 | Середній (NFR-14) | E2E у WebKit і Firefox частково закриває рушії; ризик чек-листа не прийнято (L-003) | Власник продукту |
 | Обмеження | Сценарій «Немає з'єднання» (офлайн, TC-091) у Gherkin окремо не описано — в E2E не автоматизовано; покрито модульною таблицею тригерів і RUN-2026-11-03-2 | Низький | За потреби — сценарій у вимогах (етап 2) | Власник продукту |
-| Обмеження | `page.reload()` у WebKit під підміною бере відповідь з кешу (той самий механізм, що BUG-010) — новий візит у тестах моделюється новою сторінкою того самого контексту | Низький | Переглянути після виправлення BUG-010 | Етап 8.b |
-| Спостереження | WebKit може не дати подію `load`, поки запит preload до CoinGecko висить (режим pending; у житті — до тайм-ауту мережі); застосунок при цьому вже показує стан Loading | Низький | Розглянути разом із BUG-010 (preload) | Етап 7 |
+| Обмеження → знято | `page.reload()` у WebKit під підміною брав відповідь з кешу (механізм BUG-010). Перевірено в Revise 8.b (тимчасова проба, видалена; 01:23:28, EXIT=0; вивід — 4.1, блок «Revise 8.b»): після `page.reload()` у chromium, webkit і firefox лічильник `topRequests` 1 → 2 — запит іде в мережу. Тести нового візиту лишаються з новою сторінкою — це не обхід дефекту; застарілий коментар про кеш у `e2e/us-6.e2e.spec.js` прибрано | — | — | — |
+| Спостереження → неактуально | WebKit не давав подію `load`, поки висів запит preload (режим pending) — preload прибрано, `page.goto` знову чекає `load`; US-8 у WebKit × 5 — 50 passed | — | — | — |
 | Обмеження | `verify-gate.py --check-code` не охоплює `e2e/` (`quality_rules` — лише `src/`); лінт і формат `e2e/` — у складі `pnpm verify` | Низький | За потреби — запит на зміну етапу 5 | Власник продукту |
 | Обмеження | `knip.json` не охоплює `e2e/` (файл етапу 5) — мертвий код у тестових хелперах не міряється | Низький | За рішенням власника — запит на зміну етапу 5 | Власник продукту |
 | Не застосовно | Контракт API, фазинг, BOLA, сесії, тестові акаунти | — | `has_http_api: false`, входу немає (ADR 0001, 0002) | — |
@@ -742,7 +883,7 @@ WARNING: карантин AC-8.1 у WebKit ширший за дефект (ли�
 
 | Технологія / Інструмент / Патерн | Рівень опанування | Ключові концепції | Офіційне першоджерело |
 | :--- | :--- | :--- | :--- |
-| Playwright Test: проєкти, `webServer`, `test.step`, `test.fail` | **Вміти** | Матриця браузерів, спільний сервер, кроки як у Gherkin, позначка відомого дефекту `test.fail(browserName === "webkit")` | https://playwright.dev/docs/test-projects |
+| Playwright Test: проєкти, `webServer`, `test.step`, `test.fail` | **Вміти** | Матриця браузерів, спільний сервер, кроки як у Gherkin, позначка відомого дефекту `test.fail(browserName === "webkit")` (використовувалась до Revise 8.b) | https://playwright.dev/docs/test-projects |
 | Playwright `route` і `clock` | **Вміти** | `route.fulfill` / `route.abort` для керованих відповідей; `page.clock.setFixedTime` фіксує `Date` без підміни таймерів; `page.clock.install` + `runFor` — керовані таймери; `waitForRequest` з тайм-аутом — точка синхронізації для «запиту не було» | https://playwright.dev/docs/network і https://playwright.dev/docs/clock |
 | `<link rel="preload" as="fetch">` і кеш браузера | **Розуміти** | Попередньо завантажена відповідь має бути спожита один раз; рушії поводяться по-різному (BUG-010) | https://html.spec.whatwg.org/multipage/links.html#link-type-preload |
 | axe-core у Playwright | **Вміти** | `AxeBuilder.withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"])`, фільтр impact critical / serious | https://playwright.dev/docs/accessibility-testing |
@@ -754,27 +895,24 @@ WARNING: карантин AC-8.1 у WebKit ширший за дефект (ли�
 
 ### 7.1. Список файлів для індексації (`git status --short`)
 
+Первинний коміт етапу — `f52746a`. **Revise 8.b** — файли нижче. `.agentic/pipeline-state.md` містить і записи гейту 7 (Revise №6, хеш `8c68680`) — за протоколом вони йдуть у коміт наступного етапу. Чужі зміни не в коміті: `.agentic/specs/01–02`, `.agentic/reports/01–02` (лише закінчення рядків).
+
 ```text
+ M e2e/us-8.e2e.spec.js
+ M e2e/support/app.js
+ M e2e/us-6.e2e.spec.js
+ M .agentic/qa/bugs/BUG-010.md
+ M .agentic/qa/bugs/BUG-011.md
+ M .agentic/reports/08b-qa-automation-report.md
  M .agentic/pipeline-state.md
- M .agentic/project.json
- M .github/workflows/ci.yml
-?? .agentic/qa/bugs/BUG-010-repro.mjs
-?? .agentic/qa/bugs/BUG-010.md
-?? .agentic/qa/bugs/BUG-011.md
-?? .agentic/reports/08b-qa-automation-report.md
-?? e2e/
+ M .claude/rules/project-lessons.md     (повтор L-004, рев'ю №3)
 ```
-
-`.agentic/project.json`: у робочій копії є ще рядок власника `oracle.holdouts_command` (Revise №4, рішення власника не дано). У коміт 8.b іде **лише** ключ `verify_commands["8.b"]`: файл індексується з версії `HEAD` + цей ключ (`git hash-object -w` + `git update-index --cacheinfo`), рядок власника лишається незакоміченим у робочій копії.
-
-Чужі незакомічені зміни, які в коміт етапу не йдуть: `.agentic/specs/01–02`, `.agentic/reports/01–02` (лише закінчення рядків), `.claude/skills/`.
 
 ### 7.2. Явна індексація та коміт (Conventional Commits)
 
 ```bash
-git add -- e2e/playwright.config.js e2e/support/app.js e2e/support/coingecko.js e2e/us-1.e2e.spec.js e2e/us-2.e2e.spec.js e2e/us-3.e2e.spec.js e2e/us-4.e2e.spec.js e2e/us-5.e2e.spec.js e2e/us-6.e2e.spec.js e2e/us-7.e2e.spec.js e2e/us-8.e2e.spec.js e2e/us-9.e2e.spec.js e2e/us-10.e2e.spec.js .github/workflows/ci.yml .agentic/qa/bugs/BUG-010.md .agentic/qa/bugs/BUG-010-repro.mjs .agentic/qa/bugs/BUG-011.md .agentic/reports/08b-qa-automation-report.md .agentic/pipeline-state.md
-# .agentic/project.json — лише verify_commands["8.b"] (див. 7.1): git update-index --cacheinfo 100644,<blob HEAD + 8.b>,.agentic/project.json
-git commit -m "test(stage-8.b): add e2e acceptance suite with axe in three browsers"
+git add -- e2e/us-8.e2e.spec.js e2e/support/app.js e2e/us-6.e2e.spec.js .agentic/qa/bugs/BUG-010.md .agentic/qa/bugs/BUG-011.md .agentic/reports/08b-qa-automation-report.md .agentic/pipeline-state.md .claude/rules/project-lessons.md
+git commit -m "test(stage-8.b): lift webkit quarantine after bug-010 and check safari hint text"
 ```
 
 ---
@@ -794,3 +932,9 @@ git commit -m "test(stage-8.b): add e2e acceptance suite with axe in three brows
 
 **Коментарі / Зауваження:**
 > 2026-11-03 23:38: власник — «Approve & закоміть 8.b». Схвалено пункт 1 (набір E2E, job `e2e` у CI, `verify_commands["8.b"]`). Пункти 2–4 окремо не вирішено — лишаються відкритими (L-003): BUG-010 (Major / P1), BUG-011 (Minor / P3), рядок власника в `.agentic/project.json` (не комічено).
+>
+> **Revise 8.b (2026-11-04, команда власника «Так, Revise 8.b» після гейту 7 Revise №6 `8c68680`):** гейт Revise 8.b:
+> 1. Схвалити зняття карантину WebKit (AC-8.1 – AC-8.3, AC-8.6) і тест тексту поради Safari (BUG-011) — коміт `test(stage-8.b): …`.
+> 2. BUG-010: справжній Safari не перевірено — ретест на 8.a (TC-088) чи прийняти перевірку WebKit Playwright (тоді — Verified).
+>
+> **2026-11-04 01:31:** власник — «Approve & закоміть 8.b» (Revise 8.b). Схвалено пункт 1 (зняття карантину WebKit, тест тексту поради Safari; коміт `test(stage-8.b): …`). Пункт 2 (BUG-010 у справжньому Safari) окремо не вирішено — лишається відкритим (L-003).

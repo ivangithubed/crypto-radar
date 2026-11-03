@@ -36,11 +36,6 @@ async function expectNoRetryWithinWindow(page) {
   await expect(late).rejects.toThrow();
 }
 
-// BUG-010: у WebKit повторні fetch топ-50 бере з <link rel="preload" as="fetch"> (index.html) і не йдуть у мережу:
-// повтори, «Спробувати ще раз» і оновлення щохвилини щоразу отримують першу (попередньо завантажену) відповідь.
-const WEBKIT_PRELOAD_BUG =
-  "BUG-010: WebKit повторно віддає відповідь preload топ-50 з кешу, повтори й «Спробувати ще раз» не доходять до джерела";
-
 /** Блок помилки з кнопкою «Спробувати ще раз». */
 async function expectErrorWithRetry(page, title) {
   const alert = alertBlock(page);
@@ -57,7 +52,7 @@ async function expectBitcoinPrice(page) {
 }
 
 test.describe("US-8: Недоступні або застарілі дані", () => {
-  test("@US-8 @AC-8.1 @smoke Джерело даних недоступне", async ({ page, browserName }) => {
+  test("@US-8 @AC-8.1 @smoke Джерело даних недоступне", async ({ page }) => {
     let mode;
     let source;
     await test.step("Дано джерело даних недоступне", async () => {
@@ -68,15 +63,8 @@ test.describe("US-8: Недоступні або застарілі дані", (
     });
     await test.step('Тоді відвідувач бачить повідомлення про помилку даних з дією "Спробувати ще раз"', async () => {
       await expectErrorWithRetry(page, "Не вдалося отримати ціни");
-      if (browserName === "webkit") {
-        // BUG-010: повтори у WebKit бере відповідь preload, до мережі доходить 1 запит.
-        // Фіксуємо дефект: після виправлення тут стане 3, тест упаде й нагадає прибрати цю гілку.
-        test.info().annotations.push({ type: "BUG-010", description: WEBKIT_PRELOAD_BUG });
-        expect(source.topRequests).toHaveLength(1);
-      } else {
-        // 5xx: перший запит і 2 повтори (2 с і 4 с), не більше.
-        expect(source.topRequests).toHaveLength(3);
-      }
+      // 5xx: перший запит і 2 повтори (2 с і 4 с), не більше.
+      expect(source.topRequests).toHaveLength(3);
     });
     await test.step("Але відвідувач не бачить жодної ціни, зміни за 7 днів чи капіталізації", async () => {
       await expect(coinLinks(page)).toHaveCount(0);
@@ -85,12 +73,7 @@ test.describe("US-8: Недоступні або застарілі дані", (
     });
   });
 
-  test("@US-8 @AC-8.2 Спробувати ще раз після відновлення джерела", async ({
-    page,
-    browserName,
-  }) => {
-    // BUG-010: у WebKit тест має падати; після виправлення дефекту «неочікуваний успіх» нагадає зняти позначку.
-    test.fail(browserName === "webkit", WEBKIT_PRELOAD_BUG);
+  test("@US-8 @AC-8.2 Спробувати ще раз після відновлення джерела", async ({ page }) => {
     let source;
     await test.step("Дано відвідувач бачить повідомлення про помилку даних", async () => {
       // Обрив при onLine === true — так браузер бачить 429 CoinGecko без CORS (L-008).
@@ -115,12 +98,7 @@ test.describe("US-8: Недоступні або застарілі дані", (
     });
   });
 
-  test("@US-8 @AC-8.3 Спроба ще раз, коли джерело все ще недоступне", async ({
-    page,
-    browserName,
-  }) => {
-    // BUG-010: у WebKit тест має падати; після виправлення дефекту «неочікуваний успіх» нагадає зняти позначку.
-    test.fail(browserName === "webkit", WEBKIT_PRELOAD_BUG);
+  test("@US-8 @AC-8.3 Спроба ще раз, коли джерело все ще недоступне", async ({ page }) => {
     let source;
     await test.step("Дано відвідувач бачить повідомлення про помилку даних", async () => {
       source = await openApp(page, "#/", { mode: "429", fakeTimers: true });
@@ -200,12 +178,7 @@ test.describe("US-8: Недоступні або застарілі дані", (
     });
   });
 
-  test("@US-8 @AC-8.6 Обрані не втрачаються під час помилки даних", async ({
-    page,
-    browserName,
-  }) => {
-    // BUG-010: у WebKit тест має падати; після виправлення дефекту «неочікуваний успіх» нагадає зняти позначку.
-    test.fail(browserName === "webkit", WEBKIT_PRELOAD_BUG);
+  test("@US-8 @AC-8.6 Обрані не втрачаються під час помилки даних", async ({ page }) => {
     let source;
     await test.step('Дано в обраних є монети "Bitcoin" і "Ethereum"', async () => {
       source = await openApp(page, "#/favorites", {

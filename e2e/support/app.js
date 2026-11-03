@@ -44,9 +44,7 @@ export async function openApp(
       [FAVORITES_KEY, JSON.stringify(favorites)],
     );
   }
-  // У режимі «pending» запит preload (index.html) не завершується, і WebKit може не дати подію load:
-  // чекаємо лише DOMContentLoaded — застосунок уже показує стан Loading.
-  await page.goto(hash, { waitUntil: source.mode === "pending" ? "domcontentloaded" : "load" });
+  await page.goto(hash);
   return source;
 }
 

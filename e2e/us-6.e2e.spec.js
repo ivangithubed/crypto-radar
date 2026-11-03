@@ -284,7 +284,6 @@ test.describe("US-6: Перегляд обраних при наступному
 
     await test.step("І відвідувач відкриває обрані", async () => {
       // Новий візит у тому самому браузері: те саме сховище, нова вкладка й нові дані джерела.
-      // page.reload() у WebKit бере відповідь джерела з кешу й не робить нового запиту.
       later = await context.newPage();
       const source = await openFavorites(later, undefined, { markets });
       await expect.poll(() => source.topRequests.length).toBeGreaterThan(0);
@@ -323,4 +322,22 @@ test.describe("US-6: Перегляд обраних при наступному
       expect(await cardText(page, "Solana")).toMatch(/^5 /);
     });
   });
+});
+
+// BUG-011 (Revise 8.b): текст поради S-3 дослівно за UX §5.2 `safari.*` (ADR 0006); поза WebKit порада не з'являється.
+const SAFARI_TITLE = "Щоб обрані не зникли в Safari";
+const SAFARI_TEXT =
+  "Safari стирає дані сайту, якщо 7 днів ви нічого на ньому не натискали. Додайте Крипто-Радар на головний екран: Поділитися → «На початковий екран». Обрані, додані тут у Safari, на головний екран не переносяться — додайте їх там заново.";
+
+test("@US-6 Порада Safari на «Обраних» — текст за UX §5.2", async ({ page, browserName }) => {
+  await openFavorites(page, ["bitcoin"]);
+  await expect(favoritesList(page)).toBeVisible();
+  const title = main(page).getByRole("heading", { level: 2, name: SAFARI_TITLE });
+  if (browserName === "webkit") {
+    await expect(title).toBeVisible();
+    await expect(main(page).getByText(SAFARI_TEXT, { exact: true })).toBeVisible();
+    await expect(main(page).getByRole("button", { name: "Закрити пораду" })).toBeVisible();
+  } else {
+    await expect(title).toHaveCount(0);
+  }
 });
