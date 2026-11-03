@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 8.a: ретест після Revise №4 етапу 7 — повторне рев'ю й гейт`
+- **Поточний активний етап:** `Stage 8.b: очікує старту`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-03 13:59`
+- **Останнє оновлення:** `2026-11-03 14:11`
 
 ---
 
@@ -24,8 +24,8 @@
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b` |
-| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76` |
-| **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `REJECTED_REVISING` | `.agentic/reports/08a-qa-manual-report.md` | — |
+| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805` |
+| **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | — |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
 
@@ -56,6 +56,7 @@
 | **5 (Revise №2)** | `2026-11-03 01:47` | `d7d162e` | `ci(stage-5): run acceptance oracle in ci and resolve package exports` | `Власник продукту` |
 | **6 (Revise №3)** | `2026-11-03 03:23` | `8720a04` | `test(stage-6): allow IP abbreviation in AC-9.3 latin whitelist` | `Власник продукту` |
 | **7** | `2026-11-03 04:21` | `8645c76` | `feat(stage-7): implement sprint 1 mvp screens and data layer` | `Власник продукту` |
+| **7 (Revise №4)** | `2026-11-03 14:00` | `e3fb805` | `fix(stage-7): fix qa defects bug-001 to bug-008 except bug-003` | `Власник продукту` |
 
 ---
 
@@ -133,3 +134,6 @@
 - `2026-11-03 06:01 Stage 7 (Revise №4): ремонт BUG-001, 002, 004–008 — 3 ремонтні воркери dag-worker (зони не перетинались), урок L-008 записано; pnpm verify 0 (252 passed), оракул 91/91, --debt 0, Red-Team №7 — PASS, D (P2 = 12; TD-005, TD-018 закрито, TD-021 новий). Рев'ю: №3 — BLOCKERS FOUND (звіт не оновлено під Red-Team №7 і рішення 04:41, L-002) — виправлено; №4 — PASS (WARNING TD-021). verify-gate.py --stage 7 --run після вердикту — код 0 (05:59:03). Статус 7 → WAITING_FOR_APPROVAL. BUG-003 не ремонтувався (запит на зміну №4).`
 - `2026-11-03 06:01 Stage 8.a (ретест після Revise №4): 05:36 – 05:57 — BUG-001, 002, 004–008 Verified (живий 429 без CORS 05:38: «Не вдалося отримати ціни», 1 запит), BUG-003 Confirmed, новий BUG-009 (Minor / P3, логотип без запасного кружка, UX §8), новий TC-091 (офлайн E-NET) Pass. Повторне рев'ю 8.a — BLOCKERS FOUND (передумова: етап 7 не схвалено; L-004) — виправлено, крім передумови: статус 8.a лишається REJECTED_REVISING до гейту й коміту етапу 7, далі хеш коміту, нове рев'ю, --stage 8.a і гейт 8.a.`
 - `2026-11-03 13:59 Stage 7 (Revise №4): власник — «Approve & закоміть» (APPROVED_AND_COMMITTED). Коміт: fix(stage-7): fix qa defects bug-001 to bug-008 except bug-003. Пункти 2–5 блоку гейту Revise №4 (запит на зміну №4 / BUG-003, TD-021, фокус на h1 — рамка й прокрутка, BUG-009) власник окремо не вирішив — лишаються відкритими, жоден не позначено «прийнятим» (L-003). .agentic/evidence/walkthrough.md (веде сесія-координатор) у коміт не входить.`
+- `2026-11-03 14:01 Stage 7 (Revise №4): коміт e3fb805 (git rev-parse --short HEAD). Stage 8.a: передумова знову виконана (етап 7 — APPROVED_AND_COMMITTED); хеш e3fb805 вписано в звіт 8.a, RUN-2026-11-03-2 і статуси BUG-001, 002, 004–008; git diff --stat e3fb805 -- src порожній. Статус 8.a — IN_PROGRESS (нове рев'ю).`
+- `2026-11-03 14:07 Stage 8.a: рев'ю №3 — BLOCKERS FOUND (суперечливий TC-078 у RUN-2, старі лічильники — L-002), виправлено о 14:05 (зокрема колонка «Коміт» етапу 7 у матриці — e3fb805); рев'ю №4 — PASS (2 WARNING виправлено). verify-gate.py --stage 8.a після вердикту — код 0 (14:07:37). Статус 8.a → WAITING_FOR_APPROVAL. На гейт: BUG-003 (запит на зміну №4, варіант А/Б/В), BUG-009 (новий, Minor/P3), чек-лист TC-087–TC-090 — жоден не вирішено (L-003).`
+- `2026-11-03 14:11 Stage 8.a: власник — «Approve & закоміть» (APPROVED_AND_COMMITTED). Коміт: test(stage-8.a): add test plan, manual test run and defect reports. Пункти гейту — BUG-003 (запит на зміну №4, варіант А/Б/В), BUG-009 (Minor/P3: виправити зараз чи спринт 2), чек-лист TC-087–TC-090 (виконати / відкласти) — власник окремо не вирішив: лишаються відкритими, жоден не позначено «прийнятим» (L-003). Відкриті з гейту Revise №4 етапу 7: TD-021, фокус на h1 (рамка й прокрутка).`

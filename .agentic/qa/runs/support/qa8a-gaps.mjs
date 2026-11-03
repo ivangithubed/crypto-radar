@@ -1,0 +1,38 @@
+import { chromium, devices } from "file:///D:/crypto-radar/node_modules/@playwright/test/index.mjs";
+import { readFileSync } from "node:fs";
+const BASE = "http://localhost:4173/crypto-radar/";
+const FIX = "D:/crypto-radar/src/test/fixtures/";
+const M = JSON.parse(readFileSync(FIX + "markets-top50.json", "utf8"));
+const ST = JSON.parse(readFileSync(FIX + "stablecoins.json", "utf8"));
+const fresh = () => M.map((c) => ({ ...c, last_updated: new Date(Date.now() - 60000).toISOString() }));
+const b = await chromium.launch();
+const c = await b.newContext({ ...devices["Desktop Chrome"] });
+await c.route("https://api.coingecko.com/**", (r) => r.fulfill({ json: new URL(r.request().url()).searchParams.get("category") ? ST : fresh(), headers: { "access-control-allow-origin": "*" } }));
+await c.route("https://coin-images.coingecko.com/**", (r) => r.fulfill({ status: 404 }));
+const p = await c.newPage(); const out = {};
+await p.goto(BASE + "#/coin/ethereum"); await p.locator("h1").waitFor();
+out.ethName = await p.getByRole("button", { name: /Додати в обрані.*Ethereum/ }).evaluate((e) => e.getAttribute("aria-label") ?? e.textContent);
+await p.getByRole("button", { name: /Додати в обрані.*Ethereum/ }).click();
+out.tab1 = await p.locator("nav a").nth(1).innerText();
+await p.goto(BASE + "#/coin/solana"); await p.getByRole("button", { name: /Додати в обрані.*Solana/ }).click();
+out.tab2 = await p.locator("nav a").nth(1).innerText();
+await p.getByRole("link", { name: /Обрані/ }).click(); await p.locator("main ol > li").first().waitFor();
+out.favs = (await p.locator("main ol > li").allInnerTexts()).map((t) => t.split("\n").slice(0, 2).join(" "));
+out.favFooter = (await p.locator("footer").innerText()).includes("Інформація не є інвестиційною порадою") && (await p.locator("footer").innerText()).includes("Powered by CoinGecko");
+await p.goto(BASE + "#/coin/tether"); await p.locator("h1").waitFor(); await p.waitForTimeout(500);
+const hint = p.getByRole("button", { name: "Що означає «Стейблкоїн»?" });
+out.stableHintCount = await hint.count();
+await hint.first().click();
+out.stableHintText = (await p.locator(`#${await hint.first().getAttribute("aria-controls")}`).innerText()).replace(/\s+/g, " ");
+await p.goto(BASE + "#/"); await p.locator("main tbody tr").first().waitFor();
+out.listHints = {};
+for (const t of ["Місце в рейтингу", "Тікер", "Зміна за 7 днів", "Капіталізація"]) {
+  const h = p.getByRole("button", { name: `Що означає «${t}»?` }).first(); await h.click();
+  out.listHints[t] = (await p.locator(`#${await h.getAttribute("aria-controls")}`).innerText()).replace(/\s+/g, " ").slice(0, 70);
+  await p.keyboard.press("Escape");
+}
+await p.goto(BASE + "#/coin/bitcoin"); await p.locator("h1").waitFor();
+const v = p.getByRole("button", { name: "Що означає «Волатильність»?" }); await v.click();
+out.volatility = (await p.locator(`#${await v.getAttribute("aria-controls")}`).innerText()).replace(/\s+/g, " ").slice(0, 70);
+await b.close();
+console.log(JSON.stringify(out, null, 1));

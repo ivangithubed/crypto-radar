@@ -1,0 +1,32 @@
+{
+ "C-TAB": {
+  "tabB": "Обрані Ціни на 05:36 7 Solana SOL ★ $92,05 ▼ −8,1 % , падіння на 8,1 % Капіталіз",
+  "tabLabel": "Обрані · 1\n, 1 монета"
+ },
+ "E-STORE": {
+  "star": "Прибрати з обраних: Solana",
+  "status": [
+   "Solana додано в обрані",
+   "Не вдалося зберегти обрані: браузер не дозволяє зберігати дані сайту (наприклад, у приватному режимі). Обрані діятимуть до закриття вкладки."
+  ]
+ },
+ "Partial+logo": {
+  "alert": 0,
+  "stableHint": 0,
+  "prices": true,
+  "imgs": 1,
+  "fallback": "Tether\nUSDT\n☆\nДодати в обрані"
+ },
+ "reflow 640x800 #/": 0,
+ "reflow 640x800 #/coin/bitcoin": 0,
+ "reflow 640x800 #/favorites": 0,
+ "reflow 640x800 #/abc": 0,
+ "reflow 640x360 #/": 0,
+ "reflow 640x360 #/coin/bitcoin": 0,
+ "reflow 640x360 #/favorites": 0,
+ "reflow 640x360 #/abc": 0,
+ "reflow 1280x800 #/": 0,
+ "reflow 1280x800 #/coin/bitcoin": 0,
+ "reflow 1280x800 #/favorites": 0,
+ "reflow 1280x800 #/abc": 0
+}

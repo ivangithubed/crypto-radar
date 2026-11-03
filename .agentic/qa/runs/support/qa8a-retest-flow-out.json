@@ -1,0 +1,36 @@
+{
+ "firstLoadFocus": "BODY:\n    Перейти до вмістуКрипто-Р",
+ "before": {
+  "rows": 50,
+  "sort": "cap"
+ },
+ "coinFocus": "H1:Bitcoin",
+ "coinActive": "<h1 tabindex=\"-1\" class=\"m-0 font-display text-2xl leading-[30px] font-semibold\">Bitcoin</h1>",
+ "chartLabels": "27 жовт.\n3 лист.",
+ "afterBackLink": {
+  "rows": 50,
+  "sort": "cap",
+  "focus": "H1:Топ-50 монет"
+ },
+ "afterHistoryBack": {
+  "query": "sol",
+  "rows": 1,
+  "sort": "cap",
+  "focus": "H1:Топ-50 монет"
+ },
+ "favFocus": "H1:Обрані",
+ "outOfTopFocus": "H1:Монета зараз поза топ-50",
+ "afterReload": {
+  "sort": "price",
+  "query": "",
+  "rows": 25
+ },
+ "mobile": {
+  "#/": 0,
+  "#/coin/bitcoin": 0,
+  "#/coin/tether": 0,
+  "#/favorites": 0,
+  "#/abc": 0
+ },
+ "mobileChartLabels": "27 жовт.\n3 лист."
+}

@@ -1,0 +1,21 @@
+{
+ "beforeOffline": {
+  "alert": "Не вдалося отримати ціни",
+  "top": 3
+ },
+ "offline": {
+  "onLine": false,
+  "alert": "Немає з'єднання",
+  "status": [
+   "Досі немає з'єднання. Перевірте інтернет і спробуйте ще раз."
+  ],
+  "prices": false,
+  "attemptsWhileOffline": 3
+ },
+ "logo": {
+  "img": true,
+  "broken": true,
+  "fallbackLetter": false
+ },
+ "listBrokenImgs": 25
+}
