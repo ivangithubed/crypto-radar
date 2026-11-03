@@ -110,7 +110,7 @@ export function FavoritesPage() {
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="m-0 font-display text-xl leading-[26px] font-semibold"
+          className="m-0 font-display text-xl leading-[26px] font-semibold [&:focus:not(:focus-visible)]:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
           {TEXTS.title}
         </h1>

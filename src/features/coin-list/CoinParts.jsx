@@ -8,7 +8,7 @@ const FOCUS_RING =
 
 /**
  * Зміна за 7 днів: стрілка (лише для ока) + текст + прихований текст для зчитувача (AC-1.5).
- * @param {{pct: number}} props
+ * @param {{pct: number | null}} props
  * @returns {import('react').ReactElement}
  */
 export function ChangeValue({ pct }) {
@@ -51,26 +51,5 @@ export function StableTag() {
     <span className="inline-flex items-center gap-1 text-sm leading-5 text-brand">
       Стейблкоїн <TermHint term="stablecoin" />
     </span>
-  );
-}
-
-/**
- * Логотип 24×24 лише з непорожнім `imageUrl` (декоративний, `alt=""`); з 7-ї монети `loading="lazy"`.
- * @param {{url: string, lazy: boolean}} props
- * @returns {import('react').ReactElement}
- */
-export function CoinLogo({ url, lazy }) {
-  if (url === "") {
-    return <span aria-hidden="true" className="size-6 shrink-0 rounded-full bg-brand-soft" />;
-  }
-  return (
-    <img
-      src={url}
-      alt=""
-      width="24"
-      height="24"
-      loading={lazy ? "lazy" : undefined}
-      className="size-6 shrink-0 rounded-full"
-    />
   );
 }

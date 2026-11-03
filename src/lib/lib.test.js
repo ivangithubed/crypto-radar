@@ -41,6 +41,7 @@ describe("formatChange", () => {
     [-0.04, "0,0 %", "flat", "без змін"],
     [0, "0,0 %", "flat", "без змін"],
     [1234.56, `+1${NB}234,6 %`, "up", `зростання на 1${NB}234,6 %`],
+    [null, "—", "flat", "немає даних"],
   ])("%s", (input, text, direction, spoken) => {
     expect(formatChange(input)).toEqual({ text, direction, spoken });
   });
@@ -117,6 +118,13 @@ describe("sortCoins", () => {
     const b = { ...coins[1], rank: 2, priceUsd: 1.001, marketCapUsd: 1_004_000_000_000 };
     expect(sortCoins([a, b], "price").map((c) => c.rank)).toEqual([2, 9]);
     expect(sortCoins([a, b], "cap").map((c) => c.rank)).toEqual([2, 9]);
+  });
+  test("BUG-003: монета без зміни (null) — у кінці за зростанням і за падінням, між собою — за рангом", () => {
+    const none = { ...coins[0], rank: 5, change7dPct: null };
+    const none2 = { ...coins[1], rank: 6, change7dPct: null };
+    const input = [none2, none, ...coins];
+    expect(sortCoins(input, "gain").map((c) => c.rank)).toEqual([2, 3, 1, 4, 5, 6]);
+    expect(sortCoins(input, "loss").map((c) => c.rank)).toEqual([4, 1, 2, 3, 5, 6]);
   });
   test("не мутує вхід і повертає нову копію", () => {
     const input = [...coins].reverse();

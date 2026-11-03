@@ -9,7 +9,7 @@
  * @property {string} symbol тікер у верхньому регістрі (`BTC`)
  * @property {number} rank місце в рейтингу, 1–50
  * @property {number} priceUsd ціна, $
- * @property {number} change7dPct зміна за 7 днів, %
+ * @property {number | null} change7dPct зміна за 7 днів, %; `null` — джерело не дало значення (показується «—»)
  * @property {number} marketCapUsd капіталізація, $
  * @property {string} imageUrl логотип лише з https://coin-images.coingecko.com/…, інакше порожній рядок
  * @property {number[]} sparkline7d погодинні ціни за 7 днів (до 168 точок)

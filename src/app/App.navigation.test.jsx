@@ -84,6 +84,56 @@ describe("BUG-005: фокус на h1 після зміни маршруту", (
   });
 });
 
+describe("Фокус без стрибка: прокрутка після переходу (рішення власника 2026-11-03)", () => {
+  it("h1 отримує фокус без прокрутки до нього; список повертається на свою позицію, сторінка монети — на початок", async () => {
+    const scrollTo = vi.fn((x, y) => {
+      window.scrollY = y;
+    });
+    vi.stubGlobal("scrollTo", scrollTo);
+    const focus = vi.spyOn(HTMLElement.prototype, "focus");
+    render(<App />);
+    await screen.findByRole("link", { name: "Bitcoin" });
+
+    window.scrollY = 1240;
+    fireEvent.scroll(window);
+    fireEvent.click(screen.getByRole("link", { name: "Bitcoin" }));
+    expect(await heading("Bitcoin")).toHaveFocus();
+    expect(scrollTo).toHaveBeenLastCalledWith(0, 0);
+
+    fireEvent.scroll(window);
+    fireEvent.click(screen.getByRole("link", { name: "← До списку монет" }));
+    expect(await heading("Топ-50 монет")).toHaveFocus();
+    expect(scrollTo).toHaveBeenLastCalledWith(0, 1240);
+    const headingFocus = focus.mock.calls.filter(
+      (_, i) => focus.mock.instances[i]?.tagName === "H1",
+    );
+    expect(headingFocus.length).toBeGreaterThanOrEqual(2);
+    expect(headingFocus.every(([options]) => options?.preventScroll === true)).toBe(true);
+    focus.mockRestore();
+    window.scrollY = 0;
+  });
+
+  it("h1 з tabIndex=-1: рамки немає при фокусі мишею, є при :focus-visible (клавіатура)", async () => {
+    vi.stubGlobal("scrollTo", vi.fn());
+    for (const [hash, name] of [
+      ["#/", "Топ-50 монет"],
+      ["#/coin/bitcoin", "Bitcoin"],
+      ["#/favorites", "Обрані"],
+      ["#/abc", "Сторінку не знайдено"],
+    ]) {
+      window.location.hash = hash;
+      render(<App />);
+      const h1 = await heading(name);
+      expect(h1).toHaveAttribute("tabindex", "-1");
+      expect(h1).toHaveClass(
+        "[&:focus:not(:focus-visible)]:outline-none",
+        "focus-visible:outline-2",
+      );
+      cleanup();
+    }
+  });
+});
+
 describe("BUG-008: ім'я кнопки обраних", () => {
   it("дорівнює «Додати в обрані: Bitcoin» і змінюється на «Прибрати з обраних: Bitcoin»", async () => {
     window.location.hash = "#/coin/bitcoin";

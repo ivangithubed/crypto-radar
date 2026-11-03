@@ -14,7 +14,7 @@ export function NotFoundPage() {
       <h1
         ref={heading}
         tabIndex={-1}
-        className="font-display text-xl font-semibold focus:outline-none md:text-2xl"
+        className="font-display text-xl font-semibold [&:focus:not(:focus-visible)]:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus md:text-2xl"
       >
         Сторінку не знайдено
       </h1>

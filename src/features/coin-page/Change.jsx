@@ -5,7 +5,7 @@ const COLORS = { up: "text-up", down: "text-down", flat: "text-ink-muted" };
 
 /**
  * Зміна за 7 днів: видимий текст зі стрілкою (`aria-hidden`) і текст для зчитувача (UX §5.2 `change.*`).
- * @param {{pct: number, suffix?: string}} props `suffix` дописується до тексту для зчитувача
+ * @param {{pct: number | null, suffix?: string}} props `suffix` дописується до тексту для зчитувача
  * @returns {import('react').ReactElement}
  */
 export function Change({ pct, suffix = "" }) {

@@ -34,6 +34,11 @@ function finite(raw, field) {
   return value;
 }
 
+/** Зміна за 7 днів: `null` (нові лістинги) → `null`, монета лишається у знімку з «—» (BUG-003, рішення власника, варіант Б). */
+function change(raw, field) {
+  return raw[field] === null ? null : finite(raw, field);
+}
+
 function safeImage(value) {
   if (typeof value !== "string") return "";
   try {
@@ -79,7 +84,7 @@ function toCoin(raw, rank) {
     symbol: text(raw, "symbol").toUpperCase(),
     rank,
     priceUsd: finite(raw, "current_price"),
-    change7dPct: finite(raw, "price_change_percentage_7d_in_currency"),
+    change7dPct: change(raw, "price_change_percentage_7d_in_currency"),
     marketCapUsd: finite(raw, "market_cap"),
     imageUrl: safeImage(raw.image),
     sparkline7d: sparkline(raw),

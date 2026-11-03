@@ -16,7 +16,7 @@ function CrashScreen() {
       <h1
         ref={heading}
         tabIndex={-1}
-        className="font-display text-xl font-semibold text-down focus:outline-none md:text-2xl"
+        className="font-display text-xl font-semibold text-down [&:focus:not(:focus-visible)]:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus md:text-2xl"
       >
         Щось пішло не так
       </h1>

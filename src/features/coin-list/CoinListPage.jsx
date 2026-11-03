@@ -72,7 +72,7 @@ export function CoinListPage() {
         <h1
           ref={h1Ref}
           tabIndex={-1}
-          className="font-display text-xl leading-6.5 font-semibold text-ink outline-none"
+          className="font-display text-xl leading-6.5 font-semibold text-ink [&:focus:not(:focus-visible)]:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
           Топ-50 монет
         </h1>

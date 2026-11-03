@@ -2,11 +2,21 @@
 // (округлені як у format.js), вони впорядковуються за місцем у рейтингу.
 import { shownChange, shownMarketCap, shownPrice } from "./format.js";
 
+/** Монети без зміни за 7 днів (`null`, BUG-003) — у кінці за обох напрямів. */
+function byChange(direction) {
+  return (a, b) => {
+    if (a.change7dPct === null || b.change7dPct === null) {
+      return Number(a.change7dPct === null) - Number(b.change7dPct === null);
+    }
+    return direction * (shownChange(b.change7dPct) - shownChange(a.change7dPct));
+  };
+}
+
 const COMPARATORS = {
   price: (a, b) => shownPrice(b.priceUsd) - shownPrice(a.priceUsd),
   cap: (a, b) => shownMarketCap(b.marketCapUsd) - shownMarketCap(a.marketCapUsd),
-  gain: (a, b) => shownChange(b.change7dPct) - shownChange(a.change7dPct),
-  loss: (a, b) => shownChange(a.change7dPct) - shownChange(b.change7dPct),
+  gain: byChange(1),
+  loss: byChange(-1),
 };
 
 /**

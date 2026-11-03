@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { formatChange, formatMarketCap, formatPrice } from "../../lib/index.js";
+import { CoinLogo } from "../../ui/index.js";
 import { removeLabel, TEXTS } from "./model.js";
 
 const CARD = "grid gap-1 rounded-md border border-line bg-surface-raised px-4 py-3";
@@ -21,23 +22,7 @@ function Star({ id, label, onRemove }) {
   );
 }
 
-function Logo({ coin }) {
-  if (coin.imageUrl) {
-    return (
-      <img src={coin.imageUrl} alt="" width="24" height="24" className="h-6 w-6 rounded-full" />
-    );
-  }
-  return (
-    <span
-      aria-hidden="true"
-      className="h-6 w-6 rounded-full bg-brand-soft text-center text-xs leading-6 font-semibold text-brand"
-    >
-      {coin.name.slice(0, 1)}
-    </span>
-  );
-}
-
-/** @param {{pct: number}} props */
+/** @param {{pct: number | null}} props */
 function Change({ pct }) {
   const { text, direction, spoken } = formatChange(pct);
   return (
@@ -58,7 +43,7 @@ export function FavoriteCard({ coin, onRemove }) {
     <li className={CARD}>
       <div className="flex items-center gap-2">
         <span className="min-w-5 text-sm text-ink-muted tabular-nums">{coin.rank}</span>
-        <Logo coin={coin} />
+        <CoinLogo url={coin.imageUrl} name={coin.name} />
         <Link
           to={`/coin/${coin.id}`}
           className="font-semibold text-ink hover:text-brand hover:underline"

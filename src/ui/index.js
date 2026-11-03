@@ -1,6 +1,7 @@
 // Публічний інтерфейс модуля ui (архітектура §5): доступні базові компоненти без залежностей від інших модулів.
 // Сигнатури та JSDoc — у файлах реалізацій.
 export { Button } from "./Button.jsx";
+export { CoinLogo } from "./CoinLogo.jsx";
 export { StatusMessage } from "./StatusMessage.jsx";
 export { ErrorBlock } from "./ErrorBlock.jsx";
 export { Skeleton } from "./Skeleton.jsx";

@@ -56,7 +56,7 @@ function changeTenths(pct) {
 
 /**
  * Зміна за 7 днів з точністю показу, 0,1 % (для сортування за видимим значенням); «0,0 %» → 0.
- * @param {number} pct
+ * @param {number} pct не `null`: монети без зміни сортування ставить у кінець (sort.js)
  * @returns {number}
  */
 export function shownChange(pct) {
@@ -66,11 +66,13 @@ export function shownChange(pct) {
 }
 
 /**
- * Зміна за 7 днів: видимий текст, напрям і текст для зчитувача (UX §5.2 `change.*`, §5.3, AC-1.5).
- * @param {number} pct
+ * Зміна за 7 днів: видимий текст, напрям і текст для зчитувача (UX §5.2 `change.*`, §5.3, AC-1.5);
+ * `null` — «—» і «немає даних» (BUG-003).
+ * @param {number | null} pct
  * @returns {{text: string, direction: 'up' | 'down' | 'flat', spoken: string}}
  */
 export function formatChange(pct) {
+  if (pct === null) return { text: "—", direction: "flat", spoken: "немає даних" };
   const tenths = changeTenths(pct);
   const shown = formatNumber(tenths / 10, 1);
   if (tenths === 0 || Number.isNaN(tenths)) {

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
-import { CoinLogo, StableTag } from "./CoinParts.jsx";
+import { CoinLogo } from "../../ui/index.js";
+import { StableTag } from "./CoinParts.jsx";
 
 /**
  * Логотип, назва-посилання на сторінку монети, тікер і мітка стейблкоїна (спільне для картки й рядка).
@@ -9,7 +10,7 @@ import { CoinLogo, StableTag } from "./CoinParts.jsx";
 export function CoinIdentity({ coin, index, isStable }) {
   return (
     <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-      <CoinLogo url={coin.imageUrl} lazy={index >= 6} />
+      <CoinLogo url={coin.imageUrl} name={coin.name} lazy={index >= 6} />
       <Link
         to={`/coin/${coin.id}`}
         data-coin-id={coin.id}

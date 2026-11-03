@@ -55,6 +55,23 @@ describe("parseMarkets", () => {
     expect(() => parseMarkets(json)).toThrow(ShapeError);
   });
 
+  it("BUG-003: price_change_percentage_7d_in_currency: null — монета лишається з change7dPct null", () => {
+    const json = clone();
+    json[3].price_change_percentage_7d_in_currency = null;
+    const coins = parseMarkets(json);
+    expect(coins).toHaveLength(50);
+    expect(coins.find((c) => c.id === json[3].id).change7dPct).toBeNull();
+  });
+
+  it("BUG-003: зміна за 7 днів відсутня або рядок — ShapeError (null дозволено лише явно)", () => {
+    const missing = clone();
+    delete missing[3].price_change_percentage_7d_in_currency;
+    expect(() => parseMarkets(missing)).toThrow(ShapeError);
+    const text = clone();
+    text[3].price_change_percentage_7d_in_currency = "1.5";
+    expect(() => parseMarkets(text)).toThrow(ShapeError);
+  });
+
   it("порожній sparkline — не помилка", () => {
     const json = clone();
     json[0].sparkline_in_7d.price = [];

@@ -2,6 +2,7 @@ import { act, fireEvent, render, renderHook, screen } from "@testing-library/rea
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   Button,
+  CoinLogo,
   ErrorBlock,
   Skeleton,
   StatusMessage,
@@ -32,6 +33,34 @@ describe("Button", () => {
     fireEvent.click(btn);
     expect(onClick).not.toHaveBeenCalled();
     expect(btn).toHaveFocus();
+  });
+});
+
+describe("CoinLogo (BUG-009, UX §8)", () => {
+  const URL = "https://coin-images.coingecko.com/coins/images/1/small/bitcoin.png";
+  it("з адресою — декоративне зображення заданого розміру", () => {
+    const { container } = render(<CoinLogo url={URL} name="Bitcoin" size={40} />);
+    const img = container.querySelector("img");
+    expect(img).toHaveAttribute("alt", "");
+    expect(img).toHaveAttribute("width", "40");
+    expect(container.querySelector("[data-logo-fallback]")).toBeNull();
+  });
+  it("помилка завантаження img → кружок з першою літерою, без зображення й повідомлення", () => {
+    const { container } = render(<CoinLogo url={URL} name="bitcoin" />);
+    fireEvent.error(container.querySelector("img"));
+    expect(container.querySelector("img")).toBeNull();
+    const fallback = container.querySelector("[data-logo-fallback]");
+    expect(fallback).toHaveTextContent("B");
+    expect(fallback).toHaveAttribute("aria-hidden", "true");
+    expect(fallback).toHaveClass("bg-brand-soft");
+  });
+  it("без адреси — одразу кружок з літерою; нова адреса після збою знову пробує зображення", () => {
+    const { container, rerender } = render(<CoinLogo url="" name="Ethereum" />);
+    expect(container.querySelector("[data-logo-fallback]")).toHaveTextContent("E");
+    rerender(<CoinLogo url={URL} name="Ethereum" />);
+    fireEvent.error(container.querySelector("img"));
+    rerender(<CoinLogo url={`${URL}?v=2`} name="Ethereum" />);
+    expect(container.querySelector("img")).not.toBeNull();
   });
 });
 

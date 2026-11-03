@@ -205,3 +205,32 @@ OK   CLS: медіана 0.000  (поріг ≤ 0.1 ; прогони: 0.000, 0.0
 OK   TBT: медіана 7.500 мс (поріг ≤ 200 мс; прогони: 7.500, 5.500, 8.500)
 EXIT=0
 ```
+
+## Revise №5 етапу 7 (BUG-003, BUG-009, фокус і прокрутка; 2026-11-03)
+
+```text
+$ python verify-gate.py --debt   (start 2026-11-03 14:36:42, end 14:37:34)
+✅ [PASS] Команда успішна: pnpm lint
+✅ [PASS] Команда успішна: pnpm dup
+✅ [PASS] Команда успішна: pnpm deadcode
+✅ [PASS] Команда успішна: pnpm boundaries
+✅ [PASS] Команда успішна: pnpm audit --audit-level high
+✅ [PASS] Команда успішна: pnpm sbom:write
+✅ [PASS] Команда успішна: pnpm test:a11y
+✅ [PASS] Команда успішна: pnpm vitals
+✅ [PASS] debt_commands: 7 аспектів задано
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+# vitals — окремий прогін до ремонту рамки (час не зафіксовано) і в складі --debt 14:36:42 – 14:37:34 (вище); після ремонту рамки не повторено — зміна лише в класах CSS:
+$ pnpm vitals     → LCP медіана 906.170 мс; CLS 0.000; TBT 5.500 мс — EXIT=0
+# окремі прогони після ремонту рамки (deadcode — 14:45:38 і повтор 16:22:52 – 16:23:09; boundaries і dup — повтор 2026-11-03 16:22:44 – 16:22:52):
+$ pnpm deadcode   (14:45:38) → knip: «Configuration hints (1): .css knip.json Compiled extension excluded by project» — EXIT=0
+$ pnpm boundaries (16:22:44 – 16:22:50) → ✔ no dependency violations found (93 modules, 238 dependencies cruised) — EXIT=0
+$ pnpm dup        (16:22:50 – 16:22:52) → Total: 74 файли, 5912 рядків, 8 клонів, 65 рядків (1.10%), 543 токени (1.30%) — поріг ≤ 3 % — EXIT=0
+$ pnpm deadcode   (16:22:52 – 16:23:09) → «Configuration hints (1)» — EXIT=0
+# після ремонту рамки фокуса й scrollRestoration (14:43):
+$ pnpm verify     (14:53:43 – 14:53:51; повтор 16:23:09 – 16:23:17, Start at 16:23:11) → Test Files 16 passed, Tests 261 passed, NFR-5 105.93 kB gzip — EXIT=0
+# окремий прогін 14:44:22 – 14:44:52 (після ремонту рамки о 14:43):
+$ pnpm test:a11y  (14:44:22 – 14:44:52) → 40 passed — EXIT=0
+$ pnpm exec vitest run --config acceptance/vitest.config.js   (14:53:51 – 14:54:00) → Tests 91 passed — EXIT=0
+```

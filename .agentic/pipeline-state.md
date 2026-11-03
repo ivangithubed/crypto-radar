@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Запит на зміну №5 (етапи 3, 4, 6 — Revise) і Stage 7: Revise №5; гейти в порядку 3 → 4 → 6 → 7, далі Stage 8.b`
+- **Поточний активний етап:** `Stage 8.b (після рішення щодо Revise 8.a)`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-03 20:59`
+- **Останнє оновлення:** `2026-11-03 22:25`
 
 ---
 
@@ -23,8 +23,8 @@
 | **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f`, запит №5 — `9417669` |
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0` |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
-| **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b` |
-| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `REJECTED_REVISING` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805` |
+| **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5` |
+| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805` |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f` |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
@@ -60,6 +60,7 @@
 | **8.a** | `2026-11-03 14:12` | `93d517f` | `test(stage-8.a): add test plan, manual test run and defect reports` | `Власник продукту` |
 | **3 (запит №5)** | `2026-11-03 17:18` | `9417669` | `docs(stage-3): align retry policy with client after bug-001` | `Власник продукту` |
 | **4 (запит №5)** | `2026-11-03 19:01` | `a6719e0` | `docs(stage-4): align network error retries with client after bug-001` | `Власник продукту` |
+| **6 (запит №5)** | `2026-11-03 20:59` | `f1ac4b5` | `docs(stage-6): align p-4 retry policy with client after bug-001` | `Власник продукту` |
 
 ---
 
@@ -152,3 +153,6 @@
 - `2026-11-03 17:18 Stage 3 (запит на зміну №5): власник — «Approve & закоміть 3» (APPROVED_AND_COMMITTED). TD-021 закрито для етапу 3 (NFR-3, діаграма 7.1, ADR 0005, ADR 0001 приведено до коду). Пункти гейту, які власник окремо не вирішив, лишаються відкритими (L-003): прийняття ризиків «CoinGecko / GitHub бачать IP» (STRIDE I) — «підтвердити на гейті»; TD-022 (§6 change7dPct і null) — відкритий; TD-020 — відкритий. Далі — гейт етапу 4 (повтор --stage 4).`
 - `2026-11-03 19:00 Stage 4 (запит на зміну №5): власник — «Approve & закоміть 4» (APPROVED_AND_COMMITTED). TD-021 закрито для етапу 4 (повтори мережевої помилки в UX приведено до коду); валідатор --stage 4 exit 0. Відкритими лишаються (L-003): TD-022 (UX §3 / §5.2, change7dPct = null → «—») і TD-023. Далі — гейт етапу 6 (повтор --stage 6).`
 - `2026-11-03 20:59 Stage 6 (запит на зміну №5): власник — «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» → «Approve & закоміть» (APPROVED_AND_COMMITTED). TD-021 закрито для етапу 6 (P-4 і §12.3 приведено до коду); валідатор --stage 6 exit 0 (20:42:48). Відкритими лишаються (L-003): TD-022, TD-023. Далі — повторне рев'ю етапу 7 (Revise №5), --stage 7 --run і гейт етапу 7.`
+- `2026-11-03 22:17 Stage 7 (Revise №5): рев'ю №7 — BLOCKERS FOUND (секція 1, 4.0, 7.1 і пункт 1 гейту описували гейти 3 → 4 → 6 як майбутні; tech-debt.md у 7.1 без змін). Виправлено: поточний стан із хешами; TD-021 закрито в реєстрі (гейти 3, 4, 6); «Поточний активний етап». Далі — рев'ю №8.`
+- `2026-11-03 22:23 Stage 7 (Revise №5): рев'ю №8 — PASS (≈22:20); verify-gate.py --stage 7 --run — EXIT 0 (22:21:53 – 22:23:41, 26 PASS). Етап готовий до гейту 7; на гейт: TD-022, TD-023, ризики IP (STRIDE I), артефакти 8.a, рядок project.json, .claude/skills/verify/**.`
+- `2026-11-03 22:25 Stage 7 (Revise №5): власник — «Approve & закоміть 7» (APPROVED_AND_COMMITTED). Схвалено пункт 1 гейту: BUG-003 (варіант Б), BUG-009, фокус і прокрутка. Відкритими лишаються (L-003, окремо не вирішено): TD-023, TD-022, чек-лист TC-087 – TC-090, Revise 8.a (08-test-plan.md, BUG-003, BUG-009, PNG), .claude/skills/verify/logo-focus-check.mjs (не комічено), ризики IP (STRIDE I), рядок .agentic/project.json. Далі — рішення щодо Revise 8.a, потім Stage 8.b.`
