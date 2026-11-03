@@ -2,14 +2,14 @@
 
 - **Етап:** `Stage 4: UX і контракт API`
 - **Відповідальний скіл:** `ux-api-design`
-- **Дата формування:** `2026-11-02 19:25` · **Revise (запит №1):** `2026-11-03 00:20`
-- **Статус аудиту independent-reviewer:** `PASS`
+- **Дата формування:** `2026-11-02 19:25` · **Revise (запит №1):** `2026-11-03 00:20` · **Revise (запит №5, TD-021):** `2026-11-03 14:35`
+- **Статус аудиту independent-reviewer:** `PASS` (рев'ю №3 запиту на зміну №5, 2026-11-03; рев'ю №1 і №2 повернули блокери, їх виправлено — див. 4.3)
 
 ---
 
 ## 1. Перевірені передумови (Pre-Flight Summary)
 
-Етап документний: нічого не встановлювалося, пакети не завантажувалися. Передумова — етап 3 `APPROVED_AND_COMMITTED` (`2edc20f`), `verify-gate.py --next` повернув 0. У `.agentic/project.json`: `stack.type: "frontend-only"`, `has_http_api: false`.
+Етап документний: нічого не встановлювалося, пакети не завантажувалися. Передумова на старті етапу (2026-11-02) — етап 3 `APPROVED_AND_COMMITTED` (`2edc20f`), `verify-gate.py --next` повернув 0. **Revise за запитом №5:** етап 3 зараз у статусі `REJECTED_REVISING` за тим самим запитом, тож `verify-gate.py --stage 4` до гейту й коміту етапу 3 повертає FAIL передумови; гейт етапу 4 виноситься лише після гейту етапу 3 (порядок 3 → 4 → 6 → 7). Етап 3 схвалено й закомічено (`9417669`); `--stage 4` після цього — код 0. У `.agentic/project.json`: `stack.type: "frontend-only"`, `has_http_api: false`.
 
 | Інструмент / SDK / Акаунт | Необхідна версія | Фактичний стан на старті | Запропонована команда | Згода отримана | Результат |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -40,6 +40,8 @@
 
 ## 3. Виконаний обсяг робіт (Deliverables)
 
+**Revise (запит на зміну №5, 2026-11-03 14:35):** змінено [`.agentic/specs/04-ux-and-contract.md`](../specs/04-ux-and-contract.md) (§3 E-NET, E-SRC; §7.1; §8) — повтори при мережевій помилці лише при `navigator.onLine === false`; виняток `fetch` онлайн — E-SRC, 1 запит; трекер — `.agentic/pipeline-state.md` (розділ 4).
+
 - [`.agentic/specs/04-ux-and-contract.md`](../specs/04-ux-and-contract.md) — карта 5 екранів, 7 user flows (US-1 – US-10), матриці станів, WCAG 2.2 AA, тексти (6 підказок, 60+ рядків мікрокопірайту, формат чисел), брейкпоінти, 4 діаграми послідовності, каталог операцій стороннього API, дизайн-система й відповідність макетам.
 - **Revise 2026-11-03 (запит на зміну №1):** у §5.2 рядок `footer.privacy` — «GitHub» тепер звичайний текст без посилання, «CoinGecko» лишається посиланням на політику приватності. Причина: `quality_rules.only-coingecko-origins` у `.agentic/project.json` забороняє в `src/**` адреси поза доменами CoinGecko (виявив рев'юер етапу 6). Текст примітки й решта документа не змінювалися.
 - [`.agentic/reports/04-ux-api-report.md`](04-ux-api-report.md) — цей звіт.
@@ -57,13 +59,16 @@
 
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 4` | 0 | 0 помилок (фінальний запуск після вердикту) | так (до вердикту — exit 1, лише через вердикт) | Без `--run`: етап без коду; вивід у 4.2 |
-| Сканер секретів | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .agentic/specs/` | 0 | 12 файлів, 0 секретів | так | Revise 2026-11-03 |
-| Назви станів у документі | `grep -c -e Loading -e Empty -e Error .agentic/specs/04-ux-and-contract.md` | 0 | 62 рядки (> 0) | так (еквівалент Grep; хук read-only) | `must_match` етапу |
-| Розділ дизайн-системи | `grep -c "Дизайн-система" .agentic/specs/04-ux-and-contract.md` | 0 | 4 (> 0) | так (еквівалент Grep; хук read-only) | Графічний інтерфейс |
-| Покриття AC | `python -c "import re;a=set(re.findall(r'@(AC-\d+\.\d+)',open('.agentic/specs/02-requirements.md',encoding='utf-8').read()));b=set(re.findall(r'AC-\d+\.\d+',open('.agentic/specs/04-ux-and-contract.md',encoding='utf-8').read()));print(len(a),len(a-b));exit(len(a-b))"` | 0 | 57 AC у вимогах, 0 непокритих | так (еквівалент Grep -o; хук read-only) | Код виходу = кількість непокритих AC (L-001) |
-| Правка запиту №1 | `grep -c "«GitHub» — звичайний текст без посилання" .agentic/specs/04-ux-and-contract.md` | 0 | 1 (очікується 1) | так (еквівалент Grep; хук read-only) | Revise 2026-11-03 |
-| Вердикт рев'юера | Субагент `independent-reviewer` | 0 | PASS (повторний гейт, 3 WARNING) | — | Розділ 4.3 |
+| Запит №5: нове формулювання повторів | `grep -c "onLine" .agentic/specs/04-ux-and-contract.md` | 0 | 5 | так (рев'ю №3, Grep; хук read-only) | вивід — 4.2, блок «Запит №5», повтор 2026-11-03 16:19:41 після правки §7.1 |
+| Запит №5: старих формулювань немає | `python -c "import sys;fs=['.agentic/specs/03-architecture.md','.agentic/specs/adr/0005-data-source-coingecko.md','.agentic/specs/04-ux-and-contract.md','.agentic/specs/implementation_plan.md'];old=['мережа після 2 повторів','5xx / мережа / таймаут','5xx, мережа, таймаут','мережа / таймаут 10 с / 5xx','на мережеву помилку, таймаут і 5xx'];n=sum(open(f,encoding='utf-8').read().count(o) for f in fs for o in old);print('старих формулювань:',n);sys.exit(n)"` | 0 | 0 у 4 документах | так (рев'ю №3, Grep; хук read-only) | вивід — 4.2, блок «Запит №5», повтор 2026-11-03 16:19:41; код 0 = 0 збігів (L-001) |
+| Запит №5: валідатор етапу і вердикт рев'юера | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 4`, субагент `independent-reviewer` | 0 | вердикт PASS (рев'ю №3); валідатор — 8 PASS, 0 FAIL | ні | запущено 2026-11-03 17:18:22 після вердикту PASS і гейту етапу 3 (`9417669`) (L-004); вивід — 4.2, блок «Запит №5 — валідатор етапу» |
+| Валідатор етапу (`f689fc3`, Revise №1, 2026-11-03) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 4` | 0 | 0 помилок (фінальний запуск після вердикту) | так (до вердикту — exit 1, лише через вердикт) | Без `--run`: етап без коду; вивід у 4.2 |
+| Сканер секретів (`f689fc3`, Revise №1, 2026-11-03) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .agentic/specs/` | 0 | 12 файлів, 0 секретів | так | Revise 2026-11-03 |
+| Назви станів у документі (`f689fc3`, Revise №1, 2026-11-03) | `grep -c -e Loading -e Empty -e Error .agentic/specs/04-ux-and-contract.md` | 0 | 62 рядки (> 0) | так (еквівалент Grep; хук read-only) | `must_match` етапу |
+| Розділ дизайн-системи (`f689fc3`, Revise №1, 2026-11-03) | `grep -c "Дизайн-система" .agentic/specs/04-ux-and-contract.md` | 0 | 4 (> 0) | так (еквівалент Grep; хук read-only) | Графічний інтерфейс |
+| Покриття AC (`f689fc3`, Revise №1, 2026-11-03) | `python -c "import re;a=set(re.findall(r'@(AC-\d+\.\d+)',open('.agentic/specs/02-requirements.md',encoding='utf-8').read()));b=set(re.findall(r'AC-\d+\.\d+',open('.agentic/specs/04-ux-and-contract.md',encoding='utf-8').read()));print(len(a),len(a-b));exit(len(a-b))"` | 0 | 57 AC у вимогах, 0 непокритих | так (еквівалент Grep -o; хук read-only) | Код виходу = кількість непокритих AC (L-001) |
+| Правка запиту №1 (`f689fc3`, Revise №1, 2026-11-03) | `grep -c "«GitHub» — звичайний текст без посилання" .agentic/specs/04-ux-and-contract.md` | 0 | 1 (очікується 1) | так (еквівалент Grep; хук read-only) | Revise 2026-11-03 |
+| Вердикт рев'юера (`f689fc3`, Revise №1, 2026-11-03) | Субагент `independent-reviewer` | 0 | PASS (повторний гейт, 3 WARNING) | — | Розділ 4.3 |
 
 ### 4.1. Збірка, лінтери та автоматичні тести
 ```text
@@ -128,7 +133,64 @@ $ python verify-gate.py --stage 4   (фінальний запуск після 
 exit=0
 ```
 
+**Запит на зміну №5 (TD-021; перший прогін 2026-11-03 14:35:47, нижче — повтор 2026-11-03 16:19:41 після правки §7.1 о 14:47–14:48, рядок 404 «else 429 / виняток fetch при onLine = true»):** змінено `04-ux-and-contract.md` (§3 E-NET і E-SRC, §7.1 діаграма, §8 рядок `/coins/markets`): повтори лише при `navigator.onLine === false`, таймауті й 5xx; виняток `fetch` при `navigator.onLine === true` — E-SRC, 0 повторів, 1 запит (як у коді після BUG-001, L-008).
+```text
+$ grep -c "onLine" .agentic/specs/04-ux-and-contract.md
+5
+EXIT=0
+$ python -c "import sys;fs=['.agentic/specs/03-architecture.md','.agentic/specs/adr/0005-data-source-coingecko.md','.agentic/specs/04-ux-and-contract.md','.agentic/specs/implementation_plan.md'];old=['мережа після 2 повторів','5xx / мережа / таймаут','5xx, мережа, таймаут','мережа / таймаут 10 с / 5xx','на мережеву помилку, таймаут і 5xx'];n=sum(open(f,encoding='utf-8').read().count(o) for f in fs for o in old);print('старих формулювань:',n);sys.exit(n)"
+старих формулювань: 0
+EXIT=0
+```
+
+**Запит №5 — валідатор етапу (2026-11-03 17:18:22, після вердикту PASS рев'ю №3 і коміту етапу 3 `9417669`, повний вивід):**
+```text
+$ python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 4
+
+=== Перевірка етапу: Stage 4 ===
+ℹ️  [INFO] UX і контракт API — скіл ux-api-design
+✅ [PASS] Передумови схвалено: 3
+ℹ️  [INFO] Перевірка звіту: .agentic/reports/04-ux-api-report.md
+✅ [PASS] Статус аудиту independent-reviewer: PASS
+✅ [PASS] «Валюта довіри»: 10 перевірок із кодами виходу
+✅ [PASS] Карта технологій заповнена (6 рядків)
+✅ [PASS] Conventional Commit у секції 7 валідний
+✅ [PASS] Артефакт .agentic/specs/04-ux-and-contract.md знайдено
+ℹ️  [INFO] Артефакт contract/openapi.yaml: не застосовно (has_http_api = false)
+
+=== Правила якості коду: . ===
+✅ [PASS] Перевірено файлів: 85, порушень-помилок немає
+
+=== Сканування секретів: . ===
+ℹ️  [INFO] Проскановано файлів: 193
+✅ [PASS] Відкритих секретів не виявлено
+
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+```
+
 ### 4.3. Вердикт незалежного аудиту (`independent-reviewer`)
+
+**Рев'ю №3 запиту на зміну №5 (поточний вердикт):**
+```text
+PASS — independent-reviewer, 2026-11-03, Stage 4 (рев'ю №3 Revise за запитом на зміну №5, TD-021).
+Виправлення рев'ю №2 перевірено: (1) grep-лічильник «onLine» у 04-ux-and-contract.md — 5 рядків (126, 127, 404, 407, 483), у 4.0 і 4.2 теж 5; (2) секція 1 тепер чесно каже, що етап 3 у статусі REJECTED_REVISING і що --stage 4 до гейту етапу 3 дає FAIL передумови; трекер підтверджує: 3 і 4 — REJECTED_REVISING. WARNING попереднього рев'ю: у секції 6 є TD-022 (у реєстрі є, «до рішення не прийнятий», L-003); вступ секції 6 — «TD-001 – TD-023»; у 7.1 зміни етапу 3 названо змістовими, а «лише CRLF» стосується тільки 01–02 (git diff --stat HEAD їх не показує).
+Межі етапу: diff етапу 4 — це 04-ux-and-contract.md (§3 E-NET і E-SRC, §7.1, §8), 04-ux-api-report.md і pipeline-state.md, усі три в зоні етапу. Решта робочого дерева (етапи 3, 6, 7, 8.a, project.json, .claude/skills/verify/*) у 7.1 описана повністю й до git add не потрапляє. Коду, маніфестів і contract/ в етапі 4 немає. git status до і після аудиту однаковий (46 записів).
+Секція 7: явний git add трьох файлів; docs(stage-4): align network error retries with client after bug-001 — валідний.
+Відповідність коду: src/market-data/client.js (isRetryable: 5xx, TimeoutError і NetworkError лише при offline === true → 2 повтори через 2000 і 4000 мс; 429 і виняток fetch при onLine === true → 0 повторів, errorKindOf → 'src') збігається з UX §3, §7.1 і §8. src/ui/CoinLogo.jsx (кружок bg-brand-soft з першою літерою, aria-hidden, без повідомлення) збігається з UX §8. Старих формулювань у 03-architecture.md, ADR 0005, 04-ux-and-contract.md і implementation_plan.md — 0 (Grep). P-4, NFR-3 / діаграма архітектури, ADR 0005 і рядок §8 узгоджені між собою (L-002).
+Секрети: verify-gate.py --stage 4 → --scan-secrets . — 193 файли, 0 секретів.
+Залежності: не застосовно — етап документний, нових пакетів немає. Правила якості: --check-code . — 85 файлів, 0 помилок. Контракт: не застосовно — has_http_api: false (ADR 0001, ADR 0005).
+Повторний запуск: verify-gate.py --stage 4 — exit 1, 2 FAIL: «Передумова Stage 3 не схвалена (REJECTED_REVISING)» — очікувано, знімається гейтом етапу 3, у секції 1 це описано чесно; «Статус аудиту … не PASS» — до цього вердикту. Повторено рядки 4.0 запиту №5: «onLine» — 5 (збігається), «старих формулювань» — 0 (збігається), обидва інструментом Grep (хук read-only). Рядок «валідатор і вердикт» — «не запускалось» (L-004) — правильно. Годинник (date) хук заблокував — L-005 не перевірено повторно; останній коміт 14:12 не пізніший за позначки запиту №5.
+Трасування: 57 AC-N.M у секції 5 без змін; правка зачіпає лише US-8 (AC-8.1 – AC-8.3: E-NET, E-SRC, діаграма 7.1).
+WARNING: (1) поле статусу казало «рев'ю ще не проведено»; (2) рев'ю №2 не записане у звіті, абзац рев'ю №1 стоїть поза 4.3; (3) «Повторив рев'юер: ні» в рядках запиту №5. INFO: TD-022 посилається на format.js замість sort.js; у client.js стейблкоїнів немає &page=1 (було й раніше); інші 4xx в UX не класифіковано (було й раніше).
+Після вердикту (автор, 2026-11-03 16:26): WARNING (1)–(3) і INFO про sort.js виправлено — поле статусу, записи рев'ю №1 і №2 у 4.3, «Повторив рев'юер», посилання TD-022 на src/lib/sort.js.
+```
+
+**Рев'ю запиту на зміну №5, №1 (2026-11-03 ≈ 14:43, час — «Start at» з виводу рев'юера):** BLOCKERS FOUND — виправлено 14:47 – 14:48: старі рядки 4.0 позначено `f689fc3` (Revise №1); секція 7 — новий список і повідомлення коміту; блок «Запит №5» перенесено в 4.2; у §7.1 додано гілку «429 / виняток fetch онлайн → 1 запит». Наступне рев'ю — після виправлень.
+
+**Рев'ю запиту на зміну №5, №2 (2026-11-03 ≈ 16:18):** BLOCKERS FOUND — (1) лічильник «onLine» 4 замість 5 (вивід до правки §7.1); (2) секція 1 вважала етап 3 схваленим; WARNING — без TD-022 у секції 6, застарілий вступ секції 6, «CRLF» для змін етапу 3 у 7.1. Виправлено 16:19 – 16:20 (повтор команд 16:19:41).
+
+**Попередній вердикт (Revise №1):**
 ```text
 PASS — independent-reviewer, 2026-11-03, Stage 4 (повторний гейт після Revise за запитом на зміну №1).
 Межі етапу: git diff --stat HEAD — 3 файли зі змістом (.agentic/specs/04-ux-and-contract.md: 1 рядок, .agentic/reports/04-ux-api-report.md, .agentic/pipeline-state.md), усі в зоні етапу 4. У 04-ux-and-contract.md змінено лише примітку рядка footer.privacy у §5.2, текст примітки для відвідувача той самий. Коду, маніфестів і contract/ немає. 01–03 « M» без змістового diff, у коміт не входять; .claude/skills/verify/SKILL.md поза етапом, у git add його немає. git status до і після аудиту однаковий. Секція 7: явний git add трьох файлів, docs(stage-4): keep github in privacy note as plain text — валідний.
@@ -174,12 +236,13 @@ WARNING: (1) розходження §5.2 з розділом 8.4 архітек
 
 ## 6. Ризики, технічний борг і відкриті питання
 
-Реєстр `.agentic/tech-debt.md` існує з коміту `3c7cc09` (TD-001 – TD-004). Він поза зоною змін етапу 4, тому два нові пункти Revise (розходження з §8.4 і WCAG 2.4.4) винесено нижче як питання на гейт; занести їх у реєстр як TD-005 / TD-006 — за рішенням власника.
+Реєстр `.agentic/tech-debt.md` (зараз TD-001 – TD-023) поза зоною змін етапу 4; пункти, що стосуються UX-документа, винесено нижче як питання на гейт.
 
 | Тип | Опис | Вплив | Що пропонується | Власник рішення |
 | :--- | :--- | :--- | :--- | :--- |
 | Питання | Як отримати файли woff2 Unbounded і Onest для self-hosting (репозиторії шрифтів або пакет npm на кшталт `@fontsource/*`) — новий файл чи залежність треба перевірити в реєстрі | Низький | Етап 5: обрати джерело, перевірити ліцензію OFL і пакет у реєстрі npm (NFR-9) | Скіл етапу 5 + власник |
 | Ризик | Невідомо, чи має Onest OpenType-ознаку `tnum`; без неї `tabular-nums` не вирівняє цифри в колонках | Низький | Етап 5: перевірити; якщо ні — вирівнювання праворуч у колонках лишається, вигляд злегка нерівний | Скіл етапу 5 |
+| Питання | TD-022: UX §3 (E-SHAPE «неправильні типи» → Error) і §5.2 (`change.*` лише up / down / flat) не знають `null` у зміні за 7 днів, а код за варіантом Б BUG-003 показує «—» / «немає даних» і ставить такі монети в кінець сортування (`src/market-data/parse.js`, `src/lib/format.js`; сортування — `src/lib/sort.js`) | Низький | Рішення на гейті етапу 4: окремий запит на зміну UX §3 / §5.2 чи лишити як є (до рішення не «прийнятий», L-003) | Власник |
 | Ризик | Шрифти додають ~60–120 КБ woff2 і можуть зсувати текст при підміні (CLS) | Середній | `font-display: swap`, preload лише Onest 400, підмножини `cyrillic` + `latin`; виміряти LCP і CLS за NFR-4 на етапі 5 | Скіл етапу 5 |
 | Ризик | Пари на межі: `up` на `brand-soft` — 4.54:1 (світла), `line-strong` на `brand-soft` — 3.07:1 / 2.81:1 | Низький | Документ (розділи 4 і 9.2) і README дизайн-системи забороняють ставити `up`/`down` поза `surface-raised` і межі `line-strong` на `brand-soft`; axe на етапі 8.b | Скіл етапу 7 |
 | Питання | AC-9.3 дослівно вимагає, щоб увесь текст, крім назв монет і тікерів, був українською, а атрибуція «Powered by CoinGecko» за умовами CoinGecko (NFR-16, ADR 0005) — англійською | Середній | Власник на гейті: або уточнити AC-9.3 через «Revise» етапу 2 (виняток для атрибуції джерела), або зафіксувати виняток у тест-дизайні 8.a / 8.b | Власник продукту |
@@ -208,18 +271,20 @@ WARNING: (1) розходження §5.2 з розділом 8.4 архітек
 ## 7. Точка фіксації в Git (Recommended Git Commit Checkpoint)
 
 ### 7.1. Список файлів для індексації (`git status --short`)
+
+Revise за запитом на зміну №5 (TD-021). Попередні коміти етапу — у журналі трекера (розділ 3). Інші зміни робочого дерева до коміту етапу 4 не належать і не індексуються: етап 3 за запитом №5 — `.agentic/specs/03-architecture.md`, `adr/0001-stack.md`, `adr/0005-data-source-coingecko.md`, `.agentic/reports/03-architecture-report.md`; етап 6 — `implementation_plan.md`, `06-plan-report.md`; етап 7 (Revise №5) — `src/**`, `07-implementation-report.md`, `.agentic/evidence/*`, `.agentic/tech-debt.md`; етап 8.a — `08-test-plan.md`, `.agentic/qa/bugs/BUG-003.md`, `BUG-009.md`, `.agentic/qa/evidence/*.png`; власник — `.agentic/project.json` (`holdouts_command`), `.claude/skills/verify/*`; лише CRLF без змістового diff — `.agentic/specs/01–02`, `.agentic/reports/01–02`.
+
 ```text
- M .agentic/pipeline-state.md
- M .agentic/reports/04-ux-api-report.md
  M .agentic/specs/04-ux-and-contract.md
+ M .agentic/reports/04-ux-api-report.md
+ M .agentic/pipeline-state.md
 ```
 
-`git status --short` також показує ` M` для `01-…`–`03-…` звітів і специфікацій (`01-product-brief.md`, `02-requirements.md`, `03-architecture.md`), але `git diff --stat` для них порожній (змістових змін немає, лише стан індексу) — у коміт етапу 4 вони не входять; `.claude/skills/` — поза зоною етапу.
-
 ### 7.2. Явна індексація та коміт (Conventional Commits)
+
 ```bash
 git add .agentic/specs/04-ux-and-contract.md .agentic/reports/04-ux-api-report.md .agentic/pipeline-state.md
-git commit -m "docs(stage-4): keep github in privacy note as plain text"
+git commit -m "docs(stage-4): align network error retries with client after bug-001"
 ```
 
 ---
@@ -234,3 +299,5 @@ git commit -m "docs(stage-4): keep github in privacy note as plain text"
 > 2026-11-02 19:31: власник обрав «Approve & закоміть».
 > 2026-11-03 00:20: Revise за запитом на зміну №1 (footer.privacy).
 > 2026-11-03 00:40: власник обрав «Approve & закоміть».
+> 2026-11-03 14:35: Revise за запитом на зміну №5 (TD-021, рішення власника «Оновити документи»): документи про повтори приведено до коду; статус `REJECTED_REVISING`, чекбокси знову порожні до гейту (порядок гейтів 3 → 4 → 6 → 7).
+> 2026-11-03 19:00: власник обрав «Approve & закоміть 4» (запит на зміну №5). Відкриті пункти — TD-022, TD-023 (L-003).

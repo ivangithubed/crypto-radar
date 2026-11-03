@@ -123,8 +123,8 @@ flowchart TD
 
 | Код у документі | Що сталося | Як визначає SPA | Стан екрана |
 | :--- | :--- | :--- | :--- |
-| E-NET | Немає мережі | `fetch` кидає помилку, `navigator.onLine === false` | Error, текст «Немає з'єднання» |
-| E-SRC | CoinGecko недоступний: 5xx, таймаут 10 с, мережа після 2 повторів (2 с, 4 с) | статус / таймаут | Error, текст «Не вдалося отримати ціни» |
+| E-NET | Немає мережі | `fetch` кидає помилку, `navigator.onLine === false`; до 2 повторів (2 с, 4 с) | Error, текст «Немає з'єднання» |
+| E-SRC | CoinGecko недоступний: 5xx або таймаут 10 с — після 2 повторів (2 с, 4 с); `fetch` кидає помилку при `navigator.onLine === true` (так само виглядає 429 без CORS-заголовка) — без повторів, 1 запит (запит на зміну №5) | статус / таймаут / виняток `fetch` онлайн | Error, текст «Не вдалося отримати ціни» |
 | E-429 | Ліміт запитів CoinGecko | статус 429, без повторів (NFR-3) | Error, той самий текст; наступна спроба — у 60-секундний цикл або за кнопкою |
 | E-SHAPE | Некоректна відповідь (немає полів, неправильні типи, менше ніж 50 монет) | перевірка форми відповіді (ADR 0005) | Error, текст «Не вдалося отримати ціни» |
 | E-STALE | Давність > 300 с (NFR-1) | `now − min(last_updated) > 300 с` | Error, текст «Ціни застаріли» |
@@ -401,10 +401,15 @@ sequenceDiagram
         CG-->>MD: 50 монет
         MD-->>UI: status = fresh
         UI-->>V: Data: 25 монет, «Ціни на 14:33», фокус на h1
-    else 5xx / мережа / таймаут
+    else 429 / виняток fetch при onLine = true
+        CG-->>MD: помилка (1 запит, без повторів)
+        MD-->>UI: status = error
+    else 5xx / таймаут / мережа офлайн (onLine = false)
         MD->>CG: повтор через 2 с, потім через 4 с
         CG-->>MD: знову помилка
         MD-->>UI: status = error
+    end
+    opt status = error (будь-яка гілка помилки)
         UI-->>V: Error знову, кнопка знову активна, фокус на ній, role="status" «Не вдалося оновити ціни…»
     end
 ```
@@ -475,7 +480,7 @@ sequenceDiagram
 
 | Операція стороннього API | Навіщо | US / AC | Ліміти | Як помилки відображаються в станах |
 | :--- | :--- | :--- | :--- | :--- |
-| `GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=7d` | Знімок топ-50: ціни, зміна, капіталізація, місце, `sparkline_in_7d`, `last_updated`, логотип | US-1, US-2, US-3, US-4, US-6, US-8 | ≤ 1 запит/хв на видиму вкладку, 0 у прихованій; таймаут 10 с (NFR-2, NFR-3) | 5xx / мережа / таймаут → 2 повтори (2 с, 4 с), далі Error (E-SRC, E-NET); 429 → Error без повторів (E-429); некоректна форма → Error (E-SHAPE); давність > 300 с → Error (E-STALE); на S-1, S-2, S-3 однаково, без цін |
+| `GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=7d` | Знімок топ-50: ціни, зміна, капіталізація, місце, `sparkline_in_7d`, `last_updated`, логотип | US-1, US-2, US-3, US-4, US-6, US-8 | ≤ 1 запит/хв на видиму вкладку, 0 у прихованій; таймаут 10 с (NFR-2, NFR-3) | 5xx / таймаут / мережа офлайн → 2 повтори (2 с, 4 с), далі Error (E-SRC, E-NET); виняток `fetch` при `navigator.onLine === true` → Error без повторів (E-SRC); 429 → Error без повторів (E-429); некоректна форма → Error (E-SHAPE); давність > 300 с → Error (E-STALE); на S-1, S-2, S-3 однаково, без цін |
 | `GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=stablecoins&per_page=250&page=1` | Ознака `isStablecoin` для мітки й підказки «Стейблкоїн» | US-7 (AC-7.1, AC-7.3) | 1 раз за сесію вкладки (NFR-3) | Будь-яка помилка → Partial: без міток «Стейблкоїн», без повідомлення й без впливу на ціни |
 | `GET https://coin-images.coingecko.com/…` (поле `image`) | Логотипи монет 24 і 40 px | US-1, US-4, US-6 | Кешує браузер; CSP `img-src` (NFR-8) | Не завантажився → кружок `brand-soft` з першою літерою назви (`alt=""`), без повідомлення |
 
