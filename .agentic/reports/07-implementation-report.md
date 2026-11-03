@@ -2,7 +2,7 @@
 
 - **Етап:** `Stage 7: Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері`
 - **Відповідальний скіл:** `sdd-delivery` (разом із `dag-runner`, `red-team-review`, `tech-debt-auditor`)
-- **Дата формування:** `2026-11-03 03:24`
+- **Дата формування:** `2026-11-03 03:24`; Revise №4 (ремонт BUG-001, 002, 004–008 етапу 8.a) — `2026-11-03 05:49`
 - **Статус аудиту independent-reviewer:** `PASS`
 
 ---
@@ -51,17 +51,31 @@
 **Документи етапу:**
 - [`.agentic/evidence/walkthrough.md`](../evidence/walkthrough.md) — AC → докази, Quality Gates, Red-Team, рішення, бюджет, відкат.
 - [`.agentic/evidence/debt-checks.md`](../evidence/debt-checks.md) — виміряний борг і повтори після кожного ремонту.
-- [`.agentic/evidence/red-team-report.md`](../evidence/red-team-report.md) — Red-Team, проходи №1–№6.
-- [`.agentic/tech-debt.md`](../tech-debt.md) — TD-005 – TD-020 (TD-006, TD-010, TD-016, TD-017 закрито).
+- [`.agentic/evidence/red-team-report.md`](../evidence/red-team-report.md) — Red-Team, проходи №1–№7 (№7 — Revise №4).
+- [`.agentic/tech-debt.md`](../tech-debt.md) — TD-001 – TD-021: закрито TD-003, TD-004 (власник, 04:41), TD-005, TD-018 (Revise №4), TD-006, TD-010, TD-016, TD-017; відкрито 12 P2 Red-Team №7 і TD-020.
 - [`.agentic/autonomy-journal.md`](../autonomy-journal.md) — рішення, бюджет «план / факт», Sync 0–4.
-- [`.agentic/pipeline-state.md`](../pipeline-state.md) — статуси, рішення власника, запити на зміну №2 і №3.
+- [`.agentic/pipeline-state.md`](../pipeline-state.md) — статуси, рішення власника, запити на зміну №2, №3 і №4.
 - `.claude/skills/verify/SKILL.md` — доповнено (не комітиться без запиту власника).
+
+---
+
+### 3.1. Revise №4 (2026-11-03, рішення власника на гейті 8.a, трекер 05:30)
+
+Ремонтні воркери `dag-worker` W1 – W3 (зони не перетинались, перевірено `git status --short` / `git diff --stat` о 05:34:34), базовий хеш відкату — `040a537`:
+
+- W1 BUG-001: `src/market-data/client.js`, `client.test.js` (таблиця «тригер × стан», урок L-006), `triggers.test.jsx`, `useTopCoins.test.jsx` (офлайн-сценарії — `navigator.onLine = false`).
+- W2 BUG-002, 004, 005, 008: `src/app/App.jsx`, нові `src/app/FocusOnNavigate.jsx`, `src/app/App.navigation.test.jsx`; `src/features/coin-list/useCoinListView.js`, `index.js`; `src/features/coin-page/FavoriteToggle.jsx`; `src/lib/format.js`, `sort.js`, `lib.test.js`.
+- W3 BUG-006, 007: `src/favorites/store.js`, `favorites.test.jsx`; `src/chart/PriceChart7d.jsx`, `PriceChart7d.test.jsx`; `src/features/coin-page/CoinView.jsx`.
+- Докази: `.agentic/evidence/red-team-report.md` (прохід №7), `.agentic/evidence/debt-checks.md` (розділ Revise №4), `.agentic/tech-debt.md` (TD-005, TD-018 закрито; TD-021), `.agentic/autonomy-journal.md` (бюджет W1 – W3, Red-Team №7), `.claude/rules/project-lessons.md` (L-008). `.agentic/evidence/walkthrough.md` веде сесія-координатор — Revise №4 у ньому оновлює вона.
+- BUG-003 не ремонтувався: рекомендоване виправлення суперечить ADR 0005 — запит на зміну №4 (трекер, 05:30).
 
 ---
 
 ## 4. Докази працездатності (Verification Evidence)
 
 ### 4.0. Валюта довіри (Trust Receipt)
+
+Рядки з позначкою «(Revise №4)» — прогони після ремонту BUG-001, 002, 004–008 (2026-11-03); інші рядки — первинний прогін етапу (коміт `8645c76`), у цьому проході не повторювались.
 
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -76,14 +90,49 @@
 | Збірка | `pnpm build` | 0 | JS 105,66 кБ gzip (Vite) | так | вивід — 4.1 |
 | Розмір бандла (NFR-5) | `pnpm size` | 0 | 105,08 кБ gzip ≤ 150 | так | вивід — 4.1 |
 | Оракул | `pnpm exec vitest run --config acceptance/vitest.config.js` | 0 | 9 файлів, 91 passed / 91 | ні | вивід — 4.1 (Start at 02:54:24); цілісність: оракул збігається з комітом етапу 6 `8720a04` (Revise №3 закомічено 03:23) — `--stage 7 --run`, 4.2 |
-| Holdouts | — | не застосовно | — | ні | `oracle.holdouts_command` не задано; `verify-gate.py --stage 6` (01:47:22): «Holdouts не задано (.agentic/holdouts/ порожній)»; власник збирався написати їх до гейту етапу 7 (трекер, 2026-11-03 00:05) — питання на гейті |
+| Holdouts | `oracle.holdouts_command` (через `--stage 7 --run`) | не застосовно | — | ні | Первинний прогін: команду не було задано (`verify-gate.py --stage 6`, 01:47:22); власник вирішив не задавати сценарії для етапу 7 (04:41). У Revise №4 команду задала сесія власника — рядок «Holdouts (Revise №4)» нижче: 2 файли, код 0 |
 | Виміряний борг | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --debt` | 0 | 8 команд, 7 аспектів | ні | лічильники — `.agentic/evidence/debt-checks.md` (02:56) |
-| Red-Team | субагент `red-team-auditor`, проходи №5 (повний) і №6 (вузький) | 0 | PASS; P0 = 0, P1 = 0, P2 = 14; оцінка D | ні | вивід — 4.2; `.agentic/evidence/red-team-report.md` |
+| Red-Team | субагент `red-team-auditor`, проходи №5 (повний) і №6 (вузький) | 0 | PASS; P0 = 0, P1 = 0, P2 = 14; оцінка D | ні | первинний прогін (до Revise №4); поточний стан — рядок «Red-Team (Revise №4)»: P2 = 12; вивід — 4.2; `.agentic/evidence/red-team-report.md` |
 | Перевірка в браузері | скіл `verify` (preview 4173, справжній CoinGecko) | 0 | 5 маршрутів; консоль 0; `securitypolicyviolation` 0; прокрутка 0 на 320 px з кожною відкритою підказкою; обидві теми й скриншоти (03:08) | ні | вивід — 4.2 |
 | Репетиція відкату | `git worktree add --detach … f689fc3` + `pnpm verify` | 0 | 1 тест каркаса, 68,23 кБ; копію прибрано | ні | вивід — 4.2 |
-| Вердикт рев'юера | субагент `independent-reviewer` | не запускалось | — | ні | після чернетки звіту |
+| Вердикт рев'юера | субагент `independent-reviewer` | 0 | рев'ю №2 — PASS (03:13) | так | вивід — 4.3 |
+| Валідатор етапу (Revise №4) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 7 --run` | 0 | 0 FAIL; звіт, артефакти, оракул, приховані сценарії (2 файли, код 0), Red-Team D ↔ P2 = 12, реєстр 12 з 12, 84 файли правил якості, секрети, `verify_commands["7"]`, 8 команд `debt_commands` | так (без `--run`: єдина помилка — статус аудиту, до вердикту) | після вердикту PASS рев'ю №4 (L-004); повний вивід — 4.2 |
+| Тести (Revise №4) | `pnpm verify` | 0 | 16 файлів, 252 passed / 0 failed / 0 skipped; lint 0; fmt 0; JS 105,66 кБ gzip | так | 05:34:45; вивід — 4.1 |
+| Оракул (Revise №4) | `pnpm exec vitest run --config acceptance/vitest.config.js` | 0 | 9 файлів, 91 passed | ні | 05:34:45 – 05:35:01; не змінено від коміту етапу 6 `8720a04` |
+| Holdouts (Revise №4) | `oracle.holdouts_command` через `--stage 7 --run` | 0 | 2 файли, вміст не показується | ні | 05:47 – 05:48, пробний прогін валідатора |
+| Виміряний борг (Revise №4) | `verify-gate.py --debt` + 8 команд окремо | 0 | dup 1,13 %; deadcode 0; boundaries 0 (92 модулі); audit 0 high (2 moderate, TD-001); a11y 40 passed; LCP 905,3 мс, CLS 0, TBT 7,5 мс | ні | 05:35 і 05:43; вивід — `.agentic/evidence/debt-checks.md` |
+| Red-Team (Revise №4) | субагент `red-team-auditor`, прохід №7 (вузький) | 0 | PASS; P0 = 0, P1 = 0, P2 = 12; оцінка D | ні | `.agentic/evidence/red-team-report.md` |
+| Перевірка в браузері (Revise №4) | вбудований браузер (живий CoinGecko) + `qa8a-retest.mjs` / `qa8a.mjs` (Chromium, фікстура) | 0 | живий 429 без CORS → «Не вдалося отримати ціни», 1 запит; 5 маршрутів 320 px — переповнення 0; фокус на h1; консоль 0, CSP 0 (фікстура) | ні | 05:36 – 05:41; вивід — `.agentic/qa/runs/RUN-2026-11-03-2.md` |
+| Сканер секретів (Revise №4) | `verify-gate.py --scan-secrets .` (у складі `--stage 7 --run`) | 0 | 188 файлів, 0 секретів | так | пробний прогін 05:47 |
+| Вердикт рев'юера (Revise №4) | субагент `independent-reviewer` | 0 | рев'ю №3 — BLOCKERS FOUND (виправлено), рев'ю №4 — PASS (1 WARNING — TD-021, на гейт) | так | вивід — 4.3 |
 
 ### 4.1. Збірка, лінтери та автоматичні тести
+
+**Revise №4:**
+
+```text
+$ date: 2026-11-03 05:34:45
+$ pnpm verify
+EXIT=0
+$ oxlint --deny-warnings
+ Test Files  16 passed (16)
+      Tests  252 passed (252)
+dist/assets/index-B4e6vtFN.js                                 343.03 kB │ gzip: 106.25 kB
+✓ built in 189ms
+NFR-5: JS головного екрана 105.66 kB gzip (ліміт 150 kB)
+$ pnpm exec vitest run --config acceptance/vitest.config.js
+ Test Files  9 passed (9)
+      Tests  91 passed (91)
+EXIT=0
+$ date: 2026-11-03 05:35:01
+$ date: 2026-11-03 05:55:17
+$ pnpm fmt:check
+All matched files use the correct format.
+Finished in 174ms on 118 files using 24 threads.
+EXIT=0
+```
+
+**Первинний прогін етапу:**
 
 ```text
 $ pnpm install --frozen-lockfile   (2026-11-03 03:09:11)
@@ -122,6 +171,89 @@ EXIT=0
 ```
 
 ### 4.2. Валідація артефактів, контракту, інфраструктури
+
+**Revise №4 — пробний прогін валідатора, уривок** (2026-11-03 05:47:10 – 05:48:18, ще зі старою шапкою `PASS` рев'ю №2; рядок «pnpm lint / … / pnpm vitals» зведено вручну з 8 окремих рядків PASS). Повний вивід фінального прогону — після вердикту рев'ю (L-004), нижче в цьому розділі:
+
+```text
+✅ [PASS] Передумови схвалено: 6
+✅ [PASS] «Валюта довіри»: 17 перевірок із кодами виходу
+✅ [PASS] Оракул незмінний від коміту етапу 6 (8720a047)
+✅ [PASS] Команда успішна: pnpm exec vitest run --config acceptance/vitest.config.js
+✅ [PASS] Holdouts: 2 файлів (вміст не показується)
+✅ [PASS] Holdouts: код виходу 0
+✅ [PASS] Enterprise Readiness Score D відповідає знахідкам (P0 = 0, P1 = 0, P2 = 12)
+✅ [PASS] Реєстр боргу .agentic/tech-debt.md: усі знахідки P2 (12) на місці
+✅ [PASS] Перевірено файлів: 84, порушень-помилок немає
+ℹ️  [INFO] Проскановано файлів: 188
+✅ [PASS] Відкритих секретів не виявлено
+✅ [PASS] Команда успішна: pnpm install --frozen-lockfile
+✅ [PASS] Команда успішна: pnpm verify
+✅ [PASS] Команда успішна: pnpm lint / pnpm dup / pnpm deadcode / pnpm boundaries / pnpm audit --audit-level high / pnpm sbom:write / pnpm test:a11y / pnpm vitals
+✅ [PASS] debt_commands: 7 аспектів задано
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+```
+
+**Revise №4 — фінальний прогін валідатора після вердикту PASS рев'ю №4 (повний вивід):**
+
+```text
+$ date: 2026-11-03 05:57:55
+$ python verify-gate.py --stage 7 --run
+=== Перевірка етапу: Stage 7 ===
+ℹ️  [INFO] Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері — скіл sdd-delivery
+✅ [PASS] Передумови схвалено: 6
+ℹ️  [INFO] Перевірка звіту: .agentic/reports/07-implementation-report.md
+✅ [PASS] Статус аудиту independent-reviewer: PASS
+✅ [PASS] «Валюта довіри»: 26 перевірок із кодами виходу
+✅ [PASS] Карта технологій заповнена (5 рядків)
+✅ [PASS] Conventional Commit у секції 7 валідний
+✅ [PASS] Артефакт .agentic/evidence/red-team-report.md знайдено
+✅ [PASS] Артефакт .agentic/evidence/walkthrough.md знайдено
+=== Оракул (приймальні тести) — режим run ===
+✅ [PASS] Оракул незмінний від коміту етапу 6 (8720a047)
+ℹ️  [INFO] $ pnpm exec vitest run --config acceptance/vitest.config.js
+✅ [PASS] Команда успішна: pnpm exec vitest run --config acceptance/vitest.config.js
+✅ [PASS] Holdouts: 2 файлів (вміст не показується)
+✅ [PASS] Holdouts: код виходу 0
+=== Red-Team: оцінка A–F і реєстр боргу ===
+✅ [PASS] Enterprise Readiness Score D відповідає знахідкам (P0 = 0, P1 = 0, P2 = 12)
+✅ [PASS] Реєстр боргу .agentic/tech-debt.md: усі знахідки P2 (12) на місці
+=== Правила якості коду: . ===
+✅ [PASS] Перевірено файлів: 84, порушень-помилок немає
+=== Сканування секретів: . ===
+ℹ️  [INFO] Проскановано файлів: 190
+✅ [PASS] Відкритих секретів не виявлено
+=== Команди перевірки етапу 7 ===
+ℹ️  [INFO] $ pnpm install --frozen-lockfile
+✅ [PASS] Команда успішна: pnpm install --frozen-lockfile
+ℹ️  [INFO] $ pnpm verify
+✅ [PASS] Команда успішна: pnpm verify
+=== Виміряний технічний борг (debt_commands) ===
+ℹ️  [INFO] $ pnpm lint
+✅ [PASS] Команда успішна: pnpm lint
+ℹ️  [INFO] $ pnpm dup
+✅ [PASS] Команда успішна: pnpm dup
+ℹ️  [INFO] $ pnpm deadcode
+✅ [PASS] Команда успішна: pnpm deadcode
+ℹ️  [INFO] $ pnpm boundaries
+✅ [PASS] Команда успішна: pnpm boundaries
+ℹ️  [INFO] $ pnpm audit --audit-level high
+✅ [PASS] Команда успішна: pnpm audit --audit-level high
+ℹ️  [INFO] $ pnpm sbom:write
+✅ [PASS] Команда успішна: pnpm sbom:write
+ℹ️  [INFO] $ pnpm test:a11y
+✅ [PASS] Команда успішна: pnpm test:a11y
+ℹ️  [INFO] $ pnpm vitals
+✅ [PASS] Команда успішна: pnpm vitals
+✅ [PASS] debt_commands: 7 аспектів задано
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+EXIT=0
+$ date: 2026-11-03 05:59:03
+```
+
+**Revise №4 — живий браузер (BUG-001):** `curl` 05:38:33 → `HTTP/1.1 429 Too Many Requests`, `Retry-After: 43`, без `Access-Control-Allow-Origin`; сторінка 05:38:41 → `{"alert":["Не вдалося отримати ціни"],"online":true,"prices":false,"reqs":["top50 status=0 start=14ms"],"sinceLoadMs":24394}` (до ремонту — «Немає з'єднання» і 3 запити, 04:53:14).
+
+**Первинний прогін етапу:**
 
 **Валідатор етапу після вердикту рев'ю №2 і гейту етапу 6 (2026-11-03 03:23:15–03:24:21):**
 
@@ -238,6 +370,22 @@ Red-Team (`.agentic/evidence/red-team-report.md`): проходи №1–№4 FA
   Межі: 18 нових і 23 змінені файли етапу 7 у зонах плану; файли Revise №3 етапу 6 у git add не входять. Секрети: 152 файли, 0. Залежності: 4 пакети Wave 0 реальні, у lockfile немає чужих хостів. Правила якості: 82 файли, 0; .only/.skip — 0.
   Повторив рядки 4.0: Лінт, Формат, Тести, Збірка, Розмір бандла (pnpm verify — код 0, 236 passed, Start at 03:13:24), Правила якості (82 файли, 0), Сканер секретів (152 файли, 0). Не повторено (хук read-only): оракул, --debt, install, браузер, відкат, Red-Team.
   WARNING (виправлено 2026-11-03 03:17): лічильник сканера 161 → 152 (4.0, 4.2, walkthrough); сума шрифтів 118 040 → 119 040 Б (4.2, секція 6, walkthrough); числа оракула у walkthrough — виконані тести (91), як у секції 5; секція 3 — TD-005 – TD-020.
+Рев'ю №3 (Revise №4, ≈05:53 за стартом vitest 05:51:58): BLOCKERS FOUND — independent-reviewer, Stage 7, Revise №4.
+  Межі: 18 файлів src (16 M + 2 нові) і 7 документів — у зоні етапу 7, збігаються з git add 7.2; оракул і a11y/ не змінено; specs/ADR за вмістом не змінено. Секрети: 188 файлів, 0. Залежності не змінено. --check-code: 84 файли, 0; .only/.skip — 0; послаблених очікувань немає. Повтор pnpm verify (Start at 05:51:58): EXIT 0, oxfmt 118 файлів, 252 passed, NFR-5 105.66 kB. Виправлення BUG-001, 002, 004–008 відповідають BUG-файлам.
+  BLOCKER: секція 6 (P2 = 14; TD-003, TD-005, TD-018 як відкриті й quick wins), секція 3, рядок прихованих сценаріїв 4.0 і пункти 1–6 гейту не оновлено під Red-Team №7 (P2 = 12), реєстр і рішення власника 04:41 (L-002).
+  WARNING: пробний вивід валідатора в 4.2 — уривок зі зведеним рядком; TD-021 — код розходиться з UX §3 / P-4 / §7.1 / ADR 0005 до запиту на зміну.
+  INFO: «fmt 0» без виводу oxfmt у 4.1; прогалини тестів (ціна < $0,10, онлайн-виняток × тик поллера, гілка MutationObserver).
+  Виправлено (05:55): секція 3 (проходи №1–№7, реєстр TD-001 – TD-021, запити №2–№4); секція 6 — «Red-Team №7: P2 = 12», відкриті 12 P2 + TD-020 окремо, TD-003/004/005/018 — закрито; рядки й пункти, вирішені о 04:41, позначено «вирішено власником 2026-11-03 04:41 (трекер)»; рядок прихованих сценаріїв первинного прогону уточнено; рядок Red-Team первинного прогону позначено історичним; блок 4.2 підписано як уривок (повний вивід фінального прогону — після вердикту); у 4.1 додано вивід pnpm fmt:check (05:55:17, 118 файлів, EXIT=0). TD-021 — пункт 3 гейту Revise №4 (до етапу 8.b).
+Рев'ю №4 (Revise №4, ≈05:57; `date` відхилено хуком, час — за стартом vitest 05:51:58 і записом виправлень 05:55): PASS — independent-reviewer, Stage 7, Revise №4.
+  Закриття рев'ю №3 підтверджено: секція 6 — «Red-Team №7: P2 = 12», 12 відкритих P2 (TD-001, 002, 007, 008, 009, 011, 012, 013, 014, 015, 019, 021) збігаються з таблицею розділу 6 red-team-report.md і з валідатором (12 з 12); TD-020 окремо; TD-003/004/005/018 — закрито; рішення 04:41 позначено «вирішено власником» у секції 6 і в блоці гейту; секція 3 — проходи №1–№7, TD-001 – TD-021; рядки Holdouts і Red-Team первинного прогону уточнено; блок пробного валідатора 4.2 підписано як уривок; вивід pnpm fmt:check (05:55:17, 118 файлів, EXIT=0) у 4.1. «P2 = 14» лишилось лише в історичних блоках первинного прогону.
+  Межі етапу: 18 файлів src (16 M + 2 нові) і 7 документів — у зоні етапу 7, збігаються з git add 7.2; оракул acceptance/ і a11y/ не змінено («Оракул незмінний від коміту етапу 6 (8720a047)»); specs/ADR за вмістом не змінено; git status до й після повторних запусків однаковий; diff src після виправлень звіту не змінився (16 файлів, 255+/45−).
+  Секрети: --scan-secrets . (у складі --stage 7) — 188 файлів, 0. Залежності: не застосовно — package.json і pnpm-lock.yaml не змінено. Правила якості: --check-code . — 84 файли, 0; .only/.skip/xit — 0; послаблених очікувань у тестах немає. Контракт: не застосовно — has_http_api: false.
+  Повторний запуск pnpm verify (Start at 05:51:58): EXIT 0; oxlint 0; oxfmt 118 файлів; Test Files 16 passed, Tests 252 passed; index-B4e6vtFN.js gzip 106.25 kB; NFR-5 105.66 kB — збігається з 4.0 «Тести (Revise №4)» і 4.1. --stage 7 і --report: єдина помилка — «Статус аудиту»; «Валюта довіри» — 26 перевірок.
+  Повторив рядки 4.0: «Тести (Revise №4)», «Сканер секретів (Revise №4)», «Правила якості» (84 файли, 0). Не перевірено повторно (хук read-only): оракул, holdouts, --debt і 8 команд боргу, --stage 7 --run, браузер, Red-Team.
+  Трасування: BUG-001, 002, 004–008 мають реалізацію й модульні тести (client.test.js — таблиця «тригер × стан», App.navigation.test.jsx, lib.test.js, favorites.test.jsx, PriceChart7d.test.jsx), виправлення відповідають BUG-файлам; BUG-003 — запит на зміну №4.
+  WARNING: TD-021 — код розходиться з UX §3 / P-4 / §7.1 / ADR 0005 до запиту на зміну (пункт 3 гейту, до етапу 8.b).
+  INFO: прогалини тестів — рівні ціни < $0,10, «онлайн-виняток × тик поллера», гілка MutationObserver у FocusOnNavigate.
+  Після рев'ю №4 (05:58): у секції 5 рядок NFR-3 доповнено Red-Team №7; «Вирішено» з великої літери; у секцію 6 і гейт додано BUG-009 (новий дефект ретесту 8.a о 05:56, на рішення власника; код не змінювався).
 ```
 
 ---
@@ -249,17 +397,17 @@ Red-Team (`.agentic/evidence/red-team-report.md`): проходи №1–№4 FA
 | ID вимоги | Вимога | Де реалізовано | Чим перевірено | Статус |
 | :--- | :--- | :--- | :--- | :--- |
 | `US-1 / AC-1.1 – AC-1.5` | Топ-50, формати, 25 + «Показати більше», ранги 1–50, межі зміни | `src/features/coin-list/**`, `src/lib/format.js`, `src/market-data/parse.js` | оракул `us-1` (17); `lib.test.js`, `CoinListPage.test.jsx`, `parse.test.js` | `✅ Виконано` |
-| `US-2 / AC-2.1 – AC-2.8` | Сортування, тай-брейк, без збереження між візитами | `src/lib/sort.js`, `useCoinListView.js` | оракул `us-2` (10) | `✅ Виконано` |
+| `US-2 / AC-2.1 – AC-2.8` | Сортування, тай-брейк, без збереження між візитами | `src/lib/sort.js`, `useCoinListView.js` | оракул `us-2` (10); `lib.test.js` (тай-брейк за показаним значенням), `App.navigation.test.jsx` | `✅ Виконано` (Revise №4: BUG-002, BUG-004) |
 | `US-3 / AC-3.1 – AC-3.9` | Пошук за назвою й тікером, ≤ 50 символів | `src/lib/index.js`, `SearchStatus.jsx` | оракул `us-3` (15) | `✅ Виконано` |
-| `US-4 / AC-4.1 – AC-4.4` | Сторінка монети, графік і текстова альтернатива, поза топ-50 | `src/features/coin-page/**`, `src/chart/**` | оракул `us-4` (5); `CoinPage.test.jsx`, `PriceChart7d.test.jsx` | `✅ Виконано` |
-| `US-5 / AC-5.1 – AC-5.7` | ★ додати / прибрати, без дублів, лише топ-50 | `src/favorites/store.js`, фічі | оракул `us-5` (9); `favorites.test.jsx` | `✅ Виконано` (E-STORE — TD-005) |
+| `US-4 / AC-4.1 – AC-4.4` | Сторінка монети, графік і текстова альтернатива, поза топ-50 | `src/features/coin-page/**`, `src/chart/**` | оракул `us-4` (5); `CoinPage.test.jsx`, `PriceChart7d.test.jsx` | `✅ Виконано` (Revise №4: підписи днів — BUG-007) |
+| `US-5 / AC-5.1 – AC-5.7` | ★ додати / прибрати, без дублів, лише топ-50 | `src/favorites/store.js`, фічі | оракул `us-5` (9); `favorites.test.jsx` | `✅ Виконано` (E-STORE — TD-005 закрито, Revise №4 BUG-006; ім'я ★ — BUG-008) |
 | `US-6 / AC-6.1 – AC-6.7` | Обрані між візитами, вибулі, порядок | `src/features/favorites-view/**` | оракул `us-6` (9); `FavoritesPage.test.jsx` | `✅ Виконано` |
 | `US-7 / AC-7.1 – AC-7.4` | Підказки, Esc, одна відкрита, без наведення | `src/ui/TermHintButton.jsx`, `hintOffset.js`, `src/glossary/**` | оракул `us-7` (9); `ui.test.jsx`; `a11y/reflow.a11y.spec.js` | `✅ Виконано` (офлайн-старт — TD-019) |
-| `US-8 / AC-8.1 – AC-8.8` | Помилки, повтор, межі свіжості 299/300/301 с, Loading | `src/market-data/**`, `ErrorBlock.jsx` | оракул `us-8` (10); `client.test.js`, `useTopCoins.test.jsx`, `triggers.test.jsx` | `✅ Виконано` (класифікація E-NET — TD-018) |
+| `US-8 / AC-8.1 – AC-8.8` | Помилки, повтор, межі свіжості 299/300/301 с, Loading | `src/market-data/**`, `ErrorBlock.jsx` | оракул `us-8` (10); `client.test.js`, `useTopCoins.test.jsx`, `triggers.test.jsx` | `✅ Виконано` (класифікація E-NET — TD-018 закрито, Revise №4 BUG-001; BUG-003 — запит на зміну №4) |
 | `US-9 / AC-9.1 – AC-9.3` | Дисклеймер, атрибуція, українська | `src/app/Layout.jsx` | оракул `us-9` (7); `App.test.jsx` | `✅ Виконано` (запит №3) |
 | `NFR-1` | Ціни ≤ 300 с, Error ≤ 1 с | `useTopCoins.js`, `lib/index.js` (`isFresh`) | оракул AC-8.4/8.5; модульні тести | `✅ Виконано` (TD-009) |
 | `NFR-2` | Оновлення 60 с у видимій вкладці | `TopCoinsPoller.jsx` | `triggers.test.jsx`, `focus.test.jsx` | `✅ Виконано` (текст NFR-2 — TD-015) |
-| `NFR-3` | Ліміти CoinGecko | `MarketDataProvider.jsx`, `TopCoinsPoller.jsx`, `client.js` | `triggers.test.jsx` (тригер × стан), `client.test.js`, `navigation.test.jsx` | `✅ Виконано` (Red-Team №5) |
+| `NFR-3` | Ліміти CoinGecko | `MarketDataProvider.jsx`, `TopCoinsPoller.jsx`, `client.js` | `triggers.test.jsx` (тригер × стан), `client.test.js`, `navigation.test.jsx` | `✅ Виконано` (Red-Team №5; №7 — під 429 без CORS 1 запит замість 3, BUG-001) |
 | `NFR-4` | LCP ≤ 2,5 с, CLS ≤ 0,1, TBT ≤ 200 мс | `index.html` (`preload`), `CoinListPage.jsx` | `pnpm vitals` 905,8 / 0 / 6 | `✅ Виконано` (TD-013) |
 | `NFR-5` | JS ≤ 150 кБ gzip | — | `pnpm size` 105,08 кБ | `✅ Виконано` |
 | `NFR-6` | WCAG 2.2 AA | усі екрани | `pnpm test:a11y` 36 axe | `✅ Виконано` (TD-007, TD-008) |
@@ -275,20 +423,24 @@ Red-Team (`.agentic/evidence/red-team-report.md`): проходи №1–№4 FA
 
 ## 6. Ризики, технічний борг і відкриті питання
 
-Борг — реєстр `.agentic/tech-debt.md` (ID без повторення опису). Red-Team прохід №5: P2 = 14 → оцінка D.
+Борг — реєстр `.agentic/tech-debt.md` (ID без повторення опису). Red-Team прохід №7 (Revise №4): P2 = 12 → оцінка D.
 
 | Тип | Опис | Вплив | Що пропонується | Власник рішення |
 | :--- | :--- | :--- | :--- | :--- |
-| Борг | TD-001, TD-002, TD-003, TD-005, TD-007, TD-008, TD-009, TD-011, TD-012, TD-013, TD-014, TD-015, TD-018, TD-019 (14 P2 Red-Team); TD-020 (WARNING рев'юера: NFR-3 проти P-6 / `preload`) | Середній | Quick wins: TD-018, TD-019, TD-007, TD-008, TD-012 (мертва гілка й коментарі) — наступний спринт або окремий ремонт; документи TD-002, TD-003, TD-014, TD-015 — запит на зміну через `project-kickoff` | Власник продукту |
-| Борг | TD-004 (`tnum` виміряно), TD-003 (`msw` / `user-event` не потрібні) — пропозиція закрити | Низький | Закрити на гейті | Власник продукту |
-| Питання | TD-020: вкладка, відкрита у фоні — `preload` і перший запит стейблкоїнів ідуть у прихованій вкладці (P-6 допускає, NFR-3 — без винятку) | Низький | Рішення на гейті: виняток для першого завантаження в NFR-3 або без `preload` | Власник продукту |
-| Ризик | 429 без заголовків CORS від CDN CoinGecko → `TypeError` → 2 повтори й E-NET (не перевірено) | Середній | Перевірити на 8.a (DevTools) / 8.b (E2E) | Етап 8 |
-| Питання | Ручний повтор приєднується до фонового ланцюга: результат може відображати запит, надісланий до кліку (≤ 10 с) | Низький | Записати як прийнятий компроміс | Власник продукту |
+| Борг | TD-001, TD-002, TD-007, TD-008, TD-009, TD-011, TD-012, TD-013, TD-014, TD-015, TD-019, TD-021 (12 P2 Red-Team №7) | Середній | Quick wins: TD-019, TD-007, TD-008, TD-012 (мертва гілка й коментарі) — наступний спринт або окремий ремонт; документи TD-002, TD-014, TD-015, TD-021 — запит на зміну через `project-kickoff` | Власник продукту |
+| Борг → закрито | TD-003, TD-004 — вирішено власником 2026-11-03 04:41 (трекер, розділ 4); TD-005, TD-018 — Revise №4 (BUG-006, BUG-001), Red-Team №7 | — | — | — |
+| Борг | TD-020 (WARNING рев'юера): вкладка, відкрита у фоні — `preload` і перший запит стейблкоїнів у прихованій вкладці. Вирішено власником 2026-11-03 04:41 (трекер, розділ 4): виняток для першого завантаження в NFR-3; до запиту на зміну етапу 3 TD-020 відкритий | Низький | Запит на зміну NFR-3 через `project-kickoff` | Власник продукту |
+| Ризик → закрито | 429 без заголовків CORS → `TypeError` → 2 повтори й E-NET: підтверджено на 8.a (BUG-001), виправлено в Revise №4 (варіант 1), ретест у браузері 05:38 | — | E2E з `route.abort` при `onLine=true` — етап 8.b (урок L-008) | Етап 8.b |
+| Борг | TD-021 (Red-Team №7): UX §3 E-SRC, P-4, §7.1, ADR 0005 досі вимагають 2 повторів на мережеву помилку | Середній | Запит на зміну через `project-kickoff` (разом із запитом №4 і TD-014) | Власник продукту |
+| Питання | Запит на зміну №4 (BUG-003): ADR 0005 — монета з `null` у полі; варіанти А / Б / В (трекер 05:30) | Середній | Рішення власника | Власник продукту |
+| Дефект | BUG-009 (новий, ретест 8.a 05:56; Minor / P3): логотип монети не завантажився → значок зламаного зображення замість кружка з першою літерою (UX §8) — не входив у доручення Revise №4 | Низький | Виправити окремим Revise етапу 7 або в спринті 2 | Власник продукту |
+| Питання | Після переходу h1 отримує фокус: видима рамка фокуса на заголовку й прокрутка списку до h1 після повернення (Red-Team №7, 7.4.1) | Низький | Лишити або `focus({ preventScroll: true })` + стиль фокуса заголовка | Власник продукту |
+| Рішення | Ручний повтор приєднується до фонового ланцюга (результат може бути від запиту ≤ 10 с до кліку) — прийнятий компроміс, вирішено власником 2026-11-03 04:41 (трекер, розділ 4) | — | — | — |
 | Питання | UX S-1 Partial «повтор при наступному відкритті» неоднозначний | Низький | Уточнити разом із TD-019 | Власник продукту |
 | Відхилення | Панель пошуку в стані Loading (відступ від артборда M-List-Loading) | Низький | Рішення власника 00:53; записати в UX наступним Revise етапу 4 | Власник продукту |
 | Процес | Red-Team — 6 проходів замість 1: 953 080 токенів проти ~300k у плані (≈ 3,2×); 6 P1 одного класу закривались по одному тригеру; 3 спрацювання Circuit Breaker | Середній | Уроки L-006 (таблиця «тригер → наслідок» до ремонту) і L-007 (`clientWidth`, мобільна емуляція) записано й автоматизовано | Скіл етапу 7 |
-| Відхилення | Шрифти: `src/main.jsx` імпортує CSS ваг `@fontsource` з усіма підмножинами (у `dist/` ≈ 50 файлів woff/woff2), а план §4 — «лише cyrillic і latin». Автономне рішення Wave 0 (журнал): файли підмножин без `unicode-range` затирають одна одну, `knip` не бачить `url()` у CSS. Браузер вантажить лише потрібні: 10 файлів, 119 040 Б (cyrillic, latin і symbols для ★ ▲ ▼) — 4.2 | Низький | Підтвердити відхилення на гейті або доручити власний `@font-face` з `unicode-range` (із записом для `knip`) | Власник продукту |
-| Файли | `.agentic/design-ref/` — копія приватних макетів для воркерів; `.claude/skills/verify/SKILL.md` — доповнено | Низький | Не комітити; `design-ref` видалити після гейту (репозиторій публічний) | Власник продукту |
+| Рішення | Шрифти: усі підмножини `@fontsource` у `dist/`, браузер вантажить 10 файлів, 119 040 Б — відхилення від плану §4 прийнято, вирішено власником 2026-11-03 04:41 (трекер, розділ 4) | — | — | — |
+| Рішення | `.agentic/design-ref/` — видаляє власник (агентові видалення заборонено); `.claude/skills/verify/SKILL.md` не комітиться — вирішено власником 2026-11-03 04:41 (трекер, розділ 4) | — | — | — |
 
 ### 6.1. Карта технологій для самостійного опанування
 
@@ -306,61 +458,43 @@ Red-Team (`.agentic/evidence/red-team-report.md`): проходи №1–№4 FA
 
 ### 7.1. Список файлів для індексації (`git status --short`)
 
-Коміт Revise №3 етапу 6 виконано (`8720a04`); коміт етапу 7 — файли нижче.
+Коміт етапу 7 виконано (`8645c76`, гейт `040a537`). **Revise №4** — файли нижче; первинний список коміту `8645c76` лишається в історії (git log).
 
 ```text
- M index.html
- M vite.config.js
- M scripts/web-vitals.mjs
- M a11y/shell.a11y.spec.js
-?? a11y/reflow.a11y.spec.js
-?? a11y/support/fake-coingecko.js
  M src/app/App.jsx
- M src/app/App.test.jsx
-?? src/app/AppErrorBoundary.jsx
-?? src/app/Layout.jsx
-?? src/app/NotFoundPage.jsx
- M src/favorites/safari.js
+?? src/app/FocusOnNavigate.jsx
+?? src/app/App.navigation.test.jsx
+ M src/chart/PriceChart7d.jsx
+ M src/chart/PriceChart7d.test.jsx
+ M src/favorites/favorites.test.jsx
  M src/favorites/store.js
- M src/features/coin-list/CoinListPage.jsx
- M src/features/coin-list/CoinListPage.test.jsx
- M src/features/coin-list/CoinTable.jsx
- M src/features/coin-list/ListStates.jsx
- M src/features/coin-list/LoadedList.jsx
- M src/market-data/MarketDataProvider.jsx
+ M src/features/coin-list/index.js
+ M src/features/coin-list/useCoinListView.js
+ M src/features/coin-page/CoinView.jsx
+ M src/features/coin-page/FavoriteToggle.jsx
+ M src/lib/format.js
+ M src/lib/lib.test.js
+ M src/lib/sort.js
  M src/market-data/client.js
  M src/market-data/client.test.js
- M src/market-data/parse.test.js
- M src/market-data/useStablecoinIds.js
- M src/market-data/useTopCoins.js
+ M src/market-data/triggers.test.jsx
  M src/market-data/useTopCoins.test.jsx
-?? src/market-data/TopCoinsPoller.jsx
-?? src/market-data/focus.test.jsx
-?? src/market-data/navigation.test.jsx
-?? src/market-data/topCoinsQuery.js
-?? src/market-data/triggers.test.jsx
- M src/ui/TermHintButton.jsx
- M src/ui/ui.test.jsx
-?? src/ui/hintOffset.js
-?? .agentic/evidence/debt-checks.md
-?? .agentic/evidence/red-team-report.md
-?? .agentic/evidence/walkthrough.md
-?? .agentic/reports/07-implementation-report.md
+ M .agentic/evidence/debt-checks.md
+ M .agentic/evidence/red-team-report.md
+ M .agentic/reports/07-implementation-report.md
  M .agentic/tech-debt.md
  M .agentic/autonomy-journal.md
  M .agentic/pipeline-state.md
  M .claude/rules/project-lessons.md
-?? .agentic/evidence/screens/s1-list-light-360.jpg
-?? .agentic/evidence/screens/s2-coin-dark-360.jpg
 ```
 
-Не індексуються: `.agentic/design-ref/` (приватні макети; додано в `.git/info/exclude`), `.claude/skills/verify/SKILL.md` (без окремого запиту власника), файли етапів 1–4 з позначкою `M` і порожнім `git diff`.
+Окремо (сесія-координатор): `.agentic/evidence/walkthrough.md`. Файли етапу 8.a (`.agentic/specs/08-test-plan.md`, `.agentic/qa/**`, `.agentic/reports/08a-qa-manual-report.md`) — у коміт етапу 8.a. Не індексуються: `.agentic/project.json` (зміна іншої сесії), `.agentic/design-ref/` (приватні макети; додано в `.git/info/exclude`), `.claude/skills/verify/SKILL.md` (без окремого запиту власника), файли етапів 1–4 з позначкою `M` і порожнім `git diff`.
 
 ### 7.2. Явна індексація та коміт (Conventional Commits)
 
 ```bash
-git add index.html vite.config.js scripts/web-vitals.mjs a11y/shell.a11y.spec.js a11y/reflow.a11y.spec.js a11y/support/fake-coingecko.js src/app/App.jsx src/app/App.test.jsx src/app/AppErrorBoundary.jsx src/app/Layout.jsx src/app/NotFoundPage.jsx src/favorites/safari.js src/favorites/store.js src/features/coin-list/CoinListPage.jsx src/features/coin-list/CoinListPage.test.jsx src/features/coin-list/CoinTable.jsx src/features/coin-list/ListStates.jsx src/features/coin-list/LoadedList.jsx src/market-data/MarketDataProvider.jsx src/market-data/client.js src/market-data/client.test.js src/market-data/parse.test.js src/market-data/useStablecoinIds.js src/market-data/useTopCoins.js src/market-data/useTopCoins.test.jsx src/market-data/TopCoinsPoller.jsx src/market-data/focus.test.jsx src/market-data/navigation.test.jsx src/market-data/topCoinsQuery.js src/market-data/triggers.test.jsx src/ui/TermHintButton.jsx src/ui/ui.test.jsx src/ui/hintOffset.js .agentic/evidence/debt-checks.md .agentic/evidence/red-team-report.md .agentic/evidence/walkthrough.md .agentic/reports/07-implementation-report.md .agentic/tech-debt.md .agentic/autonomy-journal.md .agentic/pipeline-state.md .claude/rules/project-lessons.md .agentic/evidence/screens/s1-list-light-360.jpg .agentic/evidence/screens/s2-coin-dark-360.jpg
-git commit -m "feat(stage-7): implement sprint 1 mvp screens and data layer"
+git add src/app/App.jsx src/app/FocusOnNavigate.jsx src/app/App.navigation.test.jsx src/chart/PriceChart7d.jsx src/chart/PriceChart7d.test.jsx src/favorites/favorites.test.jsx src/favorites/store.js src/features/coin-list/index.js src/features/coin-list/useCoinListView.js src/features/coin-page/CoinView.jsx src/features/coin-page/FavoriteToggle.jsx src/lib/format.js src/lib/lib.test.js src/lib/sort.js src/market-data/client.js src/market-data/client.test.js src/market-data/triggers.test.jsx src/market-data/useTopCoins.test.jsx .agentic/evidence/debt-checks.md .agentic/evidence/red-team-report.md .agentic/reports/07-implementation-report.md .agentic/tech-debt.md .agentic/autonomy-journal.md .agentic/pipeline-state.md .claude/rules/project-lessons.md
+git commit -m "fix(stage-7): fix qa defects bug-001 to bug-008 except bug-003"
 ```
 
 ---
@@ -372,10 +506,11 @@ git commit -m "feat(stage-7): implement sprint 1 mvp screens and data layer"
 - [ ] **Revise** — статус `REJECTED_REVISING`: зауваження нижче, етап повертається на Фазу 3.
 
 **Коментарі / Зауваження:**
-> Передумова виконана: етап 6 (Revise №3) — `8720a04` (03:23). На гейті етапу 7:
-> 1. Закриття TD-003 і TD-004.
-> 2. TD-020: вкладка у фоні (NFR-3 проти P-6 / `preload`).
-> 3. Відхилення шрифтів від плану §4 (секція 6).
-> 4. Компроміс ручного повтору (приєднання до фонового ланцюга).
-> 5. Приховані сценарії власника не задано — писати до коміту етапу 7 чи ні.
-> 6. `.agentic/design-ref/` (у `.git/info/exclude`) — видалити після гейту; `.claude/skills/verify/SKILL.md` — комітити чи ні.
+> Первинний гейт етапу 7 (04:21, `8645c76`). Пункти 1–6 первинного гейту вирішено власником 2026-11-03 04:41 (трекер, розділ 4): (1) TD-003 і TD-004 закрито; (2) TD-020 — виняток для першого завантаження в NFR-3 (чекає запиту на зміну етапу 3); (3) відхилення шрифтів прийнято; (4) компроміс ручного повтору прийнято; (5) приховані сценарії для етапу 7 не задаються; (6) `.agentic/design-ref/` видаляє власник, `.claude/skills/verify/SKILL.md` не комітиться.
+>
+> **Revise №4 (2026-11-03 05:30, рішення власника на гейті 8.a «виправ все згідно твоїм рекомендаціям»):** первинне схвалення етапу 7 — `APPROVED_AND_COMMITTED` о 04:21 (`8645c76`); статус етапу тепер `REJECTED_REVISING`, гейт Revise №4 — чекбокси вище знову порожні. На гейті:
+> 1. Схвалити ремонт BUG-001, 002, 004–008 (коміт `fix(stage-7): …`).
+> 2. Запит на зміну №4 (BUG-003, ADR 0005): варіант А / Б / В.
+> 3. TD-021: запит на зміну UX §3, P-4, §7.1, ADR 0005 (повтори мережевої помилки).
+> 4. Фокус на h1 після переходу: лишити видиму рамку й прокрутку до h1 чи `preventScroll` + стиль.
+> 5. BUG-009 (новий, Minor / P3, запасний логотип UX §8): виправити зараз окремим Revise чи в спринті 2.

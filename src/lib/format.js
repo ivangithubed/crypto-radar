@@ -33,8 +33,36 @@ function smallPriceDigits(usd) {
  * @returns {string}
  */
 export function formatPrice(usd) {
-  const digits = usd > 0 && usd < SMALL_PRICE_LIMIT ? smallPriceDigits(usd) : 2;
-  return `$${formatNumber(usd, digits)}`;
+  return `$${formatNumber(usd, priceDigits(usd))}`;
+}
+
+function priceDigits(usd) {
+  return usd > 0 && usd < SMALL_PRICE_LIMIT ? smallPriceDigits(usd) : 2;
+}
+
+/**
+ * Ціна з точністю показу (для сортування за видимим значенням, US-2 правило 4).
+ * @param {number} usd
+ * @returns {number}
+ */
+export function shownPrice(usd) {
+  return Number(usd.toFixed(priceDigits(usd)));
+}
+
+/** Десяті частки відсотка за модулем: округлення половиною від нуля. */
+function changeTenths(pct) {
+  return Math.round(Math.abs(pct) * 10);
+}
+
+/**
+ * Зміна за 7 днів з точністю показу, 0,1 % (для сортування за видимим значенням); «0,0 %» → 0.
+ * @param {number} pct
+ * @returns {number}
+ */
+export function shownChange(pct) {
+  const tenths = changeTenths(pct);
+  if (tenths === 0 || Number.isNaN(tenths)) return 0;
+  return (Math.sign(pct) * tenths) / 10;
 }
 
 /**
@@ -43,8 +71,7 @@ export function formatPrice(usd) {
  * @returns {{text: string, direction: 'up' | 'down' | 'flat', spoken: string}}
  */
 export function formatChange(pct) {
-  // Округлення до 0,1 половиною від нуля; знак визначається після округлення.
-  const tenths = Math.round(Math.abs(pct) * 10);
+  const tenths = changeTenths(pct);
   const shown = formatNumber(tenths / 10, 1);
   if (tenths === 0 || Number.isNaN(tenths)) {
     return { text: "0,0 %", direction: "flat", spoken: "без змін" };
@@ -70,6 +97,17 @@ export function formatMarketCap(usd) {
   const step = CAP_UNITS.find(({ from }) => usd >= from);
   if (!step) return `$${formatNumber(usd, 0)}`;
   return `$${formatNumber(usd / step.from, step.digits)} ${step.unit}`;
+}
+
+/**
+ * Капіталізація з точністю показу (для сортування за видимим значенням).
+ * @param {number} usd
+ * @returns {number}
+ */
+export function shownMarketCap(usd) {
+  const step = CAP_UNITS.find(({ from }) => usd >= from);
+  if (!step) return Number(usd.toFixed(0));
+  return Number((usd / step.from).toFixed(step.digits)) * step.from;
 }
 
 /**

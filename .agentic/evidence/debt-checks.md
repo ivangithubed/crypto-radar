@@ -136,3 +136,72 @@ RT-4 (Red-Team прохід №3, клас NFR-3; рішення власник�
 | `pnpm test:a11y` | 0 | 40 passed (36 axe + 4 `reflow`, 320 px — мобільна емуляція) |
 | `pnpm vitals` | 0 | LCP 905,8 мс (905,9 / 902,1 / 905,8), CLS 0,000, TBT 6,0 мс |
 | браузер (preview, 320 px, мобільна емуляція, справжній CoinGecko) | — | 5 маршрутів, кожна підказка відкрита по черзі: прокрутка 0; консоль порожня; `securitypolicyviolation` 0 |
+
+## Revise №4 етапу 7 (ремонт BUG-001, 002, 004–008 з етапу 8.a)
+
+Записано 2026-11-03 05:45 за виводом останніх прогонів.
+
+| Команда | Код | Результат |
+| :--- | :--- | :--- |
+| `python verify-gate.py --debt` (05:35:05 – 05:35:53) | 0 | 7 аспектів PASS, `УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)` |
+| `pnpm verify` (05:34:45) | 0 | 16 файлів, 252 passed; JS 105,66 кБ gzip (NFR-5 ≤ 150) |
+| оракул `pnpm exec vitest run --config acceptance/vitest.config.js` | 0 | 9 файлів, 91 passed |
+| `pnpm lint` (05:43:24) | 0 | 0 попереджень |
+| `pnpm dup` (05:43:25) | 0 | 8 клонів, 65 рядків (1,13 %), 72 файли; поріг ≤ 3 % |
+| `pnpm deadcode` (05:43:25) | 0 | 0 знахідок |
+| `pnpm boundaries` (05:43:27) | 0 | 0 порушень, 92 модулі, 233 залежності |
+| `pnpm audit --audit-level high` (05:43:28) | 0 | 0 high/critical; 2 moderate (TD-001) |
+| `pnpm sbom:write` (05:43:29) | 0 | `sbom/crypto-radar.cdx.json` |
+| `pnpm test:a11y` (05:43:30) | 0 | 40 passed (18.7s) |
+| `pnpm vitals` (05:43:49) | 0 | LCP 905,3 мс (906,5 / 902,7 / 905,3), CLS 0,000, TBT 7,5 мс (7,5 / 5,5 / 8,5) |
+
+Фактичний вивід (рядки лічильників):
+
+```text
+$ date: 2026-11-03 05:43:24
+$ pnpm lint
+$ oxlint --deny-warnings
+EXIT=0
+$ date: 2026-11-03 05:43:25
+$ pnpm dup
+│ Format     │ Files analyzed │ Total lines │ Total tokens │ Clones found │ Duplicated lines │ Duplicated tokens │
+│ css        │ 1              │ 62          │ 869          │ 0            │ 0 (0.00%)        │ 0 (0.00%)         │
+│ javascript │ 23             │ 1677        │ 10127        │ 3            │ 25 (1.49%)       │ 215 (2.12%)       │
+│ jsx        │ 48             │ 4014        │ 29482        │ 5            │ 40 (1.00%)       │ 328 (1.11%)       │
+│ Total:     │ 72             │ 5753        │ 40478        │ 8            │ 65 (1.13%)       │ 543 (1.34%)       │
+Found 8 clones.
+EXIT=0
+$ date: 2026-11-03 05:43:25
+$ pnpm deadcode
+EXIT=0
+$ date: 2026-11-03 05:43:27
+$ pnpm boundaries
+✔ no dependency violations found (92 modules, 233 dependencies cruised)
+EXIT=0
+$ date: 2026-11-03 05:43:28
+$ pnpm audit --audit-level high
+2 vulnerabilities found
+Severity: 2 moderate
+EXIT=0
+$ date: 2026-11-03 05:43:29
+$ pnpm sbom:write
+$ pnpm sbom --sbom-format cyclonedx --sbom-type application --out sbom/crypto-radar.cdx.json
+sbom/crypto-radar.cdx.json
+EXIT=0
+$ date: 2026-11-03 05:43:30
+$ pnpm test:a11y
+  ok 36 [chromium] › a11y\shell.a11y.spec.js:43:7 › сторінка монети: 0 critical/serious (dark, ПК) (439ms)
+  ok 37 [chromium] › a11y\shell.a11y.spec.js:43:7 › поза топ-50: 0 critical/serious (dark, ПК) (403ms)
+  ok 38 [chromium] › a11y\shell.a11y.spec.js:43:7 › обрані порожні: 0 critical/serious (dark, ПК) (397ms)
+  ok 39 [chromium] › a11y\shell.a11y.spec.js:43:7 › обрані заповнені: 0 critical/serious (dark, ПК) (429ms)
+  ok 40 [chromium] › a11y\shell.a11y.spec.js:43:7 › сторінку не знайдено: 0 critical/serious (dark, ПК) (391ms)
+  40 passed (18.7s)
+EXIT=0
+$ date: 2026-11-03 05:43:49
+$ pnpm vitals
+✓ 205 modules transformed.
+OK   LCP: медіана 905.346 мс (поріг ≤ 2500 мс; прогони: 906.508, 902.664, 905.346)
+OK   CLS: медіана 0.000  (поріг ≤ 0.1 ; прогони: 0.000, 0.000, 0.000)
+OK   TBT: медіана 7.500 мс (поріг ≤ 200 мс; прогони: 7.500, 5.500, 8.500)
+EXIT=0
+```

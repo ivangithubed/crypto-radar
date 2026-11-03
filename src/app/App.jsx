@@ -1,9 +1,10 @@
 import { HashRouter, Route, Routes } from "react-router";
-import { CoinListPage } from "../features/coin-list/index.js";
+import { CoinListPage, CoinListViewProvider } from "../features/coin-list/index.js";
 import { CoinPage } from "../features/coin-page/index.js";
 import { FavoritesPage } from "../features/favorites-view/index.js";
 import { MarketDataProvider } from "../market-data/index.js";
 import { AppErrorBoundary } from "./AppErrorBoundary.jsx";
+import { FocusOnNavigate } from "./FocusOnNavigate.jsx";
 import { Layout } from "./Layout.jsx";
 import { NotFoundPage } from "./NotFoundPage.jsx";
 
@@ -13,15 +14,18 @@ export default function App() {
   return (
     <MarketDataProvider>
       <HashRouter>
+        <FocusOnNavigate />
         <Layout>
-          <AppErrorBoundary>
-            <Routes>
-              <Route path="/" element={<CoinListPage />} />
-              <Route path="/coin/:id" element={<CoinPage />} />
-              <Route path="/favorites" element={<FavoritesPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </AppErrorBoundary>
+          <CoinListViewProvider>
+            <AppErrorBoundary>
+              <Routes>
+                <Route path="/" element={<CoinListPage />} />
+                <Route path="/coin/:id" element={<CoinPage />} />
+                <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </AppErrorBoundary>
+          </CoinListViewProvider>
         </Layout>
       </HashRouter>
     </MarketDataProvider>

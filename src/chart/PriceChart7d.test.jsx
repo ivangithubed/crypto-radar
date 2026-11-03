@@ -39,4 +39,20 @@ describe("PriceChart7d", () => {
     expect(render(<PriceChart7d prices={[]} />).container).toBeEmptyDOMElement();
     expect(render(<PriceChart7d prices={[1]} />).container).toBeEmptyDOMElement();
   });
+
+  it("з end: підписи першого й останнього дня поза svg; без end — немає", () => {
+    const prices = series(10, 1, 2);
+    const end = new Date(2026, 9, 27, 12, 0, 0);
+    const fmt = new Intl.DateTimeFormat("uk", { day: "numeric", month: "short" });
+    const first = fmt.format(new Date(2026, 9, 20, 12, 0, 0));
+    const last = fmt.format(end);
+    const { container, unmount } = render(<PriceChart7d prices={prices} end={end} />);
+    expect(first).not.toBe(last);
+    expect(screen.getByText(first)).toBeInTheDocument();
+    expect(screen.getByText(last)).toBeInTheDocument();
+    expect(container.querySelector("svg").textContent).not.toContain(last);
+    unmount();
+    const { container: bare } = render(<PriceChart7d prices={prices} />);
+    expect(bare.querySelectorAll("span")).toHaveLength(0);
+  });
 });

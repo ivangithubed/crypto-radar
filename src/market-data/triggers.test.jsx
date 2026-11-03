@@ -73,6 +73,8 @@ function stub(responses) {
 
 const wait = (ms) => act(() => vi.advanceTimersByTimeAsync(ms));
 const setFocus = (value) => act(async () => focusManager.setFocused(value));
+// BUG-001: kind 'net' лише при navigator.onLine === false у момент збою fetch.
+const setNavOnline = (value) => vi.spyOn(navigator, "onLine", "get").mockReturnValue(value);
 const setOnline = (value) => act(async () => onlineManager.setOnline(value));
 
 beforeEach(() => {
@@ -87,6 +89,7 @@ afterEach(() => {
   onlineManager.setOnline(true);
   vi.useRealTimers();
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 /** Стани: відповіді й кількість HTTP-викликів на одну спробу (503: 1 + 2 повтори). */
@@ -255,12 +258,14 @@ describe("RT-5 / RT-6 / TD-016 / TD-017: пакетний ремонт", () => {
     await wait(100);
     expect(top()).toBe(1);
     offline = true;
+    setNavOnline(false);
     await setOnline(false);
     await wait(60000); // тик: офлайн-спроба йде (не призупиняється) і закінчується 1 + 2 повторами
     await wait(7000);
     expect(top()).toBe(4);
     await setFocus(false);
     offline = false;
+    setNavOnline(true);
     await setOnline(true);
     await wait(61000);
     expect(top()).toBe(4);
@@ -273,6 +278,7 @@ describe("RT-5 / RT-6 / TD-016 / TD-017: пакетний ремонт", () => {
         throw new TypeError("Failed to fetch");
       }),
     );
+    setNavOnline(false);
     await setOnline(false);
     app(false, "/p");
     await wait(7000);
@@ -290,6 +296,7 @@ describe("RT-5 / RT-6 / TD-016 / TD-017: пакетний ремонт", () => {
         throw new TypeError("Failed to fetch");
       }),
     );
+    setNavOnline(false);
     await setOnline(false);
     app(false, "/p");
     await wait(7000);
@@ -392,6 +399,7 @@ describe("RT-5 / RT-6 / TD-016 / TD-017: пакетний ремонт", () => {
     expect(log.at(-1).kind).toBe("src");
     await wait(60000);
     expect(log.at(-1)).toMatchObject({ status: "error", kind: "src" });
+    setNavOnline(false);
     second.resolve();
     await wait(7000);
     expect(log.at(-1)).toMatchObject({ status: "error", kind: "net" });

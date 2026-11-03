@@ -7,11 +7,16 @@ const STABLECOINS_URL = `${BASE}?vs_currency=usd&category=stablecoins&per_page=2
 const TIMEOUT_MS = 10000;
 const RETRY_DELAYS_MS = [2000, 4000];
 
-/** Мережева помилка: fetch кинув виняток (E-NET). */
+/**
+ * fetch кинув виняток. Браузер так само відхиляє відповідь без CORS-заголовка (напр. 429 CoinGecko),
+ * тому E-NET (`offline`) лише коли navigator.onLine === false у момент збою; інакше — E-SRC (BUG-001).
+ */
 export class NetworkError extends Error {
-  constructor() {
+  /** @param {boolean} [offline] */
+  constructor(offline = false) {
     super("Мережева помилка");
     this.name = "NetworkError";
+    this.offline = offline;
   }
 }
 
@@ -38,12 +43,13 @@ export class HttpError extends Error {
  * @returns {'src' | 'net'}
  */
 export function errorKindOf(error) {
-  return error instanceof NetworkError ? "net" : "src";
+  return error instanceof NetworkError && error.offline ? "net" : "src";
 }
 
 function isRetryable(error) {
   if (error instanceof HttpError) return error.status >= 500;
-  return error instanceof NetworkError || error instanceof TimeoutError;
+  if (error instanceof NetworkError) return error.offline;
+  return error instanceof TimeoutError;
 }
 
 function abortError() {
@@ -87,7 +93,7 @@ async function requestJson(url, external) {
     if (timedOut) throw new TimeoutError();
     if (error instanceof HttpError) throw error;
     if (error instanceof SyntaxError) throw new ShapeError("Відповідь не є JSON");
-    throw new NetworkError();
+    throw new NetworkError(navigator.onLine === false);
   } finally {
     clearTimeout(timer);
     external?.removeEventListener("abort", onAbort);
@@ -108,7 +114,7 @@ async function requestWithRetries(url, signal) {
 }
 
 /**
- * GET /coins/markets топ-50 з таймаутом 10 с і політикою повторів P-4 (429 → 0, мережа / таймаут / 5xx → 2: 2 с, 4 с).
+ * GET /coins/markets топ-50 з таймаутом 10 с і політикою повторів P-4 (4xx, виняток fetch онлайн → 0; офлайн / таймаут / 5xx → 2: 2 с, 4 с).
  * @param {{signal?: AbortSignal}} [options]
  * @returns {Promise<import('../lib/index.js').Coin[]>}
  */

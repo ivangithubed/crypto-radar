@@ -101,6 +101,23 @@ describe("sortCoins", () => {
   test("cap: за спаданням, тай-брейк за рангом", () => {
     expect(sortCoins([...coins].reverse(), "cap").map((c) => c.rank)).toEqual([1, 2, 3, 4]);
   });
+  test("рівність за показаним значенням: −0,0096 і −0,0028 → «0,0 %» → за рангом (BUG-004)", () => {
+    const tether = { ...coins[0], rank: 3, change7dPct: -0.0096 };
+    const usdc = { ...coins[1], rank: 7, change7dPct: -0.0028 };
+    expect(sortCoins([usdc, tether], "gain").map((c) => c.rank)).toEqual([3, 7]);
+    expect(sortCoins([usdc, tether], "loss").map((c) => c.rank)).toEqual([3, 7]);
+  });
+  test("+0,2 %: ранг 41 вище за 50, хоч сирі значення навпаки", () => {
+    const a = { ...coins[0], rank: 50, change7dPct: 0.24 };
+    const b = { ...coins[1], rank: 41, change7dPct: 0.16 };
+    expect(sortCoins([a, b], "gain").map((c) => c.rank)).toEqual([41, 50]);
+  });
+  test("ціна й капіталізація: рівні після округлення показу — за рангом", () => {
+    const a = { ...coins[0], rank: 9, priceUsd: 1.004, marketCapUsd: 1_001_000_000_000 };
+    const b = { ...coins[1], rank: 2, priceUsd: 1.001, marketCapUsd: 1_004_000_000_000 };
+    expect(sortCoins([a, b], "price").map((c) => c.rank)).toEqual([2, 9]);
+    expect(sortCoins([a, b], "cap").map((c) => c.rank)).toEqual([2, 9]);
+  });
   test("не мутує вхід і повертає нову копію", () => {
     const input = [...coins].reverse();
     const snapshot = [...input];

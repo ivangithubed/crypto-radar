@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { createContext, createElement, useContext, useEffect, useMemo, useState } from "react";
 import {
   PAGE_SIZE,
   QUERY_MAX_LENGTH,
@@ -27,6 +27,24 @@ export function useDebounced(value) {
   return settled;
 }
 
+const ViewStateContext = createContext(null);
+
+function useViewState() {
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("price");
+  const [shown, setShown] = useState(PAGE_SIZE);
+  return { query, setQuery, sort, setSort, shown, setShown };
+}
+
+/**
+ * Тримає запит, сортування й «показано» вище за екрани (UX §1 «Стан у межах вкладки»): повернення зі
+ * сторінки монети відновлює список; новий візит (перезавантаження, новий App) починає з типового.
+ * @param {{children?: import('react').ReactNode}} props
+ */
+export function CoinListViewProvider({ children }) {
+  return createElement(ViewStateContext.Provider, { value: useViewState() }, children);
+}
+
 /**
  * Стан перегляду списку в пам'яті (AC-2.5: не зберігається між візитами): запит, сортування, показано.
  * Порядок рядків не змінюється при фоновому оновленні цін: перебудова лише при дії відвідувача
@@ -34,9 +52,8 @@ export function useDebounced(value) {
  * @param {import('../../lib/index.js').Coin[]} coins
  */
 export function useCoinListView(coins) {
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("price");
-  const [shown, setShown] = useState(PAGE_SIZE);
+  const local = useViewState();
+  const { query, setQuery, sort, setSort, shown, setShown } = useContext(ViewStateContext) ?? local;
   const [base, setBase] = useState(coins);
   if (base !== coins && !sameIds(base, coins)) setBase(coins);
 

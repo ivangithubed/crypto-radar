@@ -111,7 +111,7 @@ describe("useFavorites: зміни", () => {
     expect(result.current.ids).toEqual([]);
   });
 
-  it("setItem кидає виняток → storeError write, стан не змінюється, add false", () => {
+  it("setItem кидає виняток → ★ діє в пам'яті вкладки, storeError write", () => {
     const { result } = renderHook(() => useFavorites());
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("quota");
@@ -121,11 +121,18 @@ describe("useFavorites: зміни", () => {
       ok = result.current.add("bitcoin", TOP);
     });
     expect(ok).toBe(false);
+    expect(result.current.ids).toEqual(["bitcoin"]);
+    expect(result.current.storeError).toBe("write");
+    act(() => result.current.remove("bitcoin"));
     expect(result.current.ids).toEqual([]);
     expect(result.current.storeError).toBe("write");
+    act(() => {
+      window.dispatchEvent(new StorageEvent("storage", { key: null }));
+    });
+    expect(result.current.storeError).toBeNull();
   });
 
-  it("помилка запису під час remove → storeError write", () => {
+  it("помилка запису під час remove → прибрано в пам'яті, storeError write", () => {
     window.localStorage.setItem(FAVORITES_KEY, '["bitcoin"]');
     const { result } = renderHook(() => useFavorites());
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
@@ -133,7 +140,10 @@ describe("useFavorites: зміни", () => {
     });
     act(() => result.current.remove("bitcoin"));
     expect(result.current.storeError).toBe("write");
-    expect(result.current.ids).toEqual(["bitcoin"]);
+    expect(result.current.ids).toEqual([]);
+    act(() => {
+      window.dispatchEvent(new StorageEvent("storage", { key: null }));
+    });
   });
 
   it("не тримає застарілий кеш між монтуваннями", () => {

@@ -35,6 +35,7 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe("useTopCoins", () => {
@@ -57,7 +58,22 @@ describe("useTopCoins", () => {
     expect(result.current).toMatchObject({ errorKind: "src", coins: [] });
   });
 
-  it("помилка мережі → error net", async () => {
+  it("збій fetch при onLine=true → error src (BUG-001), без повторів", async () => {
+    vi.spyOn(navigator, "onLine", "get").mockReturnValue(true);
+    vi.useFakeTimers({ now: new Date(UPDATED.getTime() + 60000) });
+    const mock = stubFetch({
+      top: () => {
+        throw new TypeError("Failed to fetch");
+      },
+    });
+    const { result } = renderHook(() => useTopCoins(), { wrapper });
+    await act(() => vi.advanceTimersByTimeAsync(7000));
+    expect(result.current).toMatchObject({ status: "error", errorKind: "src", coins: [] });
+    expect(topCalls(mock)).toHaveLength(1); // без повторів (раніше було б 3)
+  });
+
+  it("помилка мережі (офлайн) → error net", async () => {
+    vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
     vi.useFakeTimers({ now: new Date(UPDATED.getTime() + 60000) });
     stubFetch({
       top: () => {

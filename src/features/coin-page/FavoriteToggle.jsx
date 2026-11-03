@@ -16,10 +16,10 @@ export function FavoriteToggle({ isFav, name, onToggle, alwaysText = false }) {
       variant="secondary"
       className={`gap-1.5 ${alwaysText ? "" : COMPACT}`}
       onClick={onToggle}
+      aria-label={`${action}: ${name}`}
     >
       <span aria-hidden="true">{isFav ? "★" : "☆"}</span>
       <span className={alwaysText ? "" : "max-md:sr-only"}>{action}</span>
-      <span className="sr-only">: {name}</span>
     </Button>
   );
 }

@@ -12,7 +12,9 @@ export const SAFARI_HINT_KEY = "crypto-radar:safari-hint-dismissed";
 /** @type {Set<() => void>} */
 const listeners = new Set();
 let writeError = false;
-/** @type {{raw: string | null, readError: boolean, writeError: boolean, value: FavoritesSnapshot} | null} */
+/** Запас у пам'яті вкладки після невдалого запису (E-STORE): діє, поки запис не вдасться знову. @type {string[] | null} */
+let memIds = null;
+/** @type {{raw: string | null, readError: boolean, writeError: boolean, mem: string[] | null, value: FavoritesSnapshot} | null} */
 let cache = null;
 
 /**
@@ -49,15 +51,16 @@ export function getSnapshot() {
     cache &&
     cache.raw === raw &&
     cache.readError === readError &&
-    cache.writeError === writeError
+    cache.writeError === writeError &&
+    cache.mem === memIds
   ) {
     return cache.value;
   }
   let storeError = null;
   if (readError) storeError = "read";
   else if (writeError) storeError = "write";
-  const value = { ids: parseIds(raw), storeError };
-  cache = { raw, readError, writeError, value };
+  const value = { ids: memIds ?? parseIds(raw), storeError };
+  cache = { raw, readError, writeError, mem: memIds, value };
   return value;
 }
 
@@ -68,7 +71,7 @@ function emit() {
 /** @param {() => void} listener */
 export function subscribe(listener) {
   if (listeners.size === 0) {
-    writeError = false;
+    writeError = memIds !== null;
     window.addEventListener("storage", onStorage);
   }
   listeners.add(listener);
@@ -80,7 +83,10 @@ export function subscribe(listener) {
 
 /** C-TAB: зміна з іншої вкладки; остання дія перемагає. */
 function onStorage(event) {
-  if (event.key === null || event.key === FAVORITES_KEY) emit();
+  if (event.key !== null && event.key !== FAVORITES_KEY) return;
+  memIds = null;
+  writeError = false;
+  emit();
 }
 
 /** @param {string[]} ids @returns {boolean} */
@@ -88,10 +94,12 @@ function write(ids) {
   try {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
     writeError = false;
+    memIds = null;
     emit();
     return true;
   } catch {
     writeError = true;
+    memIds = ids;
     emit();
     return false;
   }

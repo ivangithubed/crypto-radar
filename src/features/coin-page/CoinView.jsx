@@ -49,7 +49,7 @@ export function CoinView({ coin, isStable, pricesAt, favorite, h1Ref }) {
             Графік за 7 днів
             <TermHint term="volatility" />
           </h2>
-          <PriceChart7d prices={coin.sparkline7d} />
+          <PriceChart7d prices={coin.sparkline7d} end={coin.lastUpdated} />
         </section>
         <CoinStats coin={coin} />
       </div>

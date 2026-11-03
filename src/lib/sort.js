@@ -1,10 +1,12 @@
-// Сортування монет (US-2): нова копія, рівні значення — за місцем у рейтингу.
+// Сортування монет (US-2): нова копія; рівними вважаються значення, однакові у відвідувача на екрані
+// (округлені як у format.js), вони впорядковуються за місцем у рейтингу.
+import { shownChange, shownMarketCap, shownPrice } from "./format.js";
 
 const COMPARATORS = {
-  price: (a, b) => b.priceUsd - a.priceUsd,
-  cap: (a, b) => b.marketCapUsd - a.marketCapUsd,
-  gain: (a, b) => b.change7dPct - a.change7dPct,
-  loss: (a, b) => a.change7dPct - b.change7dPct,
+  price: (a, b) => shownPrice(b.priceUsd) - shownPrice(a.priceUsd),
+  cap: (a, b) => shownMarketCap(b.marketCapUsd) - shownMarketCap(a.marketCapUsd),
+  gain: (a, b) => shownChange(b.change7dPct) - shownChange(a.change7dPct),
+  loss: (a, b) => shownChange(a.change7dPct) - shownChange(b.change7dPct),
 };
 
 /**

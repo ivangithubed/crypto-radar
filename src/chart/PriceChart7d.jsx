@@ -36,12 +36,29 @@ function altText(prices, min, max) {
   return `Ціна за 7 днів: на початку ${start}, наприкінці ${end}, мінімум ${formatPrice(min)}, максимум ${formatPrice(max)}.`;
 }
 
+const DAY_FORMAT = new Intl.DateTimeFormat("uk", { day: "numeric", month: "short" });
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * Підписи першого й останнього дня періоду (UX §3 S-2, п. 5).
+ * @param {{end: Date}} props
+ * @returns {import('react').ReactElement}
+ */
+function DayLabels({ end }) {
+  return (
+    <div className="flex justify-between text-sm text-ink-muted">
+      <span>{DAY_FORMAT.format(new Date(end.getTime() - WEEK_MS))}</span>
+      <span>{DAY_FORMAT.format(end)}</span>
+    </div>
+  );
+}
+
 /**
  * Лінійний графік ціни за 7 днів (чистий SVG) з текстовою альтернативою.
- * @param {{prices: number[]}} props щонайменше 2 точки (P-8)
+ * @param {{prices: number[], end?: Date}} props щонайменше 2 точки (P-8); end — час останньої точки
  * @returns {import('react').ReactElement | null}
  */
-export function PriceChart7d({ prices }) {
+export function PriceChart7d({ prices, end }) {
   if (!Array.isArray(prices) || prices.length < 2) return null;
   const min = Math.min(...prices);
   const max = Math.max(...prices);
@@ -80,6 +97,7 @@ export function PriceChart7d({ prices }) {
         />
         <circle cx={last[0]} cy={last[1]} r="4" className="fill-brand" />
       </svg>
+      {end instanceof Date && !Number.isNaN(end.getTime()) ? <DayLabels end={end} /> : null}
       <p className="text-sm text-ink-muted">{altText(prices, min, max)}</p>
     </div>
   );

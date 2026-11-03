@@ -65,6 +65,10 @@
 | Етап 7 · Red-Team прохід №6 (вузький) | `red-team-auditor` (`opus`) | — | 75 172 / 31 | PASS, D (P1 = 0, P2 = 14) | RT-2 закрито повторно; знахідки без змін |
 | Етап 7 · рев'ю Revise №2 / №3, №6 | `independent-reviewer` (`opus`) | — | 112 974 / 31; 103 053 / 29 | BLOCKERS FOUND ×2 | рядки журналу в матриці, §15.1 плану, гейт |
 | Етап 7 · рев'ю Revise №2 / №3, №3–№5 (6 проходів) | `independent-reviewer` (`opus`) | — | 92 334 / 45; 80 008 / 33; 98 688 / 33; 110 206 / 37; 121 367 / 39; 79 753 / 30 | BLOCKERS FOUND ×6 | час записів (L-005), рядки без виводу (L-004) |
+| Етап 7 · Revise №4 · W1 BUG-001 | `dag-worker` (`sonnet`) | ~60k / ≤ 60 | 42 116 / 22 (з продовженням: зону розширено на `triggers.test.jsx`, `useTopCoins.test.jsx`) | DONE | 101 тест `src/market-data`; таблиця тригерів L-006; оракул 91/91 |
+| Етап 7 · Revise №4 · W2 BUG-002/004/005/008 | `dag-worker` (`sonnet`) | ~100k / ≤ 60 | 56 623 / 13 | DONE | 82 тести `src/app src/lib src/features`; оракул 91/91 |
+| Етап 7 · Revise №4 · W3 BUG-006/007 | `dag-worker` (`sonnet`) | ~60k / ≤ 60 | 32 674 / 11 | DONE | 38 тестів; оракул 91/91 |
+| Етап 7 · Revise №4 · Red-Team №7 | `red-team-auditor` (`opus`) | ~150k / — | 162 182 / 68 | DONE | PASS, D, P2 = 12; TD-005, TD-018 закрито, TD-021 новий |
 
 ---
 
