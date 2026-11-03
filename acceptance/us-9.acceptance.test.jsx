@@ -15,12 +15,14 @@ const SCREENS = [
 ];
 
 // Латиницею дозволено лише назви монет, тікери, атрибуцію (трекер, 2026-11-02 19:46) і слова
-// схваленої примітки про приватність UX §5.2 `footer.privacy` («cookies», «GitHub», «CoinGecko»).
+// схваленої примітки про приватність UX §5.2 `footer.privacy` («cookies», «GitHub», «CoinGecko», «IP»;
+// «IP» — запит на зміну №3, трекер, 2026-11-03).
 const ALLOWED_LATIN = [
   "Powered by CoinGecko",
   "CoinGecko",
   "GitHub",
   "cookies",
+  "IP",
   ...topMarkets().flatMap((coin) => [coin.name, coin.symbol.toUpperCase()]),
 ].sort((a, b) => b.length - a.length);
 

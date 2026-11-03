@@ -4,12 +4,15 @@
 - **Відповідальний скіл:** `implementation-planner`
 - **Дата формування:** `2026-11-02 23:25`
 - **Статус аудиту independent-reviewer:** `PASS`
+- **Revise №3 (2026-11-03 00:45):** також примітки в плані (§5, §13, §15.1) про опцію резолвера `.dependency-cruiser.cjs` і крок оракула в CI, додані запитом на зміну №2 (рев'ю №5 Revise №2, L-002); запит на зміну №3 (трекер, розділ 4) — у `acceptance/us-9.acceptance.test.jsx` до `ALLOWED_LATIN` додано «IP» (слово схваленого тексту UX §5.2 `footer.privacy`), у плані §12.3 рядок AC-9.3 перелічує всі дозволені слова. Решта звіту — стан на коміті `ddcdf0b`; нові факти Revise позначено «Revise №3».
 
 ---
 
 ## 1. Перевірені передумови (Pre-Flight Summary)
 
-Передумови: етап 4 `APPROVED_AND_COMMITTED` (`4eb4f13`), етап 5 `APPROVED_AND_COMMITTED` (`3c7cc09`); `verify-gate.py --next` — код 0. Базовий стан каркаса: `pnpm install --frozen-lockfile && pnpm verify` — код 0 (розділ 4.1). Планувальник нічого не встановлював: чотири нові пакети внесено в Wave 0 плану як окремий крок, власник дав на нього згоду (трекер, розділ 4, 2026-11-02 23:10).
+**Revise №3:** етап 5 схвалено 2026-11-03 01:47 (`d7d162e`, запит №2), передумова виконана; порядок гейтів — спершу етап 5 (запит №2), потім етап 6 (запит №3), потім `--stage 6` після вердикту.
+
+На момент початкового гейту (`ddcdf0b`): етап 4 `APPROVED_AND_COMMITTED` (`4eb4f13`), етап 5 `APPROVED_AND_COMMITTED` (`3c7cc09`); `verify-gate.py --next` — код 0. Базовий стан каркаса: `pnpm install --frozen-lockfile && pnpm verify` — код 0 (розділ 4.1). Планувальник нічого не встановлював: чотири нові пакети внесено в Wave 0 плану як окремий крок, власник дав на нього згоду (трекер, розділ 4, 2026-11-02 23:10).
 
 | Інструмент / SDK / Акаунт | Необхідна версія | Фактичний стан на старті | Запропонована команда | Згода отримана | Результат |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -68,16 +71,19 @@
 
 | Перевірка | Команда | Код виходу | Лічильники | Повторив рев'юер | Примітка |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 6` | 0 | 10 PASS, 0 FAIL, 1 WARN (приховані сценарії власника не задані) | так | запущено після вердикту PASS (L-004); рев'юер запускав до вердикту — лише 2 очікувані помилки |
-| Сканер секретів | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .` | 0 | 66 файлів, 0 секретів | так | |
-| Правила якості | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --check-code .` | 0 | 3 правила, 6 файлів, 0 порушень | так | |
-| Базовий стан каркаса | `pnpm install --frozen-lockfile && pnpm verify` | 0 | lint 0, формат 34 файли, тести 1 passed / 0 failed, JS 68,23 кБ gzip | так | файли `acceptance/**` проходять `oxlint --deny-warnings` і `oxfmt --check` |
-| Оракул червоний до коду | `pnpm exec vitest run --config acceptance/vitest.config.js --reporter=json --outputFile=test-results/oracle-baseline.json; python -I -c "import json; d=json.load(open('test-results/oracle-baseline.json',encoding='utf-8')); print(d['numFailedTests'],'of',d['numTotalTests'],'failed'); raise SystemExit(0 if d['numTotalTests']==91 and d['numFailedTests']==91 else 1)"` | 0 | 91 of 91 failed (9 файлів) | ні | лічильник замість заперечної перевірки (L-001): код 0 = усі 91 тест червоні; причина всіх 91 — відсутні елементи інтерфейсу (розділ 4.2) |
-| Межі модулів | `pnpm boundaries` | 0 | 0 порушень, 8 модулів | ні | |
-| Мертвий код | `pnpm deadcode` | 0 | 0 знахідок | ні | `acceptance/**` поза `knip.json → project` |
-| Вердикт рев'юера | субагент `independent-reviewer` | 0 | рев'ю №1: BLOCKERS FOUND (3 blocker, 5 warning — виправлено); рев'ю №2: PASS, 0 blocker, 1 warning (закрито в плані §5) | так | |
+| Валідатор етапу | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 6` | 0 | 10 PASS, 0 FAIL, 1 WARN (приховані сценарії власника не задані) | ні | Revise №3: запущено 2026-11-03 01:47:22 після вердикту PASS рев'ю №7 і гейту етапу 5 (`d7d162e`); вивід — 4.2, блок «Revise №3 — валідатор етапу» |
+| Сканер секретів (`ddcdf0b`, рев'ю №2) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --scan-secrets .` | 0 | 66 файлів, 0 секретів | так | |
+| Правила якості (`ddcdf0b`, рев'ю №2) | `python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --check-code .` | 0 | 3 правила, 6 файлів, 0 порушень | так | |
+| Базовий стан каркаса (`ddcdf0b`, рев'ю №2) | `pnpm install --frozen-lockfile && pnpm verify` | 0 | lint 0, формат 34 файли, тести 1 passed / 0 failed, JS 68,23 кБ gzip | так | файли `acceptance/**` проходять `oxlint --deny-warnings` і `oxfmt --check` |
+| Оракул червоний до коду (базовий стан на `ddcdf0b`) | `pnpm exec vitest run --config acceptance/vitest.config.js --reporter=json --outputFile=test-results/oracle-baseline.json; python -I -c "import json; d=json.load(open('test-results/oracle-baseline.json',encoding='utf-8')); print(d['numFailedTests'],'of',d['numTotalTests'],'failed'); raise SystemExit(0 if d['numTotalTests']==91 and d['numFailedTests']==91 else 1)"` | 0 | 91 of 91 failed (9 файлів) | ні | лічильник замість заперечної перевірки (L-001): код 0 = усі 91 тест червоні; причина всіх 91 — відсутні елементи інтерфейсу (розділ 4.2) |
+| Межі модулів (`ddcdf0b`) | `pnpm boundaries` | не запускалось | — | ні | у Revise №3 не повторювалось (поза обсягом); на `ddcdf0b` записано код 0, «0 порушень, 8 модулів» без виводу у звіті (L-004); поточний стан — звіт етапу 5, Revise №2 |
+| Мертвий код (`ddcdf0b`) | `pnpm deadcode` | не запускалось | — | ні | у Revise №3 не повторювалось (поза обсягом); на `ddcdf0b` записано код 0 без виводу у звіті (L-004); поточний стан — `.agentic/evidence/debt-checks.md` етапу 7 |
+| Revise №3: AC-9.3 з кодом етапу 7 | `pnpm exec vitest run --config acceptance/vitest.config.js acceptance/us-9` | 0 | 7 passed / 7; повний оракул 91 passed / 91 | ні | вивід — 4.2, блок «Revise №3»; до Revise №3 — 3 failed / 88 passed на коді етапу 7 станом на 00:42 (до ремонту LCP 00:50–01:01; футер `src/app/Layout.jsx` з 00:42:49 не змінювався), вивід там само; рев'юер №3 повторити не зміг (хук read-only) |
+| Вердикт рев'юера | субагент `independent-reviewer` | не запускалось | — | ні | Revise №3: після рев'ю; попередні рев'ю (№1 BLOCKERS FOUND, №2 PASS) — розділ 4.3 |
 
 ### 4.1. Збірка, лінтери та автоматичні тести
+
+> Стан `ddcdf0b` (рев'ю №2), у Revise №3 не повторювався, крім блоків з позначкою «Revise №3». Питання про посилання GitHub і про оракул у CI закрито запитами №1 і №2 (трекер, розділ 4).
 
 `pnpm install --frozen-lockfile && pnpm verify` (останній запуск, ANSI-кольори прибрано):
 
@@ -108,6 +114,35 @@ EXIT=0
 ```
 
 ### 4.2. Валідація артефактів, контракту, інфраструктури
+
+**Revise №3 — валідатор етапу (після вердикту рев'ю №7 і гейту етапу 5, 2026-11-03 01:47:22):**
+
+```text
+$ python "C:/Users/learn/.claude/skills/gate-check/verify-gate.py" --stage 6
+=== Перевірка етапу: Stage 6 ===
+ℹ️  [INFO] План реалізації: хвилі DAG і матриця перевірок — скіл implementation-planner
+✅ [PASS] Передумови схвалено: 4, 5
+ℹ️  [INFO] Перевірка звіту: .agentic/reports/06-plan-report.md
+✅ [PASS] Статус аудиту independent-reviewer: PASS
+✅ [PASS] «Валюта довіри»: 9 перевірок із кодами виходу
+✅ [PASS] Карта технологій заповнена (5 рядків)
+✅ [PASS] Conventional Commit у секції 7 валідний
+✅ [PASS] Артефакт .agentic/specs/implementation_plan.md знайдено
+✅ [PASS] Артефакт .agentic/project.json знайдено
+=== Оракул (приймальні тести) — режим define ===
+✅ [PASS] Оракул: 13 файлів приймальних тестів за acceptance/**
+⚠️  [WARN] Holdouts не задано (.agentic/holdouts/ порожній): рекомендовано кілька прихованих сценаріїв
+=== Правила якості коду: . ===
+✅ [PASS] Перевірено файлів: 81, порушень-помилок немає
+=== Сканування секретів: . ===
+ℹ️  [INFO] Проскановано файлів: 160
+✅ [PASS] Відкритих секретів не виявлено
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0) (попереджень: 1)
+EXIT=0
+```
+
+
+> Стан `ddcdf0b` (рев'ю №2), у Revise №3 не повторювався, крім блоків з позначкою «Revise №3». Питання про посилання GitHub і про оракул у CI закрито запитами №1 і №2 (трекер, розділ 4).
 
 **Оракул — базовий прогін** (`pnpm exec vitest run --config acceptance/vitest.config.js --reporter=json`, згруповано за першим рядком повідомлення):
 
@@ -148,6 +183,36 @@ EXIT=1
 EXIT=0
 ```
 
+**Revise №3 — оракул US-9 після зміни білого списку і повний оракул:**
+
+```text
+$ pnpm exec vitest run --config acceptance/vitest.config.js acceptance/us-9   (2026-11-03 01:10, код етапу 7 + Revise №3)
+ RUN  v5.0.5 D:/crypto-radar
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  01:10:50
+EXIT=0
+
+$ pnpm exec vitest run --config acceptance/vitest.config.js   (повний оракул, той самий стан)
+ Test Files  9 passed (9)
+      Tests  91 passed (91)
+   Start at  01:10:52
+EXIT=0
+```
+
+**Revise №3 — до зміни білого списку: код етапу 7 станом на 00:42 (лог прогону 00:42; файли `src/app/*.jsx` хвилі 4 записано о 00:42:41–00:42:49, після чекпоінта `871334b` 00:41:42). Між цим прогоном і зеленим 01:10 змінено код ремонту LCP (00:50–01:01: `index.html`, `src/favorites`, `src/market-data/useStablecoinIds.js`, `src/features/coin-list`, `vite.config.js`), але не футер `Layout.jsx` — тож це не контрольоване «до / після», а два прогони, у яких AC-9.3 падав лише на «IP»:**
+
+```text
+$ pnpm exec vitest run --config acceptance/vitest.config.js   (2026-11-03 00:42, код етапу 7 до Revise №3)
+ Test Files  1 failed | 8 passed (9)
+      Tests  3 failed | 88 passed (91)
+   Start at  00:42:55
+     × AC-9.3 інтерфейс українською без реклами: обрані
+     × AC-9.3 інтерфейс українською без реклами: список монет
+     × AC-9.3 інтерфейс українською без реклами: сторінку монети Bitcoin
+AssertionError: expected [ 'IP' ] to deeply equal []
+```
+
 ### 4.3. Вердикт незалежного аудиту (`independent-reviewer`)
 
 ```text
@@ -159,6 +224,19 @@ EXIT=0
            rg -c у Done When (L-001) → --check-code; лічильник сканера 65 → 66.
   INFO: коментар us-3, мета спринту вирівняна з беклогом.
 Рев'ю №2 (2026-11-02 23:40): PASS — independent-reviewer, Stage 6.
+Рев'ю №3, Revise №3 (2026-11-03 01:10): BLOCKERS FOUND.
+  BLOCKER: рядок 4.0 «Revise №3: AC-9.3» з кодом 0 без виводу в 4.1/4.2 → додано блок «Revise №3» у 4.2 (зелений прогін 01:10 і червоний 00:42).
+  BLOCKER: часові позначки трекера й шапки (01:20, 01:40, 02:05, 02:50) пізніші за годинник системи; «Останнє оновлення» застаріле; запис затвердження етапу 4 (00:40) пізніший за коміт f689fc3 (00:05:46) → час виправлено за git log і часом зміни файлів, записи «≤ 00:05» позначено; урок L-005.
+  WARNING: передумова етапу 5 у Revise → примітка в розділі 1 і в блоці гейту; рядки 4.0 з лічильниками ddcdf0b → позначено «(ddcdf0b, рев'ю №2)».
+Рев'ю №4, Revise №3 (2026-11-03 01:14): BLOCKERS FOUND.
+  BLOCKER: «час уточнено 01:15» записано до 01:15 → замінено виводом `date` о 01:15 (і «Останнє оновлення»); урок L-005.
+  BLOCKER: рядки 4.0 «Межі модулів» і «Мертвий код» з кодом 0 без виводу й мітки → «не запускалось» з приміткою про `ddcdf0b`.
+  WARNING: блоки 4.1/4.2, секції 5/6 — стан ddcdf0b без мітки → позначено; «о 00:10» → виправлено; звіт етапу 4 (00:20/00:40) → секція 6 і трекер, на гейт.
+  INFO: червоний прогін 00:42 — файли хвилі 4 записано 00:42:41–00:42:49 (час зміни), після 871334b.
+Рев'ю №5, Revise №3 (2026-11-03, після 01:16): BLOCKERS FOUND.
+  BLOCKER: «той самий код» для червоного прогону 00:42 — неправда (ремонт LCP 00:50–01:01) → формулювання виправлено в 4.0 і 4.2.
+  WARNING: гейт для розбіжності часу звіту етапу 4 названо по-різному → гейти етапів 5 і 6, секція 6 обох звітів, трекер.
+  INFO: виняток «IP» не відкриває латиниці ширше (заміна з урахуванням регістру, після довших токенів); розділ 6 тримає закрите питання GitHub-посилання (стан ddcdf0b); трекер у коміті Revise №3 — дозволено.
 Межі етапу: 18 файлів етапу в зоні (план, 14 файлів acceptance/**, oracle у project.json, Sprint і мета спринту в беклозі, звіт, трекер); 10 файлів етапів 1–4 з позначкою M мають порожній diff; .claude/skills/verify/SKILL.md поза комітом. Секрети: --scan-secrets . — код 0, 66 файлів, 0 знахідок.
 Залежності: не застосовно — package.json і pnpm-lock.yaml не змінено; 4 пакети заплановано на Wave 0 етапу 7 за згодою власника (трекер, 2026-11-02 23:10).
 Правила якості: --check-code . — код 0, 6 файлів, 0 порушень. Контракт: не застосовно — has_http_api: false (ADR 0001, UX §8).
@@ -166,11 +244,25 @@ EXIT=0
 Не перевірено повторно (хук read-only): оракул, `pnpm boundaries`, `pnpm deadcode`; статично звірено 91 тест, 55/55 AC і групування причин у 4.2.
 Трасування: 55/55 Must-AC US-1 – US-9 мають тест AC-N.M; виправлені AC-2.2 і AC-7.3 досяжні для правильної реалізації. Виправлення рев'ю №1 (3 BLOCKER, 5 WARNING) підтверджено.
 WARNING: спосіб імпортів заглушок Wave 0 (no-unused-vars) і MarketDataProvider → children — закрито в плані §5 після рев'ю (імпорт без прив'язок, заглушка провайдера повертає children, App рендерить заглушки в наявному каркасі).
+Рев'ю №6, Revise №3 (2026-11-03 01:30): BLOCKERS FOUND.
+  BLOCKER: план §15.1 звужував заборону до «правил» → повернуто заборону на весь файл з єдиним винятком options.enhancedResolveOptions.
+  BLOCKER: рядки журналу комітів у матриці етапів трекера → перенесено в розділ 3.
+  BLOCKER: блок гейту «23:55 → ddcdf0b» → «≤ 23:48 (час уточнено …)».
+  WARNING: гейт етапу 6 можливий лише після гейту етапу 5 (передумова) — у розділі 1 і блоці гейту.
+Рев'ю №7, Revise №3 (2026-11-03 01:42): PASS — independent-reviewer, Stage 6.
+  Закриття рев'ю №6 підтверджено: план §15.1 — заборона на весь .dependency-cruiser.cjs з єдиним винятком options.enhancedResolveOptions; рядки журналу комітів — у розділі 3 трекера; блок гейту «≤ 23:48 (час уточнено …)»; розбіжність часу звіту етапу 4 — пункт на гейті («00:10, 00:20, 00:40»); порядок гейтів 5 → 6.
+  Годинник: vitest «Start at 01:42:25»; позначок, пізніших за годинник, немає.
+  Межі: 4 файли Revise №3 у зоні етапу 6; «IP» відповідає UX §5.2 і Layout.jsx:94; заміна латиниці ширше не відкриває. Секрети: 160 файлів, 0. Правила якості: 81 файл, 0.
+  Повторно: --stage 6 — код 1, лише 2 очікувані помилки; pnpm verify — код 0 (189 passed). Не повторено (хук): оракул, boundaries, deadcode — звірено статично.
+  WARNING: план §13 «Запуск оракула в CI — пропозиція власнику» → замінено на «запит на зміну №2 (Revise етапу 5, гейт етапу 5)» (2026-11-03 01:44).
+  INFO: записи 4.3 упорядковано за номером; блок 4.2 «Валідатор етапу» — замінити виводом --stage 6 після гейту етапу 5 (L-004).
 ```
 
 ---
 
 ## 5. Матриця трасування вимог (Requirements Traceability)
+
+> Стан `ddcdf0b` (рев'ю №2), у Revise №3 не повторювався, крім блоків з позначкою «Revise №3». Питання про посилання GitHub і про оракул у CI закрито запитами №1 і №2 (трекер, розділ 4).
 
 Етап 6 не реалізує історій: «де реалізовано» — модуль і хвиля плану; «чим перевірено» — тест оракула. Повна матриця — план, розділ 12.3.
 
@@ -197,6 +289,8 @@ Must-AC: 55 з 55 мають тест оракула (91 тест).
 
 ## 6. Ризики, технічний борг і відкриті питання
 
+> Стан `ddcdf0b` (рев'ю №2), у Revise №3 не повторювався, крім блоків з позначкою «Revise №3». Питання про посилання GitHub і про оракул у CI закрито запитами №1 і №2 (трекер, розділ 4).
+
 | Тип | Опис | Вплив | Що пропонується | Власник рішення |
 | :--- | :--- | :--- | :--- | :--- |
 | Рішення плану | P-1: монета поза топ-50 в обраних показується своїм `id` (`moneta-x`), бо NFR-10 дозволяє зберігати лише `id`. AC-6.4 перевіряє саме `id` | Низький | Підтвердити на гейті; інакше — «Revise» етапу 3 (NFR-10: дозволити зберігати назви) | Власник продукту |
@@ -211,6 +305,8 @@ Must-AC: 55 з 55 мають тест оракула (91 тест).
 | Питання (суперечність етапів 4 і 5) | UX §5.2 `footer.privacy` робить «GitHub» посиланням на політику приватності GitHub, а правило `only-coingecko-origins` (`project.json → quality_rules`) дає помилку на будь-яку не-CoinGecko адресу в `src/**`. Wave 4 упреться в це правило | Середній | Вирішити на гейті до старту етапу 7: (а) «Revise» етапу 5 — додати `docs.github.com` у виняток правила; або (б) «Revise» етапу 4 — «GitHub» без посилання, лише текст | Власник продукту |
 | Пропозиція (зона етапу 5) | `verify-gate.py --ci` перевіряє лише цілісність оракула, а не запускає його; `pnpm verify` бере тести тільки з `src/**`. Приймальні тести в CI зараз не виконуються | Середній | «Revise» етапу 5: додати крок CI `pnpm exec vitest run --config acceptance/vitest.config.js` (після етапу 7, коли оракул зелений) | Власник продукту |
 | Спостереження | `git status` показує 10 файлів `.agentic/` етапів 1–4 як `M`, хоча `git diff` для них порожній (кеш стану, як на етапі 5) | Низький | Нічого; у коміт етапу 6 вони не потрапляють | — |
+
+**Revise №3 — розбіжність часу у звіті етапу 4 (підтвердити на гейті, L-003):** `.agentic/reports/04-ux-api-report.md` (коміт `f689fc3`, 00:05:46) містить позначки 00:10, 00:20 і 00:40, пізніші за коміт; уточнений час — у трекері, розділ 4 («≤ 00:05»). Звіт етапу 4 поза зоною етапу 6; варіанти — запит на зміну до етапу 4 або лишити запис трекера як джерело правди. Те саме питання винесено й на гейт етапу 5 (секція 6 його звіту): власник вирішує один раз.
 
 ### 6.1. Карта технологій для самостійного опанування
 
@@ -229,19 +325,25 @@ Must-AC: 55 з 55 мають тест оракула (91 тест).
 ### 7.1. Список файлів для індексації (`git status --short`)
 
 ```text
- M .agentic/backlog.md
+Revise №3:
+ M .agentic/specs/implementation_plan.md
+ M .agentic/reports/06-plan-report.md
  M .agentic/pipeline-state.md
- M .agentic/project.json
-?? .agentic/specs/implementation_plan.md
-?? .agentic/reports/06-plan-report.md
-?? acceptance/
+ M acceptance/us-9.acceptance.test.jsx
 ```
+
+Інші незакомічені файли робочого дерева належать етапу 7 (`IN_PROGRESS`) і запиту №2 (`.dependency-cruiser.cjs`, етап 5) — у коміт Revise №3 не входять. Уроки L-004 (посилено) і L-005 з рев'ю №3 ідуть у коміт Revise №2 (перший гейт).
 
 `.claude/skills/verify/SKILL.md` не індексується (без окремого запиту власника). 10 файлів `.agentic/` етапів 1–4 з позначкою `M` мають порожній `git diff` і не індексуються.
 
 ### 7.2. Явна індексація та коміт (Conventional Commits)
 
 ```bash
+# Revise №3
+git add acceptance/us-9.acceptance.test.jsx .agentic/specs/implementation_plan.md .agentic/reports/06-plan-report.md .agentic/pipeline-state.md
+git commit -m "test(stage-6): allow IP abbreviation in AC-9.3 latin whitelist"
+
+# Початковий коміт етапу 6 (ddcdf0b)
 git add .agentic/specs/implementation_plan.md acceptance/vitest.config.js acceptance/support/setup.js acceptance/support/fake-coingecko.js acceptance/support/app.jsx acceptance/us-1.acceptance.test.jsx acceptance/us-2.acceptance.test.jsx acceptance/us-3.acceptance.test.jsx acceptance/us-4.acceptance.test.jsx acceptance/us-5.acceptance.test.jsx acceptance/us-6.acceptance.test.jsx acceptance/us-7.acceptance.test.jsx acceptance/us-8.acceptance.test.jsx acceptance/us-9.acceptance.test.jsx .agentic/project.json .agentic/backlog.md .agentic/reports/06-plan-report.md .agentic/pipeline-state.md
 git commit -m "docs(stage-6): add sprint 1 implementation plan and acceptance oracle"
 ```
@@ -257,4 +359,6 @@ git commit -m "docs(stage-6): add sprint 1 implementation plan and acceptance or
 - [ ] **Revise** — статус `REJECTED_REVISING`: зауваження нижче, етап повертається на Фазу 3.
 
 **Коментарі / Зауваження:**
-> «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» (2026-11-02 23:55)
+> Початковий гейт: «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» (2026-11-02 ≤ 23:48; час уточнено 2026-11-03 01:31 за git log ddcdf0b 23:48:12; у первинному записі стояло 23:55) → `ddcdf0b`.
+> Revise №3: «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» (2026-11-03 03:23) → «Approve & закоміть»; рішення щодо часу звіту етапу 4 — трекер є джерелом правди (гейт етапу 5). Порядок: спершу гейт етапу 5 (запит №2), потім цей гейт; після вердикту рев'юера — `--stage 6` (L-004).
+> На гейті: розбіжність часу у звіті етапу 4 (секція 6): позначки 00:10, 00:20, 00:40 пізніші за `f689fc3` — власник вирішує один раз для етапів 5 і 6.
