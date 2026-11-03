@@ -63,7 +63,7 @@ describe("parseMarkets", () => {
 
   it("логотип з чужого хоста чи не https дає порожній рядок", () => {
     const json = clone();
-    json[0].image = "https://evil.example/logo.png";
+    json[0].image = "https://coin-images.coingecko.com.evil.test/logo.png";
     json[1].image = "http://coin-images.coingecko.com/x.png";
     json[2].image = "<img src=x onerror=alert(1)>";
     const coins = parseMarkets(json);

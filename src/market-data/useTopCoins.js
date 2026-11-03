@@ -1,12 +1,12 @@
 // Знімок топ-50: перше завантаження, оновлення 60 с (P-6), свіжість щосекунди (P-5, NFR-1).
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { isFresh } from "../lib/index.js";
-import { errorKindOf, fetchTopCoins } from "./client.js";
+import { errorKindOf } from "./client.js";
+import { lastErrorKinds, topCoinsQuery } from "./topCoinsQuery.js";
 
 /** @typedef {import('../lib/index.js').TopCoinsState} TopCoinsState */
 
-const REFRESH_MS = 60000;
 /** @type {never[]} */
 const EMPTY = [];
 
@@ -37,7 +37,8 @@ function useManualRetry(refetch) {
   const retry = useCallback(() => {
     setRetrying(true);
     setRetryFailed(false);
-    refetch().then((result) => {
+    // Якщо запит уже виконується (фоновий ланцюг повторів), приєднуємось до нього, а не скасовуємо (TD-017).
+    refetch({ cancelRefetch: false }).then((result) => {
       setRetrying(false);
       setRetryFailed(result.status === "error");
     });
@@ -49,14 +50,10 @@ function useManualRetry(refetch) {
  * @returns {TopCoinsState}
  */
 export function useTopCoins() {
-  const query = useQuery({
-    queryKey: ["top-coins"],
-    queryFn: ({ signal }) => fetchTopCoins({ signal }),
-    staleTime: REFRESH_MS,
-    refetchInterval: REFRESH_MS,
-    refetchIntervalInBackground: false,
-    refetchOnWindowFocus: true,
-  });
+  // Сторінковий спостерігач: неявні тригери вимкнено в defaultOptions провайдера; цикл 60 с, фокус і
+  // reconnect веде лише TopCoinsPoller (NFR-3).
+  const client = useQueryClient();
+  const query = useQuery(topCoinsQuery);
   const { data, error } = query;
   const { retry, retrying, retryFailed } = useManualRetry(query.refetch);
   const now = useNow(Boolean(data), data);
@@ -71,6 +68,10 @@ export function useTopCoins() {
   } else if (query.isError) {
     status = "error";
     errorKind = errorKindOf(error);
+  } else if (query.errorUpdatedAt > 0) {
+    // Фонова спроба після помилки без даних: query-core обнулив error, лишаємо стан помилки (TD-016).
+    status = "error";
+    errorKind = lastErrorKinds.get(client) ?? "src";
   }
 
   return useMemo(

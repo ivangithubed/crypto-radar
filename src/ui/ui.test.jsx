@@ -9,6 +9,7 @@ import {
   useDocumentTitle,
   useMediaQuery,
 } from "./index.js";
+import { computeHintOffset } from "./hintOffset.js";
 
 describe("Button", () => {
   it("викликає onClick і має type=button", () => {
@@ -193,5 +194,71 @@ describe("useDocumentTitle", () => {
     expect(document.title).toBe("Один");
     rerender({ t: "Два" });
     expect(document.title).toBe("Два");
+  });
+});
+
+describe("TermHintButton position", () => {
+  const rect = (left, width) => ({
+    left,
+    width,
+    right: left + width,
+    top: 0,
+    bottom: 0,
+    height: 0,
+  });
+  const cases = [
+    ["320 біля правого краю", 320, 280, 250],
+    ["320 біля лівого краю", 320, 2, 250],
+    ["320 посередині", 320, 100, 250],
+    ["1280 біля правого краю", 1280, 1250, 320],
+    ["1280 посередині", 1280, 600, 320],
+  ];
+  it.each(cases)("%s: панель у межах [16, innerWidth − 16]", (_n, vw, btnLeft, panelW) => {
+    const offset = computeHintOffset(btnLeft, panelW, vw);
+    expect(btnLeft + offset).toBeGreaterThanOrEqual(16);
+    expect(btnLeft + offset + panelW).toBeLessThanOrEqual(vw - 16);
+  });
+
+  it("застосовує зсув після відкриття", () => {
+    vi.stubGlobal("innerWidth", 320);
+    const spy = vi
+      .spyOn(Element.prototype, "getBoundingClientRect")
+      .mockImplementation(function () {
+        return this.getAttribute("role") === "region" ? rect(0, 250) : rect(280, 32);
+      });
+    render(<TermHintButton term="A" hintText="a" id="hp" />);
+    fireEvent.click(screen.getByRole("button", { name: "Що означає «A»?" }));
+    const panel = screen.getByRole("region", { name: "A" });
+    expect(panel.style.left).toBe("-226px");
+    spy.mockRestore();
+    vi.unstubAllGlobals();
+    fireEvent.keyDown(document, { key: "Escape" });
+  });
+
+  it("телефон: clientWidth 320, innerWidth 530 — maxWidth ≤ 288, панель у [16, 304]", () => {
+    vi.stubGlobal("innerWidth", 530);
+    const cw = vi.spyOn(document.documentElement, "clientWidth", "get").mockReturnValue(320);
+    const spy = vi
+      .spyOn(Element.prototype, "getBoundingClientRect")
+      .mockImplementation(function () {
+        return this.getAttribute("role") === "region" ? rect(0, 288) : rect(280, 32);
+      });
+    render(<TermHintButton term="A" hintText="a" id="hm" />);
+    fireEvent.click(screen.getByRole("button", { name: "Що означає «A»?" }));
+    const panel = screen.getByRole("region", { name: "A" });
+    expect(parseFloat(panel.style.maxWidth)).toBeLessThanOrEqual(288);
+    const left = 280 + parseFloat(panel.style.left);
+    expect(left).toBeGreaterThanOrEqual(16);
+    expect(left + 288).toBeLessThanOrEqual(304);
+    spy.mockRestore();
+    cw.mockRestore();
+    vi.unstubAllGlobals();
+    fireEvent.keyDown(document, { key: "Escape" });
+  });
+
+  it("відкрита панель не успадковує nowrap (whitespace-normal)", () => {
+    render(<TermHintButton term="A" hintText="a" id="hw" />);
+    fireEvent.click(screen.getByRole("button", { name: "Що означає «A»?" }));
+    expect(screen.getByRole("region", { name: "A" })).toHaveClass("whitespace-normal");
   });
 });

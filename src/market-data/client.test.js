@@ -48,6 +48,19 @@ describe("fetchTopCoins: політика повторів P-4", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  it("вкладку сховали під час паузи повтору — наступної спроби немає", async () => {
+    const fetchMock = vi.fn(async () => fail(503));
+    vi.stubGlobal("fetch", fetchMock);
+    const result = settle(fetchTopCoins({}));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const spy = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+    await vi.advanceTimersByTimeAsync(20000);
+    spy.mockRestore();
+    expect(await result).toMatchObject({ status: 503 });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("інший 4xx — без повторів", async () => {
     const fetchMock = vi.fn(async () => fail(404));
     vi.stubGlobal("fetch", fetchMock);

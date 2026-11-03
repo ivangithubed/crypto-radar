@@ -2,11 +2,14 @@
 // (емуляція повільного 4G і CPU ×4) на зібраному застосунку через `vite preview`.
 // Поріг — медіана з 3 прогонів: LCP ≤ 2500 мс, CLS ≤ 0,1, TBT ≤ 200 мс. Перевищення → код 1.
 // Запускати після `pnpm build` (скрипт `pnpm vitals` робить обидва кроки).
+// TD-002: CoinGecko підмінено записаним прикладом — Playwright під'єднується до того самого Chrome через CDP
+// і ставить маршрути на типовий контекст, тож вкладка Lighthouse отримує фікстуру; у бандл продукту нічого не додано.
 import { spawn, spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { chromium } from "@playwright/test";
 import * as chromeLauncher from "chrome-launcher";
 import lighthouse from "lighthouse";
+import { routeCoinGecko } from "../a11y/support/fake-coingecko.js";
 
 const PORT = 4174;
 const URL = `http://localhost:${PORT}/crypto-radar/`;
@@ -58,6 +61,7 @@ function median(values) {
 
 const server = startPreview();
 let chrome;
+let driver;
 let failed = false;
 try {
   await waitForPreview();
@@ -66,6 +70,8 @@ try {
     // У CI (одноразовий раннер) пісочницю Chromium вимикаємо так само, як це робить Playwright.
     chromeFlags: ["--headless=new", ...(process.env.CI ? ["--no-sandbox"] : [])],
   });
+  driver = await chromium.connectOverCDP(`http://127.0.0.1:${chrome.port}`);
+  await routeCoinGecko(driver.contexts()[0]);
 
   const samples = Object.fromEntries(BUDGETS.map((budget) => [budget.id, []]));
   mkdirSync(REPORT_DIR, { recursive: true });
@@ -91,6 +97,7 @@ try {
     );
   }
 } finally {
+  await driver?.close();
   await chrome?.kill();
   stopPreview(server);
 }

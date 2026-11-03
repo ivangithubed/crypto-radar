@@ -1,4 +1,5 @@
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { computeHintMaxWidth, computeHintOffset, getPageWidth } from "./hintOffset.js";
 import { getOpenHintId, setOpenHintId, subscribeHint } from "./hintStore.js";
 
 const FOCUS_RING =
@@ -19,6 +20,22 @@ export function TermHintButton({ term, hintText, id }) {
   );
   const buttonRef = useRef(null);
   const panelRef = useRef(null);
+  const [offset, setOffset] = useState(0);
+
+  useLayoutEffect(() => {
+    if (!open) return undefined;
+    const place = () => {
+      if (!buttonRef.current || !panelRef.current) return;
+      const pageWidth = getPageWidth();
+      panelRef.current.style.maxWidth = `${computeHintMaxWidth(pageWidth)}px`;
+      const button = buttonRef.current.getBoundingClientRect();
+      const panel = panelRef.current.getBoundingClientRect();
+      setOffset(computeHintOffset(button.left, panel.width, pageWidth));
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -72,9 +89,10 @@ export function TermHintButton({ term, hintText, id }) {
           id={id}
           role="region"
           aria-label={term}
-          className="absolute top-full left-0 z-10 mt-2 flex w-max max-w-80 items-start gap-2 rounded-md bg-surface-raised p-4 text-ink shadow-pop"
+          style={{ left: offset }}
+          className="absolute top-full z-10 mt-2 flex max-w-80 w-max items-start gap-2 whitespace-normal rounded-md bg-surface-raised p-4 text-ink shadow-pop"
         >
-          <div>
+          <div className="min-w-0">
             <p className="font-sans font-semibold">{term}</p>
             <p className="mt-1 text-sm">{hintText}</p>
           </div>

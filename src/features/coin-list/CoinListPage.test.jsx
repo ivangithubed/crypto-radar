@@ -147,15 +147,44 @@ describe("CoinListPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("Loading: «Завантажуємо ціни…» без посилань на монети й цін", () => {
+  it("Loading: справжня панель, «Завантажуємо ціни…», без монет і статусу пошуку", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(() => new Promise(() => {})),
     );
     renderPage();
     expect(screen.getByText("Завантажуємо ціни…")).toBeInTheDocument();
+    expect(screen.getByLabelText("Пошук монети")).toHaveAttribute("maxlength", "50");
+    expect(screen.getByLabelText("Сортування")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Пошук монети"), { target: { value: "btc" } });
+    expect(screen.getByRole("button", { name: "Очистити пошук" })).toBeInTheDocument();
     expect(coinLinks()).toHaveLength(0);
+    expect(screen.queryByText("Нічого не знайдено")).toBeNull();
     expect(screen.getByRole("main").textContent).not.toContain("$");
+  });
+
+  it("Loading → Data: те саме поле, фокус і введений запит зберігаються", async () => {
+    let release;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url) => {
+        if (String(url).includes("category=stablecoins")) return ok(stablecoins);
+        await new Promise((resolve) => {
+          release = resolve;
+        });
+        return ok(top50);
+      }),
+    );
+    renderPage();
+    const input = screen.getByLabelText("Пошук монети");
+    input.focus();
+    fireEvent.change(input, { target: { value: "btc" } });
+    release();
+    await waitForList();
+    expect(screen.getByLabelText("Пошук монети")).toBe(input);
+    expect(document.activeElement).toBe(input);
+    expect(input).toHaveValue("btc");
+    expect(names()).toEqual(["Bitcoin"]);
   });
 
   it("Error: блок помилки, рядок про обрані, без цін; повтор повертає список і фокус на h1", async () => {

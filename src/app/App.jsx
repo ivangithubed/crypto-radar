@@ -1,30 +1,29 @@
+import { HashRouter, Route, Routes } from "react-router";
 import { CoinListPage } from "../features/coin-list/index.js";
 import { CoinPage } from "../features/coin-page/index.js";
 import { FavoritesPage } from "../features/favorites-view/index.js";
 import { MarketDataProvider } from "../market-data/index.js";
+import { AppErrorBoundary } from "./AppErrorBoundary.jsx";
+import { Layout } from "./Layout.jsx";
+import { NotFoundPage } from "./NotFoundPage.jsx";
 
-// Оболонка застосунку (каркас етапу 5): орієнтири сторінки й один h1.
-// Wave 0 етапу 7 лише з'єднує заглушки екранів; маршрути, макет і стани S-4, S-5 — хвиля 4 (план етапу 6).
+// Корінь застосунку (архітектура §5, UX §1): дані → маршрути `HashRouter` → спільний каркас → екран.
+// Межа помилок S-5 стоїть усередині <main>, тож шапка, дисклеймер і атрибуція лишаються й під час збою.
 export default function App() {
   return (
     <MarketDataProvider>
-      <div className="flex min-h-dvh flex-col bg-surface font-sans text-ink">
-        <header className="border-b border-line bg-surface-raised px-4 py-3">
-          <p className="font-display text-lg font-semibold">Крипто-Радар</p>
-        </header>
-        <main className="flex-1 px-4 py-6">
-          <h1 className="font-display text-2xl font-semibold">Крипто-Радар</h1>
-          <p className="mt-2 text-ink-muted">
-            Каркас застосунку. Екрани з&apos;являться на етапі реалізації.
-          </p>
-          <CoinListPage />
-          <CoinPage />
-          <FavoritesPage />
-        </main>
-        <footer className="border-t border-line px-4 py-3 text-sm text-ink-muted">
-          <p>Крипто-Радар</p>
-        </footer>
-      </div>
+      <HashRouter>
+        <Layout>
+          <AppErrorBoundary>
+            <Routes>
+              <Route path="/" element={<CoinListPage />} />
+              <Route path="/coin/:id" element={<CoinPage />} />
+              <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </AppErrorBoundary>
+        </Layout>
+      </HashRouter>
     </MarketDataProvider>
   );
 }

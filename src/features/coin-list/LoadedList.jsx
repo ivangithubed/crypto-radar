@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useFavorites } from "../../favorites/index.js";
 import { TermHint } from "../../glossary/index.js";
 import { PAGE_SIZE, SORT_LABELS, normalizeQuery, searchCoins } from "../../lib/index.js";
@@ -6,9 +6,8 @@ import { useStablecoinIds } from "../../market-data/index.js";
 import { Button, StatusMessage } from "../../ui/index.js";
 import { CoinCards } from "./CoinCards.jsx";
 import { CoinTable } from "./CoinTable.jsx";
-import { ListToolbar } from "./ListToolbar.jsx";
 import { SearchStatus } from "./SearchStatus.jsx";
-import { useCoinListView, useDebounced } from "./useCoinListView.js";
+import { useDebounced } from "./useCoinListView.js";
 
 const STORE_ERROR =
   "Не вдалося зберегти обрані: браузер не дозволяє зберігати дані сайту (наприклад, у приватному режимі). Обрані діятимуть до закриття вкладки.";
@@ -43,15 +42,14 @@ function useFocusAfterMore(pendingRef, shownCount) {
 }
 
 /**
- * Стан Data екрана S-1: панель, список (картки або таблиця), «Показати більше», живі області.
- * @param {{coins: import('../../lib/index.js').Coin[], wide: boolean}} props
+ * Стан Data екрана S-1: список (картки або таблиця), «Показати більше», живі області.
+ * Панель пошуку й сортування та стан перегляду живуть у `CoinListPage` (спільні з Loading).
+ * @param {{coins: import('../../lib/index.js').Coin[], wide: boolean, view: ReturnType<typeof import('./useCoinListView.js').useCoinListView>, announce: string, onAnnounce: (text: string) => void}} props
  * @returns {import('react').ReactElement}
  */
-export function LoadedList({ coins, wide }) {
+export function LoadedList({ coins, wide, view, announce, onAnnounce }) {
   const stableIds = useStablecoinIds();
   const favorites = useFavorites();
-  const view = useCoinListView(coins);
-  const [announce, setAnnounce] = useState("");
   const pendingFocus = useRef(null);
   const settled = useDebounced(view.query);
   useFocusAfterMore(pendingFocus, view.items.length);
@@ -61,20 +59,16 @@ export function LoadedList({ coins, wide }) {
   const toggle = (coin) => {
     if (favorites.has(coin.id)) {
       favorites.remove(coin.id);
-      setAnnounce(`${coin.name} прибрано з обраних`);
+      onAnnounce(`${coin.name} прибрано з обраних`);
     } else {
       favorites.add(coin.id, top50Ids);
-      setAnnounce(`${coin.name} додано в обрані`);
+      onAnnounce(`${coin.name} додано в обрані`);
     }
   };
   const more = () => {
     pendingFocus.current = view.nextFocusId;
-    setAnnounce(`Показано ${view.items.length + PAGE_SIZE} з ${view.total}`);
+    onAnnounce(`Показано ${view.items.length + PAGE_SIZE} з ${view.total}`);
     view.showMore();
-  };
-  const sortBy = (key) => {
-    view.changeSort(key);
-    setAnnounce(`Упорядковано: ${SORT_LABELS[key]}`);
   };
 
   const status = view.searching
@@ -83,7 +77,6 @@ export function LoadedList({ coins, wide }) {
   const shared = { coins: view.items, stableIds, isFavorite: favorites.has, onToggle: toggle };
   return (
     <>
-      <ListToolbar query={view.query} onQuery={view.changeQuery} sort={view.sort} onSort={sortBy} />
       <SearchStatus
         empty={view.searching && view.matches === 0}
         foundCount={foundCount}

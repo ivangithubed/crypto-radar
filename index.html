@@ -9,6 +9,12 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <link
+      rel="preload"
+      as="fetch"
+      crossorigin
+      href="https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=7d"
+    />
     <title>Крипто-Радар</title>
     <script src="/theme-init.js"></script>
   </head>

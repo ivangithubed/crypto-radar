@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { formatPriceTime } from "../../lib/index.js";
+import { SORT_LABELS, formatPriceTime } from "../../lib/index.js";
 import { useTopCoins } from "../../market-data/index.js";
 import { StatusMessage, useDocumentTitle, useMediaQuery } from "../../ui/index.js";
 import { ListError, ListSkeleton } from "./ListStates.jsx";
+import { ListToolbar } from "./ListToolbar.jsx";
 import { LoadedList } from "./LoadedList.jsx";
+import { useCoinListView } from "./useCoinListView.js";
+
+const NO_COINS = [];
 
 /** Після успішного «Спробувати ще раз» фокус повертається на h1 (UX §3 S-1 Error → Data). */
 function useFocusAfterRecovery(status, ref) {
@@ -53,6 +57,14 @@ export function CoinListPage() {
   const h1Ref = useRef(null);
   const { status, kind } = useScreenState(top);
   useFocusAfterRecovery(status, h1Ref);
+  // Один екземпляр стану й панелі для Loading і Data: поле не перемонтовується, введене зберігається.
+  const view = useCoinListView(status === "fresh" ? top.coins : NO_COINS);
+  const [announce, setAnnounce] = useState("");
+  const sortBy = (key) => {
+    view.changeSort(key);
+    setAnnounce(`Упорядковано: ${SORT_LABELS[key]}`);
+  };
+  const showToolbar = status === "loading" || status === "fresh";
 
   return (
     <div className="flex flex-col gap-4" aria-busy={status === "loading" ? "true" : undefined}>
@@ -66,6 +78,14 @@ export function CoinListPage() {
         </h1>
         <PricesMeta status={status} pricesAt={top.pricesAt} wide={wide} />
       </div>
+      {showToolbar ? (
+        <ListToolbar
+          query={view.query}
+          onQuery={view.changeQuery}
+          sort={view.sort}
+          onSort={sortBy}
+        />
+      ) : null}
       {status === "loading" ? <ListSkeleton wide={wide} /> : null}
       {status === "error" ? (
         <ListError
@@ -75,7 +95,15 @@ export function CoinListPage() {
           retryFailed={top.retryFailed}
         />
       ) : null}
-      {status === "fresh" ? <LoadedList coins={top.coins} wide={wide} /> : null}
+      {status === "fresh" ? (
+        <LoadedList
+          coins={top.coins}
+          wide={wide}
+          view={view}
+          announce={announce}
+          onAnnounce={setAnnounce}
+        />
+      ) : null}
     </div>
   );
 }

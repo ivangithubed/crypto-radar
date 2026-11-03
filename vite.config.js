@@ -36,6 +36,11 @@ export default defineConfig({
   // ADR 0003: GitHub Pages публікує сайт за шляхом /crypto-radar/.
   base: "/crypto-radar/",
   plugins: [react(), tailwindcss(), contentSecurityPolicy()],
+  build: {
+    // Шрифти завжди окремими файлами: data:-URI для дрібних підмножин @fontsource блокує CSP
+    // (font-src не задано → default-src 'self'), решта асетів — типове правило Vite (≤ 4 КБ inline).
+    assetsInlineLimit: (file) => (/\.woff2?$/.test(file) ? false : undefined),
+  },
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.js"],

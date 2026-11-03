@@ -4,13 +4,13 @@ import { SAFARI_HINT_KEY } from "./store.js";
 const NOT_SAFARI = /Chrome|Chromium|CriOS|FxiOS|EdgiOS|Edg|Android/;
 
 /** Safari / WebKit на iOS або macOS (не Chromium-, Firefox-, Edge-оболонки й не Android). */
-export function isSafari() {
+function isSafari() {
   const ua = navigator.userAgent ?? "";
   return ua.includes("Safari") && ua.includes("AppleWebKit") && !NOT_SAFARI.test(ua);
 }
 
 /** Сайт відкрито з головного екрана; відсутній matchMedia — не standalone. */
-export function isStandalone() {
+function isStandalone() {
   if (navigator.standalone === true) return true;
   try {
     return typeof window.matchMedia === "function"

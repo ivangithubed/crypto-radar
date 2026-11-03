@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 7: реалізація спринту 1 (хвилі DAG)`
+- **Поточний активний етап:** `Stage 8.a / 8.b: очікують старту`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-03 03:23`
+- **Останнє оновлення:** `2026-11-03 04:21`
 
 ---
 
@@ -24,7 +24,7 @@
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b` |
-| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `IN_PROGRESS` | `.agentic/reports/07-implementation-report.md` | — |
+| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | — |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `PENDING` | `.agentic/reports/08a-qa-manual-report.md` | — |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `PENDING` | `.agentic/reports/08b-qa-automation-report.md` | — |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
@@ -54,6 +54,8 @@
 | **4 (Revise №1)** | `2026-11-03 00:05` | `f689fc3` | `docs(stage-4): keep github in privacy note as plain text` | `Власник продукту` |
 | **7 (чекпоінти)** | `2026-11-03 00:24–00:41` | `62fe221`, `3bc6ee3`, `ccaddfb`, `871334b` | `chore(stage-7): checkpoint before wave 1…4` | `Власник продукту` (згода 00:23) |
 | **5 (Revise №2)** | `2026-11-03 01:47` | `d7d162e` | `ci(stage-5): run acceptance oracle in ci and resolve package exports` | `Власник продукту` |
+| **6 (Revise №3)** | `2026-11-03 03:23` | `8720a04` | `test(stage-6): allow IP abbreviation in AC-9.3 latin whitelist` | `Власник продукту` |
+| **7** | `2026-11-03 04:21` | див. `git log` | `feat(stage-7): implement sprint 1 mvp screens and data layer` | `Власник продукту` |
 
 ---
 
@@ -121,3 +123,5 @@
 - `2026-11-03 03:12 Stage 7: ремонт підказок від clientWidth — мобільний reflow 4/4, браузер 320 px прокрутка 0; Red-Team прохід №6 (вузький) — PASS, D (P1 = 0, P2 = 14). Звіт і walkthrough сформовано; рев'ю №1 етапу 7 — BLOCKERS FOUND (уроки Circuit Breaker не записано, 8 WARNING) — виправлено: уроки L-006, L-007, TD-020, таблиця STRIDE, теми й скриншоти, .agentic/design-ref/ у .git/info/exclude. Гейт етапу 7 — після гейту етапу 6 (передумова, цілісність оракула).`
 - `2026-11-03 03:17 Stage 7: рев'ю №2 — PASS (4 WARNING — лічильник сканера, сума шрифтів, числа оракула у walkthrough, TD-020 у секції 3 — виправлено). Далі: гейт етапу 6 (фраза власника, коміт Revise №3), потім verify-gate.py --stage 7 --run (L-004) і гейт етапу 7.`
 - `2026-11-03 03:23 Stage 6 (Revise №3, запит №3): власник написав «ПЛАН ЗАТВЕРДЖЕНО. ПОЧИНАЙ IMPLEMENTATION.» → «Approve & закоміть» (APPROVED_AND_COMMITTED). Коміт: test(stage-6): allow IP abbreviation in AC-9.3 latin whitelist. Рішення про розбіжність часу звіту етапу 4 (трекер — джерело правди) прийнято на гейті етапу 5 і діє для етапу 6.`
+- `2026-11-03 03:24 Stage 7: verify-gate.py --stage 7 --run після вердикту PASS рев'ю №2 і гейту етапу 6 — код 0 (24 PASS, 1 WARN: приховані сценарії власника не задано). Статус WAITING_FOR_APPROVAL; етап винесено на гейт.`
+- `2026-11-03 04:21 Stage 7: власник — «Approve & закоміть» (APPROVED_AND_COMMITTED). Перед комітом скіл verify: pnpm verify 0, test:a11y 40/40, vitals 0, маршрути й 320 px без переповнення, 0 порушень CSP. CoinGecko під час перевірки відповідав 429 без заголовків CORS → застосунок показав «Немає з'єднання» (ризик розділу 6 звіту підтверджено, перевірка на 8.a / 8.b). Пункти 1–6 блоку гейту власник не вирішив — лишаються відкритими (TD-003, TD-004, TD-020, шрифти, компроміс ручного повтору, приховані сценарії, design-ref і SKILL.md) до окремого рішення; жоден не позначено «прийнятим» (L-003).`

@@ -148,21 +148,48 @@ describe("useTopCoins", () => {
   });
 });
 
+const useBoth = () => ({ top: useTopCoins(), stable: useStablecoinIds() });
+
 describe("useStablecoinIds", () => {
   it("повертає множину id", async () => {
     stubFetch();
-    const { result } = renderHook(() => useStablecoinIds(), { wrapper });
-    expect(result.current.size).toBe(0);
-    await waitFor(() => expect(result.current.has("tether")).toBe(true));
+    const { result } = renderHook(useBoth, { wrapper });
+    expect(result.current.stable.size).toBe(0);
+    await waitFor(() => expect(result.current.stable.has("tether")).toBe(true));
   });
 
   it("при помилці — порожня множина (той самий екземпляр)", async () => {
     const mock = stubFetch({ stable: () => fail(500) });
-    const { result } = renderHook(() => useStablecoinIds(), { wrapper });
-    const first = result.current;
-    await waitFor(() => expect(mock).toHaveBeenCalled());
+    const { result } = renderHook(useBoth, { wrapper });
+    const first = result.current.stable;
+    await waitFor(() => expect(mock.mock.calls.length).toBe(2));
     await act(async () => {});
-    expect(result.current.size).toBe(0);
-    expect(result.current).toBe(first);
+    expect(result.current.stable.size).toBe(0);
+    expect(result.current.stable).toBe(first);
+  });
+
+  it("не запитується, поки топ-50 не відповів", async () => {
+    const mock = stubFetch({ top: () => new Promise(() => {}) });
+    renderHook(useBoth, { wrapper });
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
+    });
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(topCalls(mock)).toHaveLength(1);
+  });
+
+  it("після відповіді топ-50 запитується (разом 2 виклики)", async () => {
+    const mock = stubFetch();
+    const { result } = renderHook(useBoth, { wrapper });
+    await waitFor(() => expect(result.current.stable.has("tether")).toBe(true));
+    expect(mock).toHaveBeenCalledTimes(2);
+  });
+
+  it("після помилки топ-50 (429) запитується теж", async () => {
+    const mock = stubFetch({ top: () => fail(429) });
+    const { result } = renderHook(useBoth, { wrapper });
+    await waitFor(() => expect(result.current.top.status).toBe("error"));
+    await waitFor(() => expect(result.current.stable.has("tether")).toBe(true));
+    expect(mock).toHaveBeenCalledTimes(2);
   });
 });

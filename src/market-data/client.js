@@ -101,6 +101,8 @@ async function requestWithRetries(url, signal) {
     } catch (error) {
       if (attempt >= RETRY_DELAYS_MS.length || !isRetryable(error)) throw error;
       await sleep(RETRY_DELAYS_MS[attempt], signal);
+      // Вкладку сховали під час паузи: наступна спроба — у черговому циклі або при поверненні (NFR-3).
+      if (document.visibilityState === "hidden") throw error;
     }
   }
 }

@@ -20,7 +20,7 @@ let cache = null;
  * @param {string | null} raw
  * @returns {string[]}
  */
-export function parseIds(raw) {
+function parseIds(raw) {
   if (raw === null) return [];
   try {
     const data = JSON.parse(raw);
