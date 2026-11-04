@@ -10,7 +10,7 @@
 - **Проєкт:** `Крипто-Радар`
 - **Поточний активний етап:** `Запит на зміну №7 (BUG-012, свіжість за медіаною): етапи 3, 4, 6, 7, 8.a, 8.b; далі Stage 9`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-04 17:59`
+- **Останнє оновлення:** `2026-11-04 18:02`
 
 ---
 
@@ -24,8 +24,8 @@
 | **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0`, запит №6 — `318f1bf`, запит №7 — `7af806e` |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5`, запит №7 — `7b1f7fa` |
-| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5`, Revise №6 — `8c68680` |
-| **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `REJECTED_REVISING` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f`, Revise 8.a — `8755fb3`, Revise 8.a №2 — `706c08a` |
+| **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5`, Revise №6 — `8c68680`, запит №7 — `f72a0cd` |
+| **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f`, Revise 8.a — `8755fb3`, Revise 8.a №2 — `706c08a` |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `REJECTED_REVISING` | `.agentic/reports/08b-qa-automation-report.md` | `f52746a`, Revise 8.b — `821453d` |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
 
@@ -72,6 +72,7 @@
 | **3 (запит №7)** | `2026-11-04 17:57` | `ee5ce3b` | `docs(stage-3): compute data freshness by median last_updated` | `Власник продукту` |
 | **4 (запит №7)** | `2026-11-04 17:57` | `7af806e` | `docs(stage-4): align stale error and price time with median freshness` | `Власник продукту` |
 | **6 (запит №7)** | `2026-11-04 17:58` | `7b1f7fa` | `docs(stage-6): align freshness plan with median last_updated` | `Власник продукту` |
+| **7 (запит №7)** | `2026-11-04 18:02` | `f72a0cd` | `fix(stage-7): compute data freshness by median last_updated` | `Власник продукту` |
 
 ---
 
@@ -210,3 +211,4 @@
 - `2026-11-04 17:57 Stage 4 (запит на зміну №7, спільний гейт шести етапів): власник — «Approve & закоміть усі шість» (APPROVED_AND_COMMITTED). Схвалено зміну свіжості за медіаною `last_updated` (BUG-012, рішення власника «Медіана часу оновлення»). Відкритими лишаються (L-003, не прийнято): TD-029 (позначка віку окремих монет; відступ від AC-8.5), TD-027, TD-028, BUG-012 — Fixed (Verified після перевірки власником на справжньому Safari; власник: «Перевірю сам, коли вийде реліз-кандидат»), BUG-010 — Fixed.`
 - `2026-11-04 17:58 Stage 6 (запит на зміну №7, спільний гейт шести етапів): власник — «Approve & закоміть усі шість» (APPROVED_AND_COMMITTED). Схвалено зміну свіжості за медіаною `last_updated` (BUG-012, рішення власника «Медіана часу оновлення»). Відкритими лишаються (L-003, не прийнято): TD-029 (позначка віку окремих монет; відступ від AC-8.5), TD-027, TD-028, BUG-012 — Fixed (Verified після перевірки власником на справжньому Safari; власник: «Перевірю сам, коли вийде реліз-кандидат»), BUG-010 — Fixed.`
 - `2026-11-04 17:59 Stage 7 (запит на зміну №7, спільний гейт шести етапів): власник — «Approve & закоміть усі шість» (APPROVED_AND_COMMITTED). Схвалено зміну свіжості за медіаною `last_updated` (BUG-012, рішення власника «Медіана часу оновлення»). Відкритими лишаються (L-003, не прийнято): TD-029 (позначка віку окремих монет; відступ від AC-8.5), TD-027, TD-028, BUG-012 — Fixed (Verified після перевірки власником на справжньому Safari; власник: «Перевірю сам, коли вийде реліз-кандидат»), BUG-010 — Fixed.`
+- `2026-11-04 18:02 Stage 8.a (запит на зміну №7, спільний гейт шести етапів): власник — «Approve & закоміть усі шість» (APPROVED_AND_COMMITTED). Схвалено зміну свіжості за медіаною `last_updated` (BUG-012, рішення власника «Медіана часу оновлення»). Відкритими лишаються (L-003, не прийнято): TD-029 (позначка віку окремих монет; відступ від AC-8.5), TD-027, TD-028, BUG-012 — Fixed (Verified після перевірки власником на справжньому Safari; власник: «Перевірю сам, коли вийде реліз-кандидат»), BUG-010 — Fixed.`
