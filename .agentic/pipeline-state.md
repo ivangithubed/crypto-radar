@@ -20,8 +20,8 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **1** | Discovery: від ідеї до продуктового брифу | `product-discovery` | — | `APPROVED_AND_COMMITTED` | `.agentic/reports/01-discovery-report.md` | `04c6271` |
 | **2** | Вимоги: User Stories та Gherkin-критерії | `ba-requirements` | `1` | `APPROVED_AND_COMMITTED` | `.agentic/reports/02-requirements-report.md` | `2ff839a` |
-| **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f`, запит №5 — `9417669`, запит №6 — `32827ef` |
-| **4** | UX і контракт API | `ux-api-design` | `3` | `REJECTED_REVISING` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0`, запит №6 — `318f1bf` |
+| **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f`, запит №5 — `9417669`, запит №6 — `32827ef`, запит №7 — `ee5ce3b` |
+| **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0`, запит №6 — `318f1bf` |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `REJECTED_REVISING` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5` |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `REJECTED_REVISING` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5`, Revise №6 — `8c68680` |
@@ -69,6 +69,7 @@
 | **8.a (Revise 8.a №2)** | `2026-11-04 02:11` | `706c08a` | `test(stage-8.a): retest bug-010 and bug-011 after stage 7 revise 6` | `Власник продукту` |
 | **3 (запит №6)** | `2026-11-04 13:46` | `32827ef` | `docs(stage-3): allow first-load requests in hidden tab, allow null 7d change` | `Власник продукту` |
 | **4 (запит №6)** | `2026-11-04 13:46` | `318f1bf` | `docs(stage-4): document null 7d change and focus after returning to the list` | `Власник продукту` |
+| **3 (запит №7)** | `2026-11-04 17:57` | `ee5ce3b` | `docs(stage-3): compute data freshness by median last_updated` | `Власник продукту` |
 
 ---
 
@@ -204,4 +205,4 @@
 - `2026-11-04 17:51 Запит на зміну №7: вузьке рев'ю №5 звіту етапу 7 — BLOCKERS FOUND (шапка й рядок 4.0 «Вердикт рев'юера» ще називали рев'ю №3 / №4 поточними) — виправлено, нумерацію наступного рев'ю з поточних записів прибрано. Далі — вузьке рев'ю етапу 7, потім один блок гейту власнику.`
 - `2026-11-04 17:54 Запит на зміну №7: вузьке рев'ю №6 звіту етапу 7 — PASS (4 INFO, виправлено); рев'ю №3 — PASS для етапів 3, 4, 6, 8.a, 8.b. Усі шість етапів (3, 4, 6, 7, 8.a, 8.b) мають вердикт PASS і чекають одного блоку гейту власника; коміти — за порядком залежностей 3 → 4 → 6 → 7 → 8.a → 8.b, після кожного — `verify-gate.py --stage N` (L-004). Відкриті рішення власника: TD-029 (позначка віку окремих монет / виняток AC-8.5), справжній Safari після BUG-012 (BUG-012 — Fixed, Verified лише після перевірки або рішення власника), TD-027, TD-028.`
 - `2026-11-04 17:57 Stage 3 (запит на зміну №7, спільний гейт шести етапів): власник — «Approve & закоміть усі шість» (APPROVED_AND_COMMITTED). Схвалено зміну свіжості за медіаною `last_updated` (BUG-012, рішення власника «Медіана часу оновлення»). Відкритими лишаються (L-003, не прийнято): TD-029 (позначка віку окремих монет; відступ від AC-8.5), TD-027, TD-028, BUG-012 — Fixed (Verified після перевірки власником на справжньому Safari; власник: «Перевірю сам, коли вийде реліз-кандидат»), BUG-010 — Fixed.`
-- `2026-11-04 17:57 Stage 3 (запит на зміну №7, спільний гейт шести етапів): власник — «Approve & закоміть усі шість» (APPROVED_AND_COMMITTED). Схвалено зміну свіжості за медіаною `last_updated` (BUG-012, рішення власника «Медіана часу оновлення»). Відкритими лишаються (L-003, не прийнято): TD-029 (позначка віку окремих монет; відступ від AC-8.5), TD-027, TD-028, BUG-012 — Fixed (Verified після перевірки власником на справжньому Safari; власник: «Перевірю сам, коли вийде реліз-кандидат»), BUG-010 — Fixed.`
+- `2026-11-04 17:57 Stage 4 (запит на зміну №7, спільний гейт шести етапів): власник — «Approve & закоміть усі шість» (APPROVED_AND_COMMITTED). Схвалено зміну свіжості за медіаною `last_updated` (BUG-012, рішення власника «Медіана часу оновлення»). Відкритими лишаються (L-003, не прийнято): TD-029 (позначка віку окремих монет; відступ від AC-8.5), TD-027, TD-028, BUG-012 — Fixed (Verified після перевірки власником на справжньому Safari; власник: «Перевірю сам, коли вийде реліз-кандидат»), BUG-010 — Fixed.`
