@@ -24,6 +24,13 @@
     "8.b": [
       "pnpm install --frozen-lockfile",
       "pnpm exec playwright test -c e2e/playwright.config.js"
+    ],
+    "9": [
+      "pnpm install --frozen-lockfile",
+      "pnpm verify",
+      "python -c \"import yaml; yaml.safe_load(open('.github/workflows/release.yml', encoding='utf-8'))\"",
+      "python -c \"import re,sys; t=open('CHANGELOG.md',encoding='utf-8').read(); sys.exit(0 if re.search(r'^## \\[0\\.1\\.0\\]', t, re.M) else 1)\"",
+      "python -c \"import re,sys; t=open('.agentic/specs/09-release-runbook.md',encoding='utf-8').read(); sys.exit(0 if re.search(r'^## 5\\. Rollback', t, re.M) else 1)\""
     ]
   },
   "debt_commands": {

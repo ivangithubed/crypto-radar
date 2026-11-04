@@ -1,0 +1,49 @@
+# git-cliff: генерація CHANGELOG.md з Conventional Commits (етап 9, release-engineer).
+# Запуск для нової версії: `pnpm exec git-cliff --config cliff.toml --unreleased --tag vX.Y.Z --prepend CHANGELOG.md`
+# (дописує розділ угору, ручні правки не втрачаються). Перший випуск v0.1.0 відредаговано вручну.
+# Формат — Keep a Changelog; версіонування — SemVer (https://semver.org).
+
+[changelog]
+header = """
+# Changelog
+
+Усі помітні зміни Крипто-Радара. Формат — [Keep a Changelog](https://keepachangelog.com/uk/1.1.0/),
+версії — [SemVer](https://semver.org/lang/uk/).
+"""
+body = """
+{% if version -%}
+## [{{ version | trim_start_matches(pat="v") }}] — {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+## [Unreleased]
+{% endif -%}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+{% for commit in commits %}
+- {% if commit.scope %}**{{ commit.scope }}:** {% endif %}{{ commit.message | upper_first }} (`{{ commit.id | truncate(length=7, end="") }}`)\
+{% endfor %}
+{% endfor %}
+"""
+footer = ""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+protect_breaking_commits = false
+filter_commits = false
+tag_pattern = "v[0-9]*"
+sort_commits = "oldest"
+commit_parsers = [
+  { message = "^chore\\(stage-7\\): checkpoint", skip = true },
+  { message = "^chore\\(init\\)", skip = true },
+  { message = "^feat", group = "Added" },
+  { message = "^fix", group = "Fixed" },
+  { message = "^perf", group = "Performance" },
+  { message = "^build", group = "Build and CI" },
+  { message = "^ci", group = "Build and CI" },
+  { message = "^docs", group = "Documentation" },
+  { message = "^test", group = "Tests" },
+  { message = "^chore", group = "Maintenance" },
+  { message = "^refactor", group = "Changed" },
+]
