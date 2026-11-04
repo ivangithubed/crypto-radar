@@ -157,6 +157,22 @@ test.describe("US-8: Недоступні або застарілі дані", (
     });
   }
 
+  test("@US-8 @AC-8.4 BUG-012: одна рідко оновлювана монета не ховає список", async ({ page }) => {
+    let markets;
+    await test.step("Дано джерело подало свіжі ціни, але одна монета (9 місце) оновлена 3,5 години тому", async () => {
+      markets = topMarkets({ ageSeconds: 60 });
+      markets[8].last_updated = new Date(NOW.getTime() - 3.5 * 3600 * 1000).toISOString();
+    });
+    await test.step("Коли відвідувач відкриває список монет", async () => {
+      await openApp(page, "#/", { markets });
+    });
+    await test.step("Тоді відвідувач бачить ціни, а не «Ціни застаріли»", async () => {
+      await waitForList(page);
+      await expectBitcoinPrice(page);
+      await expect(alertBlock(page)).toHaveCount(0);
+    });
+  });
+
   test("@US-8 @AC-8.5 Дані застаріли, поки екран відкритий", async ({ page }) => {
     let source;
     await test.step("Дано відвідувач бачить список монет зі свіжими цінами", async () => {
