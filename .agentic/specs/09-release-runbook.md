@@ -9,6 +9,7 @@
 - **Тег:** анотований `vX.Y.Z` на коміті `main`, де пройдені всі гейти. Опублікований тег не переміщують і не видаляють: помилку виправляє новий тег.
 - **CHANGELOG:** `CHANGELOG.md` (Keep a Changelog). Для нових версій: `pnpm exec git-cliff --config cliff.toml --unreleased --tag vX.Y.Z --prepend CHANGELOG.md` (додає розділ угору), потім людська редакція. Інструмент: `git-cliff` 2.14.2 (devDependency, `cliff.toml`).
 - Поле `version` у `package.json` лишається `0.0.0`: Vite не бере версію звідти; версія артефакту — у `dist/version.json` (`{"version":"vX.Y.Z","commit":"<sha>"}`), який створює release-workflow.
+- Зміна лише CI, workflow чи документації без зміни коду застосунку теж випускається PATCH-тегом (приклад — `v0.1.1`, TD-034). Код і залежності тоді збігаються з попереднім тегом (`git diff <попередній тег> -- src public index.html vite.config.js package.json pnpm-lock.yaml` порожній), збірка відтворювана (розділ 9.3), тож `dist/` відрізняється лише `version.json`.
 - Тег ставить власник або агент за окремою згодою власника (розділ 4).
 
 ## 2. Середовища
@@ -17,16 +18,16 @@
 | :--- | :--- | :--- | :--- | :--- |
 | local | `http://localhost:5173/crypto-radar/` (dev), `http://localhost:4173/crypto-radar/` (preview) | комп'ютер власника | немає | — |
 | CI | — | GitHub Actions, `ci.yml` | немає | — |
-| staging | немає (ADR 0003) | роль виконує job `smoke` у `release.yml`: `vite preview` того самого артефакту, Chromium і WebKit, набір `@smoke` | немає | автоматично |
+| staging | немає (ADR 0003) | роль виконує job `smoke` у `release.yml`: `vite preview` того самого артефакту, Chromium і WebKit, набір `@smoke`; встановлення браузерів — таймаут кроку 8 хв і дві спроби по 3 хв (TD-034) | немає | автоматично |
 | production | `https://ivangithubed.github.io/crypto-radar/` | GitHub Pages, середовище `github-pages` | немає (OIDC `id-token`) | власник: фраза в чаті і required reviewers у GitHub |
 
 ## 3. Підготовка цілі деплою (робить власник)
 
 Агент нічого з цього не створює без окремої згоди. Усе безкоштовно.
 
-1. Репозиторій `ivangithubed/crypto-radar` — публічний (вимога Pages на GitHub Free). Статус на 2026-11-04: публічний, `origin/main` = `3c7cc09` (етап 5).
+1. Репозиторій `ivangithubed/crypto-radar` — публічний (вимога Pages на GitHub Free). Статус на 2026-11-04 23:10: публічний, `origin/main` = `b6c56c2` (= тег `v0.1.0`); локальний коміт `9438300` (запис про production) ще не запушено.
 2. Settings → Pages → **Build and deployment → Source: GitHub Actions**.
-3. Settings → Environments → `github-pages` → **Required reviewers**: власник (технічний гейт production). Також: **Deployment branches and tags** — дозволити теги `v*`. Без Source = GitHub Actions і дозволу тегів деплой не пройде; **без Required reviewers деплой пройде, але без другого гейта: production опублікується одразу після зеленого `smoke`**, тому крок 4.5 обов'язковий.
+3. Settings → Environments → `github-pages` → **Required reviewers**: власник (технічний гейт production). Також: **Deployment branches and tags** — дозволити теги `v*`. Без Source = GitHub Actions і дозволу тегів деплой не пройде (2026-11-04 `deploy` впав на `actions/configure-pages` з «Get Pages site failed … Not Found», бо Pages не було ввімкнено: розділ 7, журнал інцидентів); **без Required reviewers деплой пройде, але без другого гейта: production опублікується одразу після зеленого `smoke`**, тому крок 4.5 обов'язковий.
 4. (Необов'язково) зовнішня uptime-перевірка (розділ 6).
 
 ## 4. Звичайний реліз (кожен крок — окрема згода власника)
@@ -35,16 +36,16 @@
 2. **Локальний реліз-кандидат** (без зовнішніх дій): `pnpm build && pnpm preview --host --port 4173` → власник відкриває `http://<IP ПК>:4173/crypto-radar/` на iPhone (Safari) і комп'ютері, проходить чекліст (розділ 9.1).
 3. `git push origin main` (перший раз — 30+ комітів історії). Згода власника.
 4. Зачекати зелений CI (`ci.yml`: verify, оракул, debt, e2e у трьох браузерах). Червоний — виправити, не обходити.
-5. **Перед тегом (лише читання):** `gh api repos/ivangithubed/crypto-radar/environments/github-pages --jq '.protection_rules'` — має містити `required_reviewers` із власником (TD-032); без цього тег не ставимо. Далі `git tag -a v0.1.0 -m "Release v0.1.0"` і `git push origin v0.1.0` → запускає `release.yml`. Згода власника.
-6. `release.yml`: `build` (тег SemVer → `pnpm audit` → `pnpm verify` → `dist/version.json` → артефакт Pages) → `smoke` (той самий артефакт, `vite preview`, `@smoke` у Chromium і WebKit) → `deploy` (чекає схвалення власника в GitHub) → `verify-production`.
+5. **Перед тегом (лише читання):** `gh api repos/ivangithubed/crypto-radar/environments/github-pages --jq '.protection_rules'` — має містити `required_reviewers` із власником (TD-032); без цього тег не ставимо. Також `gh api repos/ivangithubed/crypto-radar/pages --jq .build_type` — має бути `workflow` (інакше `deploy` падає на `configure-pages` з 404). Далі `git tag -a v0.1.0 -m "Release v0.1.0"` і `git push origin v0.1.0` → запускає `release.yml`. Згода власника.
+6. `release.yml`: `build` (тег SemVer → `pnpm audit` → `pnpm verify` → `dist/version.json` → артефакт Pages) → `smoke` (той самий артефакт, `vite preview`, `@smoke` у Chromium і WebKit) → `deploy` (чекає схвалення власника в GitHub) → `verify-production`. Зависання мережевого кроку не чекає таймауту job (20 хв): встановлення браузерів у `smoke` обмежене (TD-034), решта кроків — таймаутами jobs.
 7. **Production — два гейти.** (а) Власник у чаті пише: `HUMAN ACCEPTANCE: ACCEPTED. ДОЗВОЛЯЮ PRODUCTION DEPLOYMENT.` після зеленого `smoke`. (б) Власник сам натискає **Approve and deploy** у GitHub (Actions → запуск → Review deployments). Агент схвалення не імітує.
 8. Чекліст після релізу (розділ 9.2); запис у журнал релізів (розділ 8) і в трекер.
 
 ## 5. Rollback / відкат
 
-- **Застосунок.** Вихідних міграцій і БД немає. Відкат = повторний деплой попереднього артефакту: Actions → **Release** → Run workflow → `tag` = попередній тег (наприклад `v0.1.0`). Це **не копія старого артефакту, а перезбірка того самого коміту** (збірка відтворювана: розділ 9.3) з `pnpm audit --audit-level high` і `pnpm verify`; далі `smoke`, `deploy` (схвалення власника) і `verify-production`. RTO ≤ 15 хв (NFR-12). Якщо нове advisory на старі залежності блокує відкат (TD-033), швидкий шлях — Settings → Pages → Unpublish site (дія власника) або `git revert` + новий тег PATCH.
+- **Застосунок.** Вихідних міграцій і БД немає. Відкат = повторний деплой попереднього артефакту: Actions → **Release** → Run workflow → `tag` = попередній тег (наприклад `v0.1.0`). Це **не копія старого артефакту, а перезбірка того самого коміту** (збірка відтворювана: розділ 9.3) з `pnpm audit --audit-level high` і `pnpm verify`; далі `smoke`, `deploy` (схвалення власника) і `verify-production`. RTO ≤ 15 хв (NFR-12). **Бюджет RTO:** машинний час запуску `release.yml` — близько 3 хв (run 41887573401: `build` 31 с, `smoke` 90 с, `deploy` 45 с, `verify-production` 3 с); решта бюджету (≈ 12 хв) — на фразу `HUMAN ACCEPTANCE` і Approve and deploy власника та на можливе повторне встановлення браузерів (до 6,5 хв, TD-034; повільне, але успішне встановлення не вкладається в спробу 3 хв — TD-036). Фактичний час відкату — за протоколом розділу 9.6. Якщо нове advisory на старі залежності блокує відкат (TD-033), швидкий шлях — Settings → Pages → Unpublish site (дія власника) або `git revert` + новий тег PATCH.
 - **Швидка альтернатива:** `git revert <коміт>` → push у `main` → новий тег PATCH → звичайний реліз (розділ 4).
-- **Перший реліз (`v0.1.0`):** попередньої версії немає. Якщо production зламано — вимкнути публікацію: Settings → Pages → Unpublish site (дія власника), діагностика, новий PATCH. Репетицію відкату на реальному production виконують після `v0.1.0`: випустити `v0.1.1`, відкотити workflow на `v0.1.0`, перевірити `dist/version.json` (пункт 9.4 — відкрито).
+- **Перший реліз (`v0.1.0`):** попередньої версії немає. Якщо production зламано — вимкнути публікацію: Settings → Pages → Unpublish site (дія власника), діагностика, новий PATCH. `v0.1.0` розгорнуто в production 2026-11-04 22:57; репетицію відкату (`v0.1.1`, потім `workflow_dispatch` з `tag=v0.1.0`, перевірка `version.json`) виконують за протоколом розділу 9.6 (пункт 9.4 — відкрито до її проведення).
 - **Дані користувача** лише в `localStorage` браузера (ADR 0004, 0006); сервера й бекапів немає, відновлювати нічого. Формат ключів не змінюється без міграції в коді.
 - **Хто вирішує:** власник продукту. Агент пропонує, виконує тільки за окремою згодою.
 
@@ -62,6 +63,13 @@
 3. **Дія:** відкат за розділом 5 (за згодою власника). Дані користувача не торкаємо.
 4. **Комунікація:** власник повідомляє знайомих-користувачів (канал власника) і пише коротку примітку в Releases.
 5. **Після стабілізації:** запис у цей runbook (час, симптом, причина, дія, що змінити) і BUG для етапу-власника причини. Приклад: BUG-012 (одна монета ховала список) знайдено під час ручної перевірки до першого релізу.
+
+### Журнал інцидентів
+
+| Дата, час | Симптом | Причина | Дія | Що змінено |
+| :--- | :--- | :--- | :--- | :--- |
+| 2026-11-04, run 41887573401, спроба 1 (≈ 20:29 – 20:50) | Job `smoke` скасовано за `timeout-minutes: 20` на кроці «Install browsers for smoke» (1200 с; звичайно 41 с) | Невстановлена (завислий apt / завантаження на раннері); та сама команда в CI проходила | `gh run rerun --failed` (той самий тег і артефакт, без перезбирання) — smoke зелений за 90 с | TD-034: таймаут кроку й повтор у `release.yml`; така сама прогалина в `ci.yml` (етап 5) — TD-035 |
+| 2026-11-04 22:52 | `deploy` (після схвалення власника) впав на `actions/configure-pages`: «Get Pages site failed … Not Found»; production не опубліковано | Pages не ввімкнено (Source: GitHub Actions не налаштовано) | Власник ввімкнув Pages, `gh run rerun --failed`, нове схвалення власника (22:57) — зелений | Крок 4.5: перевірка `gh api …/pages --jq .build_type` перед тегом |
 
 ## 8. Прибирання ресурсів і витрати
 
@@ -94,7 +102,8 @@
 
 | Версія | Дата | Спринт | Публікація | Хто схвалив production | Репетиція відкату | Примітки |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| v0.1.0 | 2026-11-04 | 1 | локально (кандидат); Safari (iPhone) перевірено власником 2026-11-04 | — | не проводилась: попередньої версії немає; після `v0.1.0` — `v0.1.1` і відкат (пункт відкритий) | push, тег, деплой — після згод власника |
+| v0.1.0 | 2026-11-04 | 1 | production, GitHub Pages: `https://ivangithubed.github.io/crypto-radar/`, run 41887573401 (22:57), `version.json` = v0.1.0 / `b6c56c2` | власник: фраза «HUMAN ACCEPTANCE…» 22:50 і Approve and deploy у GitHub (22:51 — збій Pages, повторно 22:57) | не проводилась — протокол 9.6 (пункт відкритий) | Safari (iPhone) на реліз-кандидаті перевірено власником 19:00; перший прогін: `smoke` завис 20 хв (TD-034) |
+| v0.1.1 | — | 1 | **не випущено** — кандидат: TD-034, runbook, CHANGELOG; код застосунку = `v0.1.0` | потрібні окремі фраза й Approve and deploy (для v0.1.0 вони не діють) | — | призначена для репетиції відкату (9.6) |
 
 ### 9.5. Готовність комерційного запуску (розділ 8 довідки скіла)
 
@@ -107,3 +116,21 @@
 | Контакт підтримки й `security.txt` | **Відкрито:** `/.well-known/security.txt` (RFC 9116) не додано — потрібен контакт власника (пошта або сторінка issues); без нього не вигадуємо. До додавання — issues репозиторію. |
 | Метрики `M-N` з першого дня | Не автоматизовано: M-1…M-3 збираються опитуванням знайомих (бриф §9), аналітики в продукті немає за рішенням власника. |
 | Ліміти витрат | $0, платних сервісів немає (розділ 8). |
+
+### 9.6. Репетиція відкату: протокол і результат (пункт 9.4 — відкрито)
+
+Мета: довести, що production повертається з `v0.1.1` на `v0.1.0` через `workflow_dispatch` і вкладається в NFR-12 (RTO ≤ 15 хв). Кожен крок, що змінює зовнішній стан, — окрема згода власника; кожен production-деплой — окрема фраза «HUMAN ACCEPTANCE: ACCEPTED. ДОЗВОЛЯЮ PRODUCTION DEPLOYMENT.» і власне натискання **Approve and deploy** (агент схвалення не імітує).
+
+1. **Передумови (лише читання):** Revise етапу 9 закомічено й запушено, CI зелений; `gh api …/environments/github-pages` — required reviewers; `gh api …/pages --jq .build_type` = `workflow`; `git diff v0.1.0 -- src public index.html vite.config.js package.json pnpm-lock.yaml` порожній (код = v0.1.0).
+2. **Випуск v0.1.1:** `git tag -a v0.1.1 -m "Release v0.1.1"`, `git push origin v0.1.1` → `release.yml` (build → smoke → deploy). Після фрази й схвалення власника: `curl https://ivangithubed.github.io/crypto-radar/version.json` → `"version":"v0.1.1"`.
+3. **Відкат:** Actions → Release → Run workflow (гілка `main`) → `tag` = `v0.1.0`. Зафіксувати `t0` (створення запуску: `gh run view <id> --json createdAt`). Після зеленого `smoke` — фраза й Approve and deploy власника. `t2` — завершення `verify-production`.
+4. **Час:** RTO загальний = `t2 − t0`; очікування власника = початок job `deploy` − завершення `smoke` (`gh api repos/ivangithubed/crypto-radar/actions/runs/<id>/jobs`); RTO машинний = загальний − очікування. Поріг NFR-12: загальний ≤ 15 хв.
+5. **Перевірка:** `version.json` = `{"version":"v0.1.0","commit":"b6c56c283bbea13ed4299bd3b0e2b9a2ffc3eeac"}`; `/` повертає 200 і «Крипто-Радар»; у справжньому браузері список завантажується, консоль без помилок; SHA-256 `index.html` production = SHA збірки `v0.1.0`.
+6. **Рішення власника:** лишити production на `v0.1.0` (рекомендовано: вміст ідентичний, на один production-деплой із фразою менше) чи повернути на `v0.1.1` (ще один деплой). Записати у 9.4 і в трекер.
+
+| Параметр | Результат |
+| :--- | :--- |
+| Дата, виконавець | не проводилась |
+| `t0` / `t2` / RTO загальний / очікування власника / RTO машинний | — |
+| `version.json` після відкату, SHA-256 `index.html` | — |
+| Вердикт проти NFR-12 | — |

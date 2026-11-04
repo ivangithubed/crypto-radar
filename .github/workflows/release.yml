@@ -90,8 +90,20 @@ jobs:
       - name: Install dependencies (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
+      # TD-034: 2026-11-04 крок завис на 20 хв (спроба 1 запуску v0.1.0), а звичайний прогін — 41 с. Спроба має власну межу
+      # (3 хв ≈ 4× норми), найгірший випадок — дві спроби; зовнішня межа кроку 8 хв не дає зависанню з'їсти RTO відкату (NFR-12).
       - name: Install browsers for smoke
-        run: pnpm exec playwright install --with-deps chromium webkit
+        timeout-minutes: 8
+        run: |
+          for attempt in 1 2; do
+            if timeout --kill-after=10s 3m pnpm exec playwright install --with-deps chromium webkit; then
+              exit 0
+            fi
+            echo "::warning::Спроба $attempt встановлення браузерів не вклалась у 3 хв або завершилась помилкою"
+            sleep 5
+          done
+          echo "::error::Браузери для smoke не встановлено за дві спроби"
+          exit 1
 
       # Той самий артефакт, що піде в production, без перезбирання.
       - name: Download the built artifact
