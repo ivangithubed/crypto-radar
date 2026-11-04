@@ -1,0 +1,49 @@
+{
+ "chromium": {
+  "preload": 0,
+  "hitsUntilList": 2,
+  "manualFetchStatuses": [
+   200,
+   200
+  ],
+  "hitsAfterManual": 4,
+  "safariHint": null
+ },
+ "webkit": {
+  "preload": 0,
+  "hitsUntilList": 2,
+  "manualFetchStatuses": [
+   200,
+   200
+  ],
+  "hitsAfterManual": 4,
+  "safariHint": {
+   "title": "Щоб обрані не зникли в Safari",
+   "text": "Safari стирає дані сайту, якщо 7 днів ви нічого на ньому не натискали. Додайте Крипто-Радар на головний екран: Поділитися → «На початковий екран». Обрані, додані тут у Safari, на головний екран не переносяться — додайте їх там заново."
+  }
+ },
+ "firefox": {
+  "preload": 0,
+  "hitsUntilList": 2,
+  "manualFetchStatuses": [
+   200,
+   200
+  ],
+  "hitsAfterManual": 4,
+  "safariHint": null
+ }
+}
+OK   chromium BUG-010: preload 0
+OK   chromium BUG-010: 503 → повтор → список (2 запити)
+OK   chromium BUG-010: ручні fetch — 200, 200 і 2 нові запити
+OK   chromium: поради Safari немає
+OK   webkit BUG-010: preload 0
+OK   webkit BUG-010: 503 → повтор → список (2 запити)
+OK   webkit BUG-010: ручні fetch — 200, 200 і 2 нові запити
+OK   webkit BUG-011: заголовок поради
+OK   webkit BUG-011: текст дослівно UX §5.2
+OK   firefox BUG-010: preload 0
+OK   firefox BUG-010: 503 → повтор → список (2 запити)
+OK   firefox BUG-010: ручні fetch — 200, 200 і 2 нові запити
+OK   firefox: поради Safari немає
+CHECKS 13/13

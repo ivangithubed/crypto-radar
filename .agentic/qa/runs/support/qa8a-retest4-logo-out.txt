@@ -1,0 +1,121 @@
+{
+ "list": {
+  "rows": 50,
+  "nullRowChange": "—\nнемає даних",
+  "alert": false,
+  "brokenImgs": 0,
+  "imgs": 0,
+  "fallbacks": 50,
+  "firstFallback": "B"
+ },
+ "mouseToCoin": {
+  "listY": 1500,
+  "text": "Ethena USDe",
+  "focused": true,
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "outlineWidth": "3px",
+  "scrollY": 0
+ },
+ "coinLogo": {
+  "img": false,
+  "fallback": "E",
+  "size": 40
+ },
+ "mouseBackLink": {
+  "focusedCoin": "ethena-usde",
+  "expectedCoin": "ethena-usde",
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "inViewport": true,
+  "scrollY": 1500
+ },
+ "browserBack": {
+  "focusedCoin": "ethena-usde",
+  "expectedCoin": "ethena-usde",
+  "focusVisible": false,
+  "outlineStyle": "none",
+  "inViewport": true,
+  "scrollY": 1500
+ },
+ "keyboard": {
+  "text": "Bitcoin",
+  "focused": true,
+  "focusVisible": true,
+  "outlineStyle": "solid",
+  "outlineWidth": "2px",
+  "scrollY": 0
+ },
+ "keyboardNextTab": "☆Додати в обрані",
+ "keyboardBack": {
+  "focusedCoin": "bitcoin",
+  "expectedCoin": "bitcoin",
+  "focusVisible": true,
+  "outlineStyle": "solid",
+  "inViewport": true,
+  "scrollY": 0
+ },
+ "keyboardBackNextTab": "Додати в обрані: Bitcoin",
+ "favoritesBack": {
+  "active": "H1",
+  "text": "Обрані",
+  "scrollY": 0
+ },
+ "nullCoinPage": {
+  "dash": true,
+  "spoken": [
+   "немає даних за 7 днів",
+   "немає даних"
+  ]
+ },
+ "desktop": {
+  "errors": [],
+  "csp": 0
+ },
+ "mobile": {
+  "#/": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/coin/bitcoin": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/coin/binancecoin": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/favorites": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "#/abc": {
+   "overflow": 0,
+   "broken": 0
+  },
+  "errors": [],
+  "csp": 0
+ }
+}
+OK   list.rows = 50
+OK   list.alert = false
+OK   list.nullRowChange починається з «—»
+OK   list.brokenImgs = 0
+OK   list.fallbacks = 50
+OK   coinLogo: без img, 40 px
+OK   mouseToCoin: фокус h1 без рамки, scrollY 0
+OK   mouseBackLink: фокус на посиланні монети без рамки, на екрані, scrollY = listY
+OK   browserBack: фокус на посиланні монети без рамки, на екрані, scrollY = listY
+OK   keyboard: h1 з рамкою solid 2px
+OK   keyboardBack: посилання bitcoin з рамкою, на екрані, scrollY 0
+OK   keyboardBackNextTab = «Додати в обрані: Bitcoin»
+OK   favoritesBack: фокус на h1 «Обрані», scrollY 0
+OK   nullCoinPage: «—» і «немає даних»
+OK   desktop: консоль 0, CSP 0
+OK   mobile: консоль 0, CSP 0
+OK   mobile #/: overflow 0, broken 0
+OK   mobile #/coin/bitcoin: overflow 0, broken 0
+OK   mobile #/coin/binancecoin: overflow 0, broken 0
+OK   mobile #/favorites: overflow 0, broken 0
+OK   mobile #/abc: overflow 0, broken 0
+CHECKS 21/21

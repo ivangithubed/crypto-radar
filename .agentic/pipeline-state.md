@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Revise 8.a (TC-059, BUG-010 на Safari) і запит на зміну №6 (TD-020, TD-022, TD-024 — етапи 3 і 4); далі Stage 9`
+- **Поточний активний етап:** `Запит на зміну №6 (TD-020, TD-022, TD-024 — етапи 3 і 4); далі Stage 9`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-04 01:31`
+- **Останнє оновлення:** `2026-11-04 02:11`
 
 ---
 
@@ -26,7 +26,7 @@
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5` |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5`, Revise №6 — `8c68680` |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f`, Revise 8.a — `8755fb3` |
-| **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08b-qa-automation-report.md` | `f52746a` |
+| **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08b-qa-automation-report.md` | `f52746a`, Revise 8.b — `821453d` |
 | **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `PENDING` | `.agentic/reports/09-release-report.md` | — |
 
 > **Статуси:**
@@ -65,6 +65,7 @@
 | **8.a (Revise 8.a)** | `2026-11-03 22:43` | `8755fb3` | `test(stage-8.a): retest bug-003 and bug-009 after stage 7 revise` | `Власник продукту` |
 | **8.b** | `2026-11-03 23:38` | `f52746a` | `test(stage-8.b): add e2e acceptance suite with axe in three browsers` | `Власник продукту` |
 | **7 (Revise №6)** | `2026-11-04 01:10` | `8c68680` | `fix(stage-7): fix bug-010 and bug-011, focus the returned coin link` | `Власник продукту` |
+| **8.b (Revise 8.b)** | `2026-11-04 01:31` | `821453d` | `test(stage-8.b): lift webkit quarantine after bug-010 and check safari hint text` | `Власник продукту` |
 
 ---
 
@@ -178,4 +179,12 @@
 - `2026-11-04 01:19 Stage 8.b: власник — «Так, Revise 8.b» (REJECTED_REVISING). Зміст: e2e/us-8 і e2e/support/app.js (знято карантин WebKit — зроблено під час Revise №6 етапу 7, рішення 00:11 п. 1, поза комітом етапу 7), новий тест тексту поради Safari в e2e/us-6 (BUG-011 — Verified), BUG-010 — Fixed (ретест у WebKit Pass, справжній Safari не перевірено). Прогони: E2E 282 passed / 3 skipped, smoke 39, US-8 WebKit × 5 — 50, verify 265. Далі — рев'ю і --stage 8.b --run.`
 - `2026-11-04 01:28 Stage 8.b (Revise 8.b): рев'ю №3 — BLOCKERS FOUND (рядок мутаційної перевірки з кодом 0 без EXIT=; застарілий опис карантину в секціях 2, 5 і BUG-010.md) — виправлено 01:23 – 01:24 (негативний контроль EXIT=1, page.reload() у WebKit перевірено пробою — обмеження знято); рев'ю №4 — PASS (1 WARNING — коментар у e2e/us-6, виправлено). Далі — --stage 8.b --run.`
 - `2026-11-04 01:29 Stage 8.b (Revise 8.b): verify-gate.py --stage 8.b --run — EXIT 0 (01:28:34 – 01:29:29). Статус — WAITING_FOR_APPROVAL. На гейт: зняття карантину WebKit і тест тексту поради Safari (BUG-011 — Verified); BUG-010 — Fixed, справжній Safari не перевірено.`
-- `2026-11-04 01:31 Stage 8.b: власник — «Approve & закоміть 8.b» (Revise 8.b, APPROVED_AND_COMMITTED). Схвалено зняття карантину WebKit і тест тексту поради Safari. Відкритими лишаються (L-003): BUG-010 у справжньому Safari; Revise 8.a (TC-059 — TD-024, ретест на Safari TC-088); запит на зміну №6 (TD-020, TD-022, TD-024).`
+- `2026-11-04 01:31 Stage 8.b: власник — «Approve & закоміть 8.b» (Revise 8.b, APPROVED_AND_COMMITTED). Схвалено зняття карантину WebKit і тест тексту поради Safari. Відкритими лишаються (L-003): BUG-010 у справжньому Safari; Revise 8.a (TC-059 — TD-024, ретест на Safari TC-088); запит на зміну №6 (TD-020, TD-022, TD-024). Коміт `821453d`.`
+- `2026-11-04 01:45 (запис; команду власника «Так, Revise 8.a» дано між 01:31 і 01:40:39 — старт ретесту) Stage 8.a: REJECTED_REVISING → IN_PROGRESS. Ретест на 8c68680 (RUN-2026-11-04, 01:40 – 01:44): BUG-010 — Pass у Chromium, WebKit, Firefox (статус Fixed — справжній Safari не перевірено), BUG-011 — Pass (Verified з 8.b), TC-059 — нове очікування (рішення 00:11, п. 5), Pass; регресія TC-058, TC-068, TC-078, TC-086 — Pass. Далі — рев'ю і --stage 8.a.`
+- `2026-11-04 01:51 Stage 8.a (Revise 8.a №2): рев'ю №3 — BLOCKERS FOUND (лічильник сканера секретів до появи 2 файлів етапу, без EXIT=; секції 1–2 — «9 BUG» і «Чекає власника») — виправлено; далі рев'ю №4.`
+- `2026-11-04 01:55 Stage 8.a (Revise 8.a №2): рев'ю №4 — BLOCKERS FOUND (секція 6: рядок чек-листа «ризик не прийнято» і «TD-023 відкритий» — застаріли) — виправлено разом із примітками RUN і тест-плану; далі рев'ю №5.`
+- `2026-11-04 02:00 Stage 8.a (Revise 8.a №2): рев'ю №5 — BLOCKERS FOUND (прогалина «сортування з null» приписана закритому 8.b) — внесено як TD-026 на рішення власника; разом виправлено всі застарілі твердження, названі рев'юером одним списком (ризик 429, «перевірити на TC-087», середовища й ризики тест-плану, шапка 4.0). Далі рев'ю №6.`
+- `2026-11-04 02:04 Stage 8.a (Revise 8.a №2): рев'ю №6 — BLOCKERS FOUND (рядок «Борг» секції 6 і перелік 3.3 не згадували TD-026) — виправлено разом з усіма WARNING / INFO (п. 3 гейту — TD-026, п. 4 — звіт 8.b; історія в рядках Verified; TC-059 «Авто» — у TD-026). Далі рев'ю №7.`
+- `2026-11-04 02:09 Stage 8.a (Revise 8.a №2): рев'ю №7 — PASS (2 WARNING — виправлено). Уточнення до записів 00:55 і 02:00: рядок 2.4.3 — це UX §4, не §6 (§6 — «Брейкпоінти»); виправлено в звіті 8.a, тест-плані й реєстрі боргу; у звітах етапу 7 — у наступному проході. Далі — --stage 8.a.`
+- `2026-11-04 02:09 Stage 8.a (Revise 8.a №2): verify-gate.py --stage 8.a — EXIT 0 (02:09:05). Статус — WAITING_FOR_APPROVAL. На гейт: ретест (BUG-010 Fixed, BUG-011 Verified, TC-059 Pass), BUG-010 на справжньому Safari, TD-026, звіт 8.b «ризик не прийнято», «UX §6» у звітах етапу 7.`
+- `2026-11-04 02:11 Stage 8.a: власник — «Approve & закоміть 8.a» (Revise 8.a №2, APPROVED_AND_COMMITTED). Схвалено ретест (BUG-010 Fixed, BUG-011 Verified, TC-059 Pass). Відкритими лишаються (L-003): BUG-010 на справжньому Safari (Fixed / Verified); TD-026; звіт 8.b «ризик не прийнято»; «UX §6» у звітах етапу 7; запит на зміну №6 (TD-020, TD-022, TD-024).`

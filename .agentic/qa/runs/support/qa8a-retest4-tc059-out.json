@@ -1,0 +1,14 @@
+{
+ "pause0": {
+  "yAfterMore": 1124,
+  "yBeforeClick": 1124,
+  "yAfterBack": 1124,
+  "focus": "H1:Топ-50 монет"
+ },
+ "pause300": {
+  "yAfterMore": 1124,
+  "yBeforeClick": 0,
+  "yAfterBack": 0,
+  "focus": "A:Bitcoin"
+ }
+}
