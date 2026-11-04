@@ -17,7 +17,7 @@
 
 ## 1. Product Goal & Observable Success Criteria
 
-Посилання: бриф §8–9 (G-1 – G-3, M-1 – M-5), беклог §1. Для хвиль важливо лише одне: **guardrail M-5** — жодної ціни, старшої за 300 с (NFR-1), у жодному стані жодного екрана.
+Посилання: бриф §8–9 (G-1 – G-3, M-1 – M-5), беклог §1. Для хвиль важливо лише одне: **guardrail M-5** — жодного набору цін із медіанною давністю понад 300 с (NFR-1) у жодному стані жодного екрана; монета з власною давньою позначкою показується (TD-029, запит на зміну №7).
 
 Вимірні критерії готовності спринту (Done When) — розділ 12.4.
 
@@ -57,7 +57,7 @@
 
 | Модуль | Експорт (сигнатура JSDoc) |
 | :--- | :--- |
-| `lib` | `formatPrice(usd: number): string` · `formatChange(pct: number): {text: string, direction: 'up'\|'down'\|'flat', spoken: string}` · `formatMarketCap(usd: number): string` · `formatPriceTime(date: Date): string` · `sortCoins(coins: Coin[], key: SortKey): Coin[]` · `searchCoins(coins: Coin[], query: string): Coin[]` · `normalizeQuery(raw: string): string` · `isFresh(oldestLastUpdated: Date, now: Date): boolean` · `pluralCoins(n: number, form: 'acc'\|'nom'): string` · константи `SORT_KEYS`, `SORT_LABELS`, `FRESHNESS_LIMIT_MS = 300000`, `QUERY_MAX_LENGTH = 50`, `PAGE_SIZE = 25` |
+| `lib` | `formatPrice(usd: number): string` · `formatChange(pct: number): {text: string, direction: 'up'\|'down'\|'flat', spoken: string}` · `formatMarketCap(usd: number): string` · `formatPriceTime(date: Date): string` · `sortCoins(coins: Coin[], key: SortKey): Coin[]` · `searchCoins(coins: Coin[], query: string): Coin[]` · `normalizeQuery(raw: string): string` · `isFresh(pricesAt: Date, now: Date): boolean` · `pluralCoins(n: number, form: 'acc'\|'nom'): string` · константи `SORT_KEYS`, `SORT_LABELS`, `FRESHNESS_LIMIT_MS = 300000`, `QUERY_MAX_LENGTH = 50`, `PAGE_SIZE = 25` |
 | `ui` | `Button`, `StatusMessage` (`role="status"`, ввічливе оголошення), `ErrorBlock({kind: 'src'\|'net'\|'stale', onRetry, retrying, retryFailed})`, `Skeleton`, `TermHintButton({term, hintText, id})` (базова доступна підказка UX §4 1.4.13), `useMediaQuery(query): boolean`, `useDocumentTitle(title)` |
 | `market-data` | `useTopCoins(): {status: 'loading'\|'fresh'\|'error', errorKind: 'src'\|'net'\|'stale'\|null, coins: Coin[], pricesAt: Date\|null, retry(): void, retrying: boolean, retryFailed: boolean}` · `useStablecoinIds(): Set<string>` · `MarketDataProvider({children})` (створює власний `QueryClient` в `useState`) · `fetchTopCoins({signal})`, `fetchStablecoinIds({signal})` · `parseMarkets(json): Coin[]` (кидає `ShapeError`) |
 | `favorites` | `useFavorites(): {ids: string[], add(id, top50Ids: Set<string>): boolean, remove(id): void, has(id): boolean, storeError: 'write'\|'read'\|null}` · `FAVORITES_KEY = 'crypto-radar:favorites'` · `SAFARI_HINT_KEY = 'crypto-radar:safari-hint-dismissed'` · `useSafariHint(): {visible: boolean, dismiss(): void}` |
@@ -91,11 +91,11 @@
 | P-2 | Ім'я кнопки «?» | `Що означає «{термін}»?` | UX не задав; має бути унікальним на екрані й зрозумілим без контексту |
 | P-3 | Як уникнути подвійних даних картки й таблиці | Один макет у DOM через `useMediaQuery` (розділ 4) | Зчитувач і тести бачать одну копію; CSS-приховування дало б дубль у jsdom |
 | P-4 | Повтори TanStack Query vs NFR-3 | `retry` Query вимкнено (`retry: false`); власна політика в `fetchTopCoins`: 429 і виняток `fetch` при `navigator.onLine === true` → 0 повторів; мережа офлайн (`onLine === false`) / таймаут 10 с / 5xx → 2 повтори через 2 с і 4 с (запит на зміну №5) | Одна політика повторів, яку тестує модульний тест (NFR-3) |
-| P-5 | Інтервал перевірки свіжості | `setInterval` 1 с у `useTopCoins`: якщо `!isFresh(oldest, new Date())` → `status: 'error', errorKind: 'stale'` | NFR-1: перехід у Error не пізніше ніж за 1 с |
+| P-5 | Інтервал перевірки свіжості | `setInterval` 1 с у `useTopCoins`: якщо `!isFresh(pricesAt, new Date())` → `status: 'error', errorKind: 'stale'` | NFR-1: перехід у Error не пізніше ніж за 1 с |
 | P-6 | Фонове оновлення | `refetchInterval: 60000`, `refetchIntervalInBackground: false`, `refetchOnWindowFocus` лише якщо дані старші за 60 с; **перше завантаження не залежить від `visibilityState`** | NFR-2, NFR-3; jsdom і prerender-вкладки не блокують перший запит |
 | P-7 | Мінімальна кількість монет у відповіді | Після фільтра `1 ≤ rank ≤ 50` має лишитися рівно 50 монет із коректними полями, інакше `ShapeError` → E-SHAPE. Порожній `sparkline_in_7d.price` формою **не** вважається помилкою (його обробляє P-8) | UX §3 E-SHAPE («менше ніж 50 монет») |
 | P-8 | `sparkline_in_7d.price` порожній або < 2 точок для монети | Сторінка монети → Error (`kind: 'src'`), список і обрані не зачіпає | AC-8.7; список не показує графіка |
-| P-9 | Час цін для «Ціни на ЧЧ:ХХ» | `pricesAt` = найстаріший `last_updated` серед 50 монет | UX §5.2 `prices.time` |
+| P-9 | Час цін для «Ціни на ЧЧ:ХХ» | `pricesAt` = медіана `last_updated` серед 50 монет (при парній кількості — старіша з двох середніх; запит на зміну №7) | UX §5.2 `prices.time` |
 
 ## 7. Data Model & Persistence
 
