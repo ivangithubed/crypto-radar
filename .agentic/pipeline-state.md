@@ -10,7 +10,7 @@
 - **Проєкт:** `Крипто-Радар`
 - **Поточний активний етап:** `Stage 9: артефакти закомічено; зовнішні кроки релізу (push, тег, production) — за згодою власника`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-04 19:00`
+- **Останнє оновлення:** `2026-11-04 19:14`
 
 ---
 
@@ -27,7 +27,7 @@
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5`, Revise №6 — `8c68680`, запит №7 — `f72a0cd` |
 | **8.a** | QA A: тест-дизайн і ручне тестування | `qa-engineer` | старт: `4`; гейт: `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08a-qa-manual-report.md` | `93d517f`, Revise 8.a — `8755fb3`, Revise 8.a №2 — `706c08a`, запит №7 — `c75727c` |
 | **8.b** | QA B: автоматизація E2E і контрактні тести | `qa-engineer` | `7` | `APPROVED_AND_COMMITTED` | `.agentic/reports/08b-qa-automation-report.md` | `f52746a`, Revise 8.b — `821453d`, запит №7 — `fc8a3d5` |
-| **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `APPROVED_AND_COMMITTED` | `.agentic/reports/09-release-report.md` | — |
+| **9** | Реліз: версіонування, staging → production, rollback | `release-engineer` | `8.a`, `8.b` | `APPROVED_AND_COMMITTED` | `.agentic/reports/09-release-report.md` | — `d0241ce` |
 
 > **Статуси:**
 > - `PENDING` — очікує старту.
@@ -75,6 +75,7 @@
 | **7 (запит №7)** | `2026-11-04 18:02` | `f72a0cd` | `fix(stage-7): compute data freshness by median last_updated` | `Власник продукту` |
 | **8.a (запит №7)** | `2026-11-04 18:02` | `c75727c` | `test(stage-8.a): add bug-012 and tc-092 for median freshness` | `Власник продукту` |
 | **8.b (запит №7)** | `2026-11-04 18:03` | `fc8a3d5` | `test(stage-8.b): cover stale outlier coin in freshness scenario` | `Власник продукту` |
+| **9** | `2026-11-04 19:00` | `d0241ce` | `ci(stage-9): add release workflow, changelog and rollback runbook` | `Власник продукту` |
 
 ---
 
@@ -218,3 +219,5 @@
 - `2026-11-04 18:08 Stage 9: власник затвердив план («Затверджую план», v0.1.0; CHANGELOG — git-cliff; окрема згода на `pnpm add -D git-cliff@2.14.2` — «Так»; npm view: 2.14.2, MIT OR Apache-2.0, без install-скриптів, платформні бінарники як optionalDependencies). Статус IN_PROGRESS. Ціль — GitHub Pages (ADR 0003), без staging (smoke на vite preview у CI), production — лише після фрази «HUMAN ACCEPTANCE: ACCEPTED. ДОЗВОЛЯЮ PRODUCTION DEPLOYMENT.» і схвалення в GitHub. Зовнішні дії (git push 30 комітів — origin/main зараз на 3c7cc09, тег, запуск workflow, налаштування Pages і середовища github-pages) — кожна окремо з згоди власника. Safari на iPhone (BUG-012, BUG-010) власник перевірить сам на локальному реліз-кандидаті до production.`
 - `2026-11-04 18:28 Stage 9: рев'ю №1 — BLOCKERS FOUND (сканер до останньої правки звіту; рядки 4.0 без блоків EXIT=; SHA дій не звірено з тегами), виправлено; рев'ю №2 — PASS (0 BLOCKER, 0 WARNING, 7 INFO). Нові TD-032 (другий гейт production залежить від налаштування власника) і TD-033 (відкат — перезбірка з audit). verify-gate.py --stage 9 --run — див. звіт 4.2. Статус WAITING_FOR_APPROVAL. Локальний реліз-кандидат: http://192.168.231.203:4173/crypto-radar/ — чекає перевірки власника на iPhone Safari (BUG-012, BUG-010 лишаються Fixed). Зовнішніх дій не виконано: origin/main = 3c7cc09, тегів немає.`
 - `2026-11-04 19:00 Stage 9: власник перевірив реліз-кандидат v0.1.0 на справжньому Safari (iPhone) — «ПЕРЕВІРИВ ВСЕ ОК» (список і оновлення, помилка й повтор, обрані); BUG-012 і BUG-010 — перевірено власником, статуси в `.agentic/qa/bugs/` (зона 8.a) переведе наступний Revise 8.a (L-009). Гейт етапу 9: власник — «закомітити артефакти» (APPROVED_AND_COMMITTED). Схвалено release.yml, CHANGELOG v0.1.0, cliff.toml, git-cliff 2.14.2, runbook, verify_commands["9"], backlog, TD-032 і TD-033. Зовнішні дії (git push origin main — 30 комітів історії, зелений CI, Pages і середовище github-pages з required reviewers, тег v0.1.0, production) — ще не виконувались, кожна — окремо з згоди власника; production — після фрази HUMAN ACCEPTANCE. Відкриті (L-003, ризик не прийнято): TD-027, TD-028, TD-029, TD-032, TD-033.`
+- `2026-11-04 19:10 Stage 9: власник — «TD-027, TD-028, TD-029, TD-033 — ризик прийнято, борг на спринт 2». Ризик цих чотирьох боргів ПРИЙНЯТО (L-003, рішення власника записано тут); у реєстрі `.agentic/tech-debt.md` статус лишається «відкрито», борг — на спринт 2; для TD-029 обрано прийняття відступу AC-8.5 для окремих монет без позначки віку й без винятку в етапі 2. TD-032 (reviewers середовища github-pages) лишається відкритим, ризик не прийнято: власник налаштовує сам до тегу, перевірка — `gh api repos/ivangithubed/crypto-radar/environments/github-pages --jq '.protection_rules'`. Зовнішні дії (push, тег, production) — ще не виконувались, кожна окремо з згоди власника.`
+- `2026-11-04 19:14 Stage 9: TD-032 закрито — власник налаштував Required reviewers середовища `github-pages` (скріншот власника), читальна перевірка `gh api repos/ivangithubed/crypto-radar/environments/github-pages` → `required_reviewers: ivangithubed`; 19:14: власник зняв «Allow administrators to bypass», перевірено `can_admins_bypass: false`; `prevent_self_review: false` — прийнято як є для проєкту з одним власником. Усі п'ять боргів TD-027, TD-028, TD-029, TD-032, TD-033 вирішені рішенням власника (TD-032 — закрито, інші — ризик прийнято, спринт 2). Зовнішні дії (push, тег, production) — ще не виконувались, кожна окремо з згоди власника.`
