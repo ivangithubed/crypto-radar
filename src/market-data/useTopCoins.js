@@ -10,9 +10,16 @@ import { lastErrorKinds, topCoinsQuery } from "./topCoinsQuery.js";
 /** @type {never[]} */
 const EMPTY = [];
 
-function oldestUpdate(coins) {
-  if (!coins) return null;
-  return new Date(Math.min(...coins.map((coin) => coin.lastUpdated.getTime())));
+/**
+ * Медіана lastUpdated (NFR-1, P-9): рідко оновлювана монета (наприклад, figure-heloc) не ховає список.
+ * При парній кількості — старіша з двох середніх.
+ * @param {import('../lib/index.js').Coin[] | undefined} coins
+ * @returns {Date | null}
+ */
+function medianUpdate(coins) {
+  if (!coins || coins.length === 0) return null;
+  const times = coins.map((coin) => coin.lastUpdated.getTime()).sort((a, b) => a - b);
+  return new Date(times[(times.length - 1) >> 1]);
 }
 
 /** Годинник свіжості: поки є дані, оновлюється щосекунди (P-5). */
@@ -58,7 +65,7 @@ export function useTopCoins() {
   const { retry, retrying, retryFailed } = useManualRetry(query.refetch);
   const now = useNow(Boolean(data), data);
 
-  const pricesAt = useMemo(() => oldestUpdate(data), [data]);
+  const pricesAt = useMemo(() => medianUpdate(data), [data]);
   const fresh = pricesAt !== null && isFresh(pricesAt, now);
   let status = "loading";
   let errorKind = null;

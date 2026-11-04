@@ -269,3 +269,47 @@ $ pnpm test:a11y  (до 00:53:20) → 40 passed — EXIT=0
 $ pnpm verify     (00:50:08, Start at 00:50:10) → Tests 265 passed; NFR-5 106.08 kB — EXIT=0
 $ pnpm exec vitest run --config acceptance/vitest.config.js   (00:51:32) → Tests 91 passed — EXIT=0
 ```
+
+
+## Revise №7 (запит на зміну №7, BUG-012: свіжість за медіаною `last_updated`), 2026-11-04
+
+Виконав головний агент на остаточному дереві; виводи дослівно з журналу `final7.log` (скорочено лише `dist/*` у `pnpm verify`).
+
+```text
+$ pnpm verify   (17:19:16)  → FAIL: oxfmt --check — «Format issues found in above 1 files»: src/market-data/useTopCoins.test.jsx (мій новий тест); VERIFY_EXIT=1
+$ pnpm exec oxfmt src/market-data/useTopCoins.test.jsx   → «Finished in 1ms on 1 files»
+$ pnpm verify   (17:21:44 – 17:21:52)
+All matched files use the correct format.
+Finished in 185ms on 132 files using 24 threads.
+ Test Files  16 passed (16)
+      Tests  268 passed (268)
+✓ built in 321ms
+NFR-5: JS головного екрана 106.10 kB gzip (ліміт 150 kB)
+VERIFY_EXIT=0
+
+$ pnpm exec vitest run --config acceptance/vitest.config.js   (17:19:17)
+ Test Files  9 passed (9)
+      Tests  91 passed (91)
+ORACLE_EXIT=0
+
+$ python .agentic/bundle/skills/gate-check/verify-gate.py --debt   (17:19:27 – 17:20:37)
+✅ [PASS] Команда успішна: pnpm lint
+✅ [PASS] Команда успішна: pnpm dup
+✅ [PASS] Команда успішна: pnpm deadcode
+✅ [PASS] Команда успішна: pnpm boundaries
+✅ [PASS] Команда успішна: pnpm audit --audit-level high
+✅ [PASS] Команда успішна: pnpm sbom:write
+✅ [PASS] Команда успішна: pnpm test:a11y
+✅ [PASS] Команда успішна: pnpm vitals
+✅ [PASS] debt_commands: 7 аспектів задано
+УСІ ПЕРЕВІРКИ ПРОЙДЕНО (EXIT CODE 0)
+DEBT_EXIT=0
+
+$ pnpm exec playwright test -c e2e/playwright.config.js   (17:20:37 – 17:21:36)
+  3 skipped
+  285 passed (57.5s)
+E2E_EXIT=0
+```
+
+Примітка: оракул, `--debt` і E2E (17:19 – 17:21) виконано до форматування нового тесту (17:21:44); різниця — лише пробіли, поведінка й `pnpm lint` не змінилися, `pnpm verify` повторено після форматування (EXIT=0). Показники `dup` (%) і `vitals` у виводі `--debt` не друкуються (рядок «PASS» на команду): останні записані числа — `dup` 1.20 % і LCP 905.954 мс (00:52, блок Revise №6); для Revise №7 підтверджено лише код виходу 0 у межах порогів.
+Негативні контролі (мутації, очікуване падіння, не рядки 4.0): `times[0]` замість нижньої медіани — E2E «BUG-012», Chromium, 16:48:42, `1 failed`, `MUTANT_EXIT=1`; без `.sort((a, b) => a - b)` — модульні тести, 17:17:44 – 17:17:49, `Tests  1 failed | 18 passed (19)`; обидва файли відновлено.

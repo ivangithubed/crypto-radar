@@ -18,6 +18,20 @@ function stubFetch({ top = () => ok(top50), stable = () => ok(stablecoins) } = {
   return mock;
 }
 
+/** Нижня медіана last_updated (NFR-1, P-9): старіша з двох середніх при парній кількості. */
+const medianOf = (coins) =>
+  coins.map((c) => Date.parse(c.last_updated)).sort((a, b) => a - b)[(coins.length - 1) >> 1];
+
+/** Копія топ-50, де n монет мають давню last_updated (як figure-heloc у CoinGecko). */
+const withStaleCoins = (n) =>
+  top50.map((c, i) => (i < n ? { ...c, last_updated: "2026-11-02T19:00:00.000Z" } : c));
+
+/** Те саме, але давні монети — наприкінці списку (вбиває мутанти «без сортування» і «за спаданням»). */
+const withStaleTail = (n) =>
+  top50.map((c, i) =>
+    i >= top50.length - n ? { ...c, last_updated: "2026-11-02T19:00:00.000Z" } : c,
+  );
+
 const topCalls = (mock) => mock.mock.calls.filter(([u]) => !String(u).includes("stablecoins"));
 
 function wrapper({ children }) {
@@ -39,7 +53,7 @@ afterEach(() => {
 });
 
 describe("useTopCoins", () => {
-  it("loading → fresh з 50 монетами і найстарішим pricesAt", async () => {
+  it("loading → fresh з 50 монетами і pricesAt = медіана last_updated", async () => {
     stubFetch();
     const { result } = renderHook(() => useTopCoins(), { wrapper });
     expect(result.current).toMatchObject({ status: "loading", errorKind: null, coins: [] });
@@ -47,8 +61,7 @@ describe("useTopCoins", () => {
     await waitFor(() => expect(result.current.status).toBe("fresh"));
     expect(result.current.coins).toHaveLength(50);
     expect(result.current.errorKind).toBeNull();
-    const oldest = Math.min(...top50.map((c) => Date.parse(c.last_updated)));
-    expect(result.current.pricesAt.getTime()).toBe(oldest);
+    expect(result.current.pricesAt.getTime()).toBe(medianOf(top50));
   });
 
   it("429 → error src без монет", async () => {
@@ -102,11 +115,39 @@ describe("useTopCoins", () => {
   });
 
   it("давність рівно 300 с ще fresh", async () => {
-    const oldest = Math.min(...top50.map((c) => Date.parse(c.last_updated)));
-    vi.setSystemTime(new Date(oldest + 300000));
+    vi.setSystemTime(new Date(medianOf(top50) + 300000));
     stubFetch();
     const { result } = renderHook(() => useTopCoins(), { wrapper });
     await waitFor(() => expect(result.current.status).toBe("fresh"));
+  });
+
+  it("одна монета з давньою last_updated не ховає список (BUG-012, figure-heloc)", async () => {
+    stubFetch({ top: () => ok(withStaleCoins(1)) });
+    const { result } = renderHook(() => useTopCoins(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe("fresh"));
+    expect(result.current.coins).toHaveLength(50);
+    expect(result.current.pricesAt.getTime()).toBe(medianOf(top50));
+  });
+
+  it("24 з 50 монет із давньою last_updated ще fresh, 25 — stale (межа медіани)", async () => {
+    stubFetch({ top: () => ok(withStaleCoins(24)) });
+    const first = renderHook(() => useTopCoins(), { wrapper });
+    await waitFor(() => expect(first.result.current.status).toBe("fresh"));
+    first.unmount();
+    stubFetch({ top: () => ok(withStaleCoins(25)) });
+    const second = renderHook(() => useTopCoins(), { wrapper });
+    await waitFor(() => expect(second.result.current.errorKind).toBe("stale"));
+    expect(second.result.current.coins).toEqual([]);
+  });
+
+  it("давні монети наприкінці списку: 24 з 50 — fresh, 25 — stale (порядок відповіді не впливає)", async () => {
+    stubFetch({ top: () => ok(withStaleTail(24)) });
+    const first = renderHook(() => useTopCoins(), { wrapper });
+    await waitFor(() => expect(first.result.current.status).toBe("fresh"));
+    first.unmount();
+    stubFetch({ top: () => ok(withStaleTail(25)) });
+    const second = renderHook(() => useTopCoins(), { wrapper });
+    await waitFor(() => expect(second.result.current.errorKind).toBe("stale"));
   });
 
   it("зсув годинника на 301 с переводить fresh у stale протягом 1 с", async () => {

@@ -25,7 +25,7 @@
  * @property {'loading' | 'fresh' | 'error'} status
  * @property {'src' | 'net' | 'stale' | null} errorKind src — E-SRC, E-429, E-SHAPE; net — E-NET; stale — E-STALE
  * @property {Coin[]} coins монети лише в стані fresh, інакше порожній масив (NFR-1)
- * @property {Date | null} pricesAt найстаріший lastUpdated серед 50 монет (P-9)
+ * @property {Date | null} pricesAt медіана lastUpdated серед 50 монет (P-9, запит на зміну №7)
  * @property {() => void} retry «Спробувати ще раз»
  * @property {boolean} retrying повтор триває
  * @property {boolean} retryFailed останній повтор завершився помилкою
@@ -81,11 +81,11 @@ export function searchCoins(coins, query) {
 }
 
 /**
- * NFR-1: давність `now − oldestLastUpdated` ≤ FRESHNESS_LIMIT_MS.
- * @param {Date} oldestLastUpdated
+ * NFR-1: давність `now − pricesAt` ≤ FRESHNESS_LIMIT_MS (pricesAt — медіана lastUpdated).
+ * @param {Date} pricesAt
  * @param {Date} now
  * @returns {boolean}
  */
-export function isFresh(oldestLastUpdated, now) {
-  return now.getTime() - oldestLastUpdated.getTime() <= FRESHNESS_LIMIT_MS;
+export function isFresh(pricesAt, now) {
+  return now.getTime() - pricesAt.getTime() <= FRESHNESS_LIMIT_MS;
 }
