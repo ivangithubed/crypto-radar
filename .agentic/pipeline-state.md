@@ -8,9 +8,9 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Stage 9: артефакти закомічено; зовнішні кроки релізу (push, тег, production) — за згодою власника`
+- **Поточний активний етап:** `Stage 9: артефакти закомічено, main запушено, CI зелений; тег і production — за згодою власника`
 - **Спринт:** `1`
-- **Останнє оновлення:** `2026-11-04 19:14`
+- **Останнє оновлення:** `2026-11-04 19:55`
 
 ---
 
@@ -76,6 +76,7 @@
 | **8.a (запит №7)** | `2026-11-04 18:02` | `c75727c` | `test(stage-8.a): add bug-012 and tc-092 for median freshness` | `Власник продукту` |
 | **8.b (запит №7)** | `2026-11-04 18:03` | `fc8a3d5` | `test(stage-8.b): cover stale outlier coin in freshness scenario` | `Власник продукту` |
 | **9** | `2026-11-04 19:00` | `d0241ce` | `ci(stage-9): add release workflow, changelog and rollback runbook` | `Власник продукту` |
+| **9 (борги)** | `2026-11-04 19:15` | `2752e42` | `docs(stage-9): record debt decisions and close td-032` | `Власник продукту` |
 
 ---
 
@@ -221,3 +222,4 @@
 - `2026-11-04 19:00 Stage 9: власник перевірив реліз-кандидат v0.1.0 на справжньому Safari (iPhone) — «ПЕРЕВІРИВ ВСЕ ОК» (список і оновлення, помилка й повтор, обрані); BUG-012 і BUG-010 — перевірено власником, статуси в `.agentic/qa/bugs/` (зона 8.a) переведе наступний Revise 8.a (L-009). Гейт етапу 9: власник — «закомітити артефакти» (APPROVED_AND_COMMITTED). Схвалено release.yml, CHANGELOG v0.1.0, cliff.toml, git-cliff 2.14.2, runbook, verify_commands["9"], backlog, TD-032 і TD-033. Зовнішні дії (git push origin main — 30 комітів історії, зелений CI, Pages і середовище github-pages з required reviewers, тег v0.1.0, production) — ще не виконувались, кожна — окремо з згоди власника; production — після фрази HUMAN ACCEPTANCE. Відкриті (L-003, ризик не прийнято): TD-027, TD-028, TD-029, TD-032, TD-033.`
 - `2026-11-04 19:10 Stage 9: власник — «TD-027, TD-028, TD-029, TD-033 — ризик прийнято, борг на спринт 2». Ризик цих чотирьох боргів ПРИЙНЯТО (L-003, рішення власника записано тут); у реєстрі `.agentic/tech-debt.md` статус лишається «відкрито», борг — на спринт 2; для TD-029 обрано прийняття відступу AC-8.5 для окремих монет без позначки віку й без винятку в етапі 2. TD-032 (reviewers середовища github-pages) лишається відкритим, ризик не прийнято: власник налаштовує сам до тегу, перевірка — `gh api repos/ivangithubed/crypto-radar/environments/github-pages --jq '.protection_rules'`. Зовнішні дії (push, тег, production) — ще не виконувались, кожна окремо з згоди власника.`
 - `2026-11-04 19:14 Stage 9: TD-032 закрито — власник налаштував Required reviewers середовища `github-pages` (скріншот власника), читальна перевірка `gh api repos/ivangithubed/crypto-radar/environments/github-pages` → `required_reviewers: ivangithubed`; 19:14: власник зняв «Allow administrators to bypass», перевірено `can_admins_bypass: false`; `prevent_self_review: false` — прийнято як є для проєкту з одним власником. Усі п'ять боргів TD-027, TD-028, TD-029, TD-032, TD-033 вирішені рішенням власника (TD-032 — закрито, інші — ризик прийнято, спринт 2). Зовнішні дії (push, тег, production) — ще не виконувались, кожна окремо з згоди власника.`
+- `2026-11-04 19:55 Stage 9: власник — «коміть та пуш». Коміт `2752e42` (рішення щодо боргів, TD-032 закрито), локальний `pnpm verify` — EXIT=0 (NFR-5: 106,10 кБ gzip), `git push origin main` — 32 коміти (`3c7cc09..2752e42`; у записі 19:00 було «30», фактично 32); GitHub повідомив про обхід правила гілки (required status check `verify`, адмін-обхід ruleset). CI run 41875849265 на `2752e42`: run — success, verify — success, e2e — усі кроки success (статус самого job у API відставав). Тег `v0.1.0` і production — ще не виконувались, кожне окремо з згоди власника; production — після фрази HUMAN ACCEPTANCE та схвалення в середовищі `github-pages`.`
