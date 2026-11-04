@@ -8,7 +8,7 @@
 ## 1. Загальний стан
 
 - **Проєкт:** `Крипто-Радар`
-- **Поточний активний етап:** `Запит на зміну №6: гейт етапу 4, далі повтор перевірок залежних етапів і Stage 9`
+- **Поточний активний етап:** `Запит на зміну №6: повтор перевірок залежних етапів (5, 6, 7, 8.a, 8.b), далі Stage 9`
 - **Спринт:** `1`
 - **Останнє оновлення:** `2026-11-04 13:46`
 
@@ -20,8 +20,8 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **1** | Discovery: від ідеї до продуктового брифу | `product-discovery` | — | `APPROVED_AND_COMMITTED` | `.agentic/reports/01-discovery-report.md` | `04c6271` |
 | **2** | Вимоги: User Stories та Gherkin-критерії | `ba-requirements` | `1` | `APPROVED_AND_COMMITTED` | `.agentic/reports/02-requirements-report.md` | `2ff839a` |
-| **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f`, запит №5 — `9417669`, запит №6 — див. журнал |
-| **4** | UX і контракт API | `ux-api-design` | `3` | `REJECTED_REVISING` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0` |
+| **3** | Архітектура: NFR, ADR, STRIDE і вибір стеку | `solution-architect` | `2` | `APPROVED_AND_COMMITTED` | `.agentic/reports/03-architecture-report.md` | `2edc20f`, запит №5 — `9417669`, запит №6 — `32827ef` |
+| **4** | UX і контракт API | `ux-api-design` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/04-ux-api-report.md` | див. журнал; запит №5 — `a6719e0`, запит №6 — див. журнал |
 | **5** | Платформа: каркас, команда verify, CI | `platform-devops` | `3` | `APPROVED_AND_COMMITTED` | `.agentic/reports/05-platform-report.md` | — |
 | **6** | План реалізації: хвилі DAG і матриця перевірок | `implementation-planner` | `4`, `5` | `APPROVED_AND_COMMITTED` | `.agentic/reports/06-plan-report.md` | `ddcdf0b`, запит №5 — `f1ac4b5` |
 | **7** | Реалізація: хвилі DAG, Red-Team аудит, перевірка в браузері | `sdd-delivery` | `6` | `APPROVED_AND_COMMITTED` | `.agentic/reports/07-implementation-report.md` | `8645c76`, Revise №4 — `e3fb805`, Revise №5 — `8f0f2a5`, Revise №6 — `8c68680` |
@@ -67,6 +67,8 @@
 | **7 (Revise №6)** | `2026-11-04 01:10` | `8c68680` | `fix(stage-7): fix bug-010 and bug-011, focus the returned coin link` | `Власник продукту` |
 | **8.b (Revise 8.b)** | `2026-11-04 01:31` | `821453d` | `test(stage-8.b): lift webkit quarantine after bug-010 and check safari hint text` | `Власник продукту` |
 | **8.a (Revise 8.a №2)** | `2026-11-04 02:11` | `706c08a` | `test(stage-8.a): retest bug-010 and bug-011 after stage 7 revise 6` | `Власник продукту` |
+| **3 (запит №6)** | `2026-11-04 13:46` | `32827ef` | `docs(stage-3): allow first-load requests in hidden tab, allow null 7d change` | `Власник продукту` |
+| **4 (запит №6)** | `2026-11-04 13:46` | `ЗАМІНИТИ` | `docs(stage-4): document null 7d change and focus after returning to the list` | `Власник продукту` |
 
 ---
 
@@ -193,4 +195,5 @@
 - `2026-11-04 02:36 Запит на зміну №6: рев'ю №1 — етап 3 PASS (7 WARNING), етап 4 BLOCKERS FOUND (UX §8 без винятку першого завантаження). Виправлено разом: UX §8, §9.3; діаграма 7.1; STRIDE I — ризик прийнято 00:11, п. 6; новий TD-027. Сесія «Завершення коригувань» повідомила, що власник доручив їй перейняти керування; мені власник цього не підтвердив — продовжую до його вказівки. Далі рев'ю №2.`
 - `2026-11-04 02:45 Запит на зміну №6: рев'ю №2 — етап 4 PASS (WARNING → TD-028), етап 3 BLOCKERS FOUND (`;` у текстах діаграм Mermaid 7.1 і 7.2) — виправлено, рендер парсером не перевірено (mermaid немає в проєкті). Далі вузьке рев'ю №3 етапу 3.`
 - `2026-11-04 02:49 Stage 3 (запит на зміну №6): рев'ю №3 — PASS; verify-gate.py --stage 3 — EXIT 0 (02:49:30). Статус — WAITING_FOR_APPROVAL. На гейт: зміни етапу, правка STRIDE «SPA · T», TD-027. Етап 4 — рев'ю №2 PASS, гейт після етапу 3.`
-- `2026-11-04 13:46 Stage 3 (запит на зміну №6): власник — «Закоміть 3 і 4, борг у спринт 2» (APPROVED_AND_COMMITTED). Підтверджено правку STRIDE «SPA · T» (виняток null, BUG-003 варіант Б). TD-027 і TD-028 лишаються відкритим боргом на спринт 2, ризик не прийнято (L-003). Керування запитом №6 перейняла сесія «Завершення коригувань» за вказівкою власника. Коміт етапу 3 — див. журнал комітів.`
+- `2026-11-04 13:46 Stage 3 (запит на зміну №6): власник — «Закоміть 3 і 4, борг у спринт 2» (APPROVED_AND_COMMITTED). Підтверджено правку STRIDE «SPA · T» (виняток null, BUG-003 варіант Б). TD-027 і TD-028 лишаються відкритим боргом на спринт 2, ризик не прийнято (L-003). Керування запитом №6 перейняла сесія «Завершення коригувань» за вказівкою власника. Коміт `32827ef`.`
+- `2026-11-04 13:46 Stage 4 (запит на зміну №6): власник — «Закоміть 3 і 4, борг у спринт 2» (APPROVED_AND_COMMITTED). Схвалено зміни UX §3, §4 (2.4.3), §5.2, §5.3, §8, §9.3. TD-028 лишається відкритим боргом на спринт 2, ризик не прийнято (L-003); TD-020, TD-022, TD-024 закрито. Валідатор --stage 4 — EXIT 0 (13:46). Далі — повтор перевірок залежних етапів.`
